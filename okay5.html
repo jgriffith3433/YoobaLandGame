@@ -143,13 +143,11 @@ function updateSongFromScroll(){
   if(decodedBuffer){
     scrubTargetSample=Math.floor(songCurrent*decodedBuffer.sampleRate);
     if(rewinding){
-      // Rewind: use scrub interpolation for smooth reverse audio
       const delta=scrubTargetSample-prevTargetSample,spf=decodedBuffer.sampleRate/60;
       scrubRate=lerp(scrubRate,delta/spf,0.12);
     }else{
-      // Normal forward play: lock to natural 1:1 playback rate, snap position
+      // Normal forward play: fixed rate, let drift keep sync
       scrubRate=1;
-      scrubCurrentSample=scrubTargetSample;
     }
     prevTargetSample=scrubTargetSample;
   }
