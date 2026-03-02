@@ -1,560 +1,1914 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Push</title><style>@import url(https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&display=swap);*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0f0a;overflow:hidden;width:100vw;height:100vh;font-family:'IBM Plex Mono',monospace;touch-action:none}canvas{display:block;width:100%;height:100%;touch-action:none}#overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0a0f0a;z-index:20;transition:opacity .8s;padding:20px}#overlay.gone{opacity:0;pointer-events:none}.ov-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,16vw,180px);letter-spacing:10px;color:#fff;line-height:.9;text-align:center}.ov-title span{color:#ff3a00}.ov-sub{margin-top:14px;font-size:clamp(14px,2.5vw,16px);letter-spacing:5px;color:rgba(255,255,255,.85);text-align:center;line-height:2.4;text-transform:uppercase}.ov-controls{margin-top:28px;font-size:clamp(16px,2.8vw,18px);letter-spacing:2px;color:rgba(255,255,255,.85);text-align:center;line-height:2.8}.ov-controls b{color:#fff;font-size:clamp(17px,3vw,19px)}#start-btn{margin-top:40px;padding:18px 56px;min-height:52px;max-width:280px;width:90%;background:#2a4a1a;color:#7fff44;border:1px solid #4a7a2a;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:6px;cursor:pointer;transition:all .1s;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}#start-btn:hover{background:#3a6a22;transform:scale(1.04)}#prog-wrap{margin-top:24px;width:180px;height:1px;background:rgba(255,255,255,.08);display:none}#prog-fill{height:100%;background:#7fff44;width:0%;transition:width 60ms}#load-txt{margin-top:10px;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.6);display:none}#hud{position:fixed;top:0;left:0;right:0;padding:16px 22px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;z-index:10;opacity:0;transition:opacity .8s}#hud.on{opacity:1}#hud-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:5px;color:rgba(255,255,255,.15)}#progress-bar-wrap{flex:1;margin:0 20px;height:2px;background:rgba(255,255,255,.06);position:relative}#progress-bar-fill{height:100%;width:0%;transition:width .1s}#progress-label{font-size:8px;letter-spacing:3px;color:rgba(255,255,255,.18);position:absolute;top:6px;left:0}#rewind-btn{padding:9px 18px;background:rgba(255,200,0,.08);border:1px solid rgba(255,200,0,.35);color:rgba(255,200,0,.7);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;cursor:pointer;pointer-events:all;transition:all .15s;text-transform:uppercase;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);user-select:none;-webkit-user-select:none}#rewind-btn.active{background:rgba(255,200,0,.25);border-color:rgba(255,200,0,.8);color:#fff;box-shadow:0 0 12px rgba(255,200,0,.3)}#death-screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.75);z-index:15;opacity:0;pointer-events:none;transition:opacity .3s}#death-screen.show{opacity:1;pointer-events:all}#death-msg{font-family:'Bebas Neue',sans-serif;font-size:clamp(60px,12vw,130px);letter-spacing:6px;color:#ff3a00;text-shadow:0 0 40px rgba(255,58,0,.8);text-align:center}#death-sub{font-size:9px;letter-spacing:4px;color:rgba(255,255,255,.25);margin-top:10px}#death-rewind-btn{margin-top:28px;padding:16px 52px;background:rgba(255,200,0,.12);border:1px solid rgba(255,200,0,.4);color:rgba(255,200,0,.9);font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:4px;cursor:pointer;transition:all .15s;text-transform:uppercase;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);user-select:none;-webkit-user-select:none;touch-action:none}#death-rewind-btn.active,#death-rewind-btn:hover{background:rgba(255,200,0,.25);border-color:rgba(255,200,0,.8);color:#fff;box-shadow:0 0 20px rgba(255,200,0,.3)}#retry-btn{margin-top:12px;padding:8px 28px;background:0 0;border:none;color:rgba(255,255,255,.2);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;cursor:pointer;transition:all .15s;text-transform:uppercase;text-decoration:underline}#retry-btn:hover{color:rgba(255,255,255,.5)}#end-screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.85);z-index:18;opacity:0;pointer-events:none;transition:opacity .8s}#end-screen.show{opacity:1;pointer-events:all}#end-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(50px,10vw,110px);letter-spacing:8px;color:#ff3a00;text-align:center;text-shadow:0 0 60px #ff3a00}#end-sub{font-size:9px;letter-spacing:5px;color:rgba(255,200,100,.4);margin-top:12px;text-align:center;line-height:2.2}#end-rewind{margin-top:32px;padding:12px 40px;background:rgba(255,58,0,.15);border:1px solid rgba(255,58,0,.4);color:#f84;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:4px;cursor:pointer;transition:all .2s;text-transform:uppercase;pointer-events:all}#end-rewind:hover{background:rgba(255,58,0,.3);color:#fff}</style></head><body><canvas id="c"></canvas><div id="hud"><div id="hud-title">DOWN</div><div id="progress-bar-wrap"><div id="progress-bar-fill"></div><div id="progress-label">beginning</div></div><button id="rewind-btn">⟲ rewind</button></div><div id="death-screen"><div id="death-msg">you fell</div><div id="death-sub">the lava got you</div><button id="death-rewind-btn">⟲ hold to rewind</button><button id="retry-btn">restart</button></div><div id="end-screen"><div id="end-title">YOU ARE<br>CORRUPTED</div><div id="end-sub">you reached the end<br>press rewind to undo your descent</div><button id="end-rewind">⟲ rewind everything</button></div><div id="overlay"><div class="ov-title">DO<span>WN</span></div><div class="ov-sub">somewhere at the start<br>something at the end<br>where's the end?</div><div class="ov-controls"><b>← →</b>&nbsp; move &nbsp;&nbsp;&nbsp;<b>space / ↑</b>&nbsp; jump<br><b>double tap</b>&nbsp; double jump<br><b>hold rewind</b>&nbsp; to go back in time</div><button id="start-btn">begin</button><div id="prog-wrap"><div id="prog-fill"></div></div><div id="load-txt"></div></div><script>const lerp=(a,b,t)=>a+(b-a)*t,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function rgba(r,g,b,a){return`rgba(${r|0},${g|0},${b|0},${a})`}
-function lerpC(c1,c2,t){return[lerp(c1[0],c2[0],t)|0,lerp(c1[1],c2[1],t)|0,lerp(c1[2],c2[2],t)|0]}
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
-let W,H,GY;
-function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;GY=H-80}
-resize();addEventListener('resize',resize);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Down</title>
+<style>
+@import url(https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&display=swap);
+* { margin:0; padding:0; box-sizing:border-box }
+body { background:#0a0f0a; overflow:hidden; width:100vw; height:100vh; font-family:'IBM Plex Mono',monospace; touch-action:none }
+canvas { display:block; width:100%; height:100%; touch-action:none }
+#overlay { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#0a0f0a; z-index:20; transition:opacity .8s; padding:20px }
+#overlay.gone { opacity:0; pointer-events:none }
+.ov-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(80px,16vw,180px); letter-spacing:10px; color:#fff; line-height:.9; text-align:center }
+.ov-title span { color:#ff3a00 }
+.ov-sub { margin-top:14px; font-size:clamp(14px,2.5vw,16px); letter-spacing:5px; color:rgba(255,255,255,.85); text-align:center; line-height:2.4; text-transform:uppercase }
+.ov-controls { margin-top:28px; font-size:clamp(16px,2.8vw,18px); letter-spacing:2px; color:rgba(255,255,255,.85); text-align:center; line-height:2.8 }
+.ov-controls b { color:#fff; font-size:clamp(17px,3vw,19px) }
+#start-btn { margin-top:40px; padding:18px 56px; min-height:52px; max-width:280px; width:90%; background:#2a4a1a; color:#7fff44; border:1px solid #4a7a2a; font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:6px; cursor:pointer; transition:all .1s; clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%) }
+#start-btn:hover { background:#3a6a22; transform:scale(1.04) }
+#prog-wrap { margin-top:24px; width:180px; height:1px; background:rgba(255,255,255,.08); display:none }
+#prog-fill { height:100%; background:#7fff44; width:0%; transition:width 60ms }
+#load-txt { margin-top:10px; font-size:9px; letter-spacing:3px; color:rgba(255,255,255,.6); display:none }
+#hud { position:fixed; top:0; left:0; right:0; padding:16px 22px; display:flex; justify-content:space-between; align-items:center; pointer-events:none; z-index:10; opacity:0; transition:opacity .8s }
+#hud.on { opacity:1 }
+#hud-title { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:5px; color:rgba(255,255,255,.15) }
+#progress-bar-wrap { flex:1; margin:0 20px; height:2px; background:rgba(255,255,255,.06); position:relative }
+#progress-bar-fill { height:100%; width:0%; transition:width .1s }
+#progress-label { font-size:8px; letter-spacing:3px; color:rgba(255,255,255,.18); position:absolute; top:6px; left:0 }
+#rewind-btn { padding:9px 18px; background:rgba(255,200,0,.08); border:1px solid rgba(255,200,0,.35); color:rgba(255,200,0,.7); font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:3px; cursor:pointer; pointer-events:all; transition:all .15s; text-transform:uppercase; clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%); user-select:none }
+#rewind-btn.active { background:rgba(255,200,0,.25); border-color:rgba(255,200,0,.8); color:#fff; box-shadow:0 0 12px rgba(255,200,0,.3) }
+#death-screen { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,.75); z-index:15; opacity:0; pointer-events:none; transition:opacity .3s }
+#death-screen.show { opacity:1; pointer-events:all }
+#death-msg { font-family:'Bebas Neue',sans-serif; font-size:clamp(60px,12vw,130px); letter-spacing:6px; color:#ff3a00; text-shadow:0 0 40px rgba(255,58,0,.8); text-align:center }
+#death-sub { font-size:9px; letter-spacing:4px; color:rgba(255,255,255,.25); margin-top:10px }
+#death-rewind-btn { margin-top:28px; padding:16px 52px; background:rgba(255,200,0,.12); border:1px solid rgba(255,200,0,.4); color:rgba(255,200,0,.9); font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:4px; cursor:pointer; transition:all .15s; text-transform:uppercase; clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%); user-select:none; touch-action:none }
+#death-rewind-btn.active, #death-rewind-btn:hover { background:rgba(255,200,0,.25); border-color:rgba(255,200,0,.8); color:#fff; box-shadow:0 0 20px rgba(255,200,0,.3) }
+#retry-btn { margin-top:12px; padding:8px 28px; background:0 0; border:none; color:rgba(255,255,255,.2); font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:3px; cursor:pointer; transition:all .15s; text-transform:uppercase; text-decoration:underline }
+#retry-btn:hover { color:rgba(255,255,255,.5) }
+#end-screen { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,.85); z-index:18; opacity:0; pointer-events:none; transition:opacity .8s }
+#end-screen.show { opacity:1; pointer-events:all }
+#end-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(50px,10vw,110px); letter-spacing:8px; color:#ff3a00; text-align:center; text-shadow:0 0 60px #ff3a00 }
+#end-sub { font-size:9px; letter-spacing:5px; color:rgba(255,200,100,.4); margin-top:12px; text-align:center; line-height:2.2 }
+#end-rewind { margin-top:32px; padding:12px 40px; background:rgba(255,58,0,.15); border:1px solid rgba(255,58,0,.4); color:#f84; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:4px; cursor:pointer; transition:all .2s; text-transform:uppercase; pointer-events:all }
+#end-rewind:hover { background:rgba(255,58,0,.3); color:#fff }
+#restored-screen { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,20,5,.9); z-index:19; opacity:0; pointer-events:none; transition:opacity 1.5s }
+#restored-screen.show { opacity:1; pointer-events:all }
+#restored-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(50px,10vw,110px); letter-spacing:8px; color:#7fff44; text-align:center; text-shadow:0 0 60px rgba(100,255,60,.5) }
+#restored-sub { font-size:11px; letter-spacing:4px; color:rgba(150,255,150,.6); margin-top:16px; text-align:center; line-height:2.2 }
+#jump-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.5);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px;
+  letter-spacing: 3px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 12;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: all;
+  transition: background 0.08s, transform 0.08s;
+}
+#jump-btn.active {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.9);
+  transform: scale(0.9);
+}
+#move-indicator {
+  position: fixed;
+  bottom: 32px;
+  left: 24px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.2);
+  z-index: 12;
+  pointer-events: none;
+  display: none;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<button id="jump-btn">JUMP</button>
+<div id="move-indicator">drag to move</div>
 
-// ═══ AUDIO ═══
-let audioCtx,analyser,freqData,freqLen,decodedBuffer=null,scrubNode=null;
-let scrubTargetSample=0,scrubCurrentSample=0,scrubRate=0,prevTargetSample=0;
-let songDuration=0,songCurrent=0,songProgress=0;
-let energy=0,bassE=0,midE=0,highE=0,beat=0,prevBass=0,smoothBins=[];
-const MOVE_SPD=5.2;
+<div id="hud">
+  <div id="hud-title">DOWN</div>
+  <div id="progress-bar-wrap">
+    <div id="progress-bar-fill"></div>
+    <div id="progress-label">beginning</div>
+  </div>
+  <button id="rewind-btn">⟲ rewind</button>
+</div>
 
-function initScrubAudio(){
-  const nc=decodedBuffer.numberOfChannels,sr=decodedBuffer.sampleRate,total=decodedBuffer.length,channels=[];
-  for(let ch=0;ch<nc;ch++)channels.push(decodedBuffer.getChannelData(ch));
-  scrubNode=audioCtx.createScriptProcessor(2048,0,nc);
-  scrubCurrentSample=0;scrubTargetSample=0;scrubRate=0;prevTargetSample=0;
-  let aRate=0,aVol=0;const sm=1-Math.exp(-1/(sr*0.03));
-  const posArr=new Float64Array(2048),volArr=new Float32Array(2048);
-  scrubNode.onaudioprocess=function(e){
-    const out=e.outputBuffer,len=out.getChannelData(0).length,tgtRate=scrubRate;
-    const drift=(scrubTargetSample-scrubCurrentSample)*0.000015;
-    let p=scrubCurrentSample,r=aRate,v=aVol;
-    for(let i=0;i<len;i++){r+=(tgtRate-r)*sm;const tv=clamp(Math.abs(r)*2.5,0,1);v+=(tv-v)*sm;p+=r+drift;posArr[i]=p;volArr[i]=v}
-    aRate=r;aVol=v;scrubCurrentSample=p;
-    for(let ch=0;ch<nc;ch++){const outCh=out.getChannelData(ch),srcCh=channels[ch];
-      for(let i=0;i<len;i++){const pos=posArr[i],idx=Math.floor(pos),frac=pos-idx;
-        if(idx>=0&&idx<total-1)outCh[i]=(srcCh[idx]*(1-frac)+srcCh[idx+1]*frac)*volArr[i];else outCh[i]=0}}
+<div id="death-screen">
+  <div id="death-msg">you fell</div>
+  <div id="death-sub">the lava got you</div>
+  <button id="death-rewind-btn">⟲ hold to rewind</button>
+  <button id="retry-btn">restart</button>
+</div>
+
+<div id="end-screen">
+  <div id="end-title">YOU ARE<br>CORRUPTED</div>
+  <div id="end-sub">you became what destroyed your world<br>there is only one way to undo this</div>
+  <button id="end-rewind">⟲ rewind everything</button>
+</div>
+
+<div id="restored-screen">
+  <div id="restored-title">RESTORED</div>
+  <div id="restored-sub">you undid your descent<br>verdana lives again</div>
+</div>
+
+<div id="overlay">
+  <div class="ov-title">DO<span>WN</span></div>
+  <div class="ov-sub">a story told in descent<br>keep moving right<br>don't look back</div>
+  <div class="ov-controls">
+    <b>← →</b>&nbsp; move &nbsp;&nbsp;&nbsp;<b>space / ↑</b>&nbsp; jump<br>
+    <b>double tap</b>&nbsp; double jump<br>
+    <b>hold rewind</b>&nbsp; to go back in time
+  </div>
+  <button id="start-btn">begin</button>
+  <div id="prog-wrap"><div id="prog-fill"></div></div>
+  <div id="load-txt"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+function rgba(r, g, b, a) { return `rgba(${r|0},${g|0},${b|0},${a})` }
+function lerpC(c1, c2, t) {
+  return [(lerp(c1[0],c2[0],t))|0, (lerp(c1[1],c2[1],t))|0, (lerp(c1[2],c2[2],t))|0];
+}
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H, GY;
+
+function resize() {
+  W = canvas.width = innerWidth;
+  H = canvas.height = innerHeight;
+  GY = H - 80;
+}
+resize();
+addEventListener('resize', resize);
+
+// ═══════════════════════════════════════════════
+//  AUDIO ENGINE
+// ═══════════════════════════════════════════════
+let audioCtx, analyser, freqData, freqLen, decodedBuffer = null, scrubNode = null;
+let scrubTargetSample = 0, scrubCurrentSample = 0, scrubRate = 0, prevTargetSample = 0;
+let songDuration = 0, songCurrent = 0, songProgress = 0;
+let energy = 0, bassE = 0, midE = 0, highE = 0, beat = 0, prevBass = 0, smoothBins = [];
+const MOVE_SPD = 5.2;
+
+function initScrubAudio() {
+  const nc = decodedBuffer.numberOfChannels;
+  const sr = decodedBuffer.sampleRate;
+  const total = decodedBuffer.length;
+  const channels = [];
+  for (let ch = 0; ch < nc; ch++) channels.push(decodedBuffer.getChannelData(ch));
+
+  scrubNode = audioCtx.createScriptProcessor(2048, 0, nc);
+  scrubCurrentSample = 0; scrubTargetSample = 0; scrubRate = 0; prevTargetSample = 0;
+  let aRate = 0, aVol = 0;
+  const sm = 1 - Math.exp(-1 / (sr * 0.03));
+  const posArr = new Float64Array(2048);
+  const volArr = new Float32Array(2048);
+
+  scrubNode.onaudioprocess = function(e) {
+    const out = e.outputBuffer;
+    const len = out.getChannelData(0).length;
+    const tgtRate = scrubRate;
+    const drift = (scrubTargetSample - scrubCurrentSample) * 0.000015;
+    let p = scrubCurrentSample, r = aRate, v = aVol;
+
+    for (let i = 0; i < len; i++) {
+      r += (tgtRate - r) * sm;
+      const tv = clamp(Math.abs(r) * 2.5, 0, 1);
+      v += (tv - v) * sm;
+      p += r + drift;
+      posArr[i] = p;
+      volArr[i] = v;
+    }
+    aRate = r; aVol = v; scrubCurrentSample = p;
+
+    for (let ch = 0; ch < nc; ch++) {
+      const outCh = out.getChannelData(ch);
+      const srcCh = channels[ch];
+      for (let i = 0; i < len; i++) {
+        const pos = posArr[i];
+        const idx = Math.floor(pos);
+        const frac = pos - idx;
+        if (idx >= 0 && idx < total - 1)
+          outCh[i] = (srcCh[idx] * (1 - frac) + srcCh[idx + 1] * frac) * volArr[i];
+        else outCh[i] = 0;
+      }
+    }
   };
-  scrubNode.connect(analyser);analyser.connect(audioCtx.destination);
-}
-function audioTick(){
-  if(!analyser)return;analyser.getByteFrequencyData(freqData);
-  for(let i=0;i<freqLen;i++)smoothBins[i]=lerp(smoothBins[i]||0,freqData[i]/255,0.2);
-  let tot=0,bas=0,mid=0,hgh=0;
-  for(let i=0;i<freqLen;i++){const v=freqData[i]/255;tot+=v;if(i<6)bas+=v;else if(i<45)mid+=v;else hgh+=v}
-  bas/=6;mid/=39;hgh/=Math.max(1,freqLen-45);tot/=freqLen;
-  const bd=bas-prevBass;if(bd>0.10)beat=1;prevBass=bas;beat=Math.max(0,beat-0.055);
-  energy=lerp(energy,tot,0.12);bassE=lerp(bassE,bas,0.22);midE=lerp(midE,mid,0.14);highE=lerp(highE,hgh,0.11);
-}
-function updateSongFromScroll(){
-  songProgress=clamp(scrollX/WORLD_WIDTH,0,1);songCurrent=songProgress*songDuration;
-  if(decodedBuffer){scrubTargetSample=Math.floor(songCurrent*decodedBuffer.sampleRate);
-    const delta=scrubTargetSample-prevTargetSample,spf=decodedBuffer.sampleRate/60;
-    scrubRate=lerp(scrubRate,delta/spf,0.12);prevTargetSample=scrubTargetSample}
+  scrubNode.connect(analyser);
+  analyser.connect(audioCtx.destination);
 }
 
-// ═══ LEVEL ═══
-let WORLD_WIDTH=0;
-function zoneAt(p){if(p<0.15)return 0;if(p<0.40)return 1;if(p<0.65)return 2;if(p<0.85)return 3;return 4}
-const ZONE_COLORS=[
-  {skyT:[10,18,8],skyB:[30,45,15],gnd:[60,90,30],plt:[180,220,100],acc:[120,200,60]},
-  {skyT:[18,14,6],skyB:[55,35,10],gnd:[100,70,20],plt:[200,160,60],acc:[220,140,20]},
-  {skyT:[12,8,20],skyB:[40,10,50],gnd:[60,20,80],plt:[160,80,200],acc:[200,100,255]},
-  {skyT:[20,4,2],skyB:[70,10,5],gnd:[120,15,5],plt:[255,60,20],acc:[255,140,0]},
-  {skyT:[5,0,0],skyB:[20,0,0],gnd:[40,0,0],plt:[180,0,0],acc:[255,30,0]}];
-function getZoneColor(prog){const z=zoneAt(prog);if(z===4)return ZONE_COLORS[4];const nx=Math.min(z+1,4),bd=[0,0.15,0.40,0.65,0.85,1.0],t=clamp((prog-bd[z])/(bd[z+1]-bd[z]),0,1),a=ZONE_COLORS[z],b=ZONE_COLORS[nx];return{skyT:lerpC(a.skyT,b.skyT,t),skyB:lerpC(a.skyB,b.skyB,t),gnd:lerpC(a.gnd,b.gnd,t),plt:lerpC(a.plt,b.plt,t),acc:lerpC(a.acc,b.acc,t)}}
-function lavaRise(p){return Math.pow(clamp((p-0.15)/0.85,0,1),1.5)*65}
+function audioTick() {
+  if (!analyser) return;
+  analyser.getByteFrequencyData(freqData);
+  for (let i = 0; i < freqLen; i++)
+    smoothBins[i] = lerp(smoothBins[i] || 0, freqData[i] / 255, 0.2);
 
-// ═══ INPUT ═══
-const keys={},touchState={left:false,right:false,jump:false};
-addEventListener('keydown',e=>{keys[e.code]=true;if(['Space','ArrowUp','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault()});
-addEventListener('keyup',e=>{keys[e.code]=false});
-function inp(c){if(c==='left')return keys.ArrowLeft||keys.KeyA||touchState.left;if(c==='right')return keys.ArrowRight||keys.KeyD||touchState.right;if(c==='jump')return keys.Space||keys.ArrowUp||keys.KeyW||touchState.jump;return false}
-
-// ═══ PLAYER ═══
-const GRAV=0.68,MAX_FALL=28,JUMP_MIN=11,JUMP_MAX=20,JUMP_HOLD=16;
-const pl={x:0,y:0,vx:0,vy:0,w:22,h:28,onGround:false,coyote:0,jumpHeld:0,jumpedThisPress:false,doubleJumpUsed:false,dead:false,deathTimer:0,squishY:1,squishX:1,morph:0,hornGrow:0,tailWag:0,standingOn:null};
-function resetPlayer(){pl.x=100;pl.y=GY-150;pl.vx=0;pl.vy=0;pl.onGround=false;pl.coyote=0;pl.jumpHeld=0;pl.jumpedThisPress=false;pl.doubleJumpUsed=false;pl.dead=false;pl.deathTimer=0;pl.squishY=1;pl.squishX=1;pl.morph=0;pl.hornGrow=0;pl.tailWag=0;pl.standingOn=null}
-
-// ═══ PLATFORMS — easy: long runs with small gaps every ~3s of walking ═══
-let platforms=[],scrollX=0,camX=0,genX=0,frame=0,score=0,nextPlatId=0;
-class SeededRNG{constructor(s=42){this.s=s}next(){this.s=(this.s*16807+0)%2147483647;return(this.s-1)/2147483646}range(a,b){return a+this.next()*(b-a)}}
-let rng=new SeededRNG(12345);
-function worldProgressAt(wx){return clamp(wx/WORLD_WIDTH,0,1)}
-
-function makePlat(x,y,w,prog){
-  const fb=Math.floor(rng.next()*50),ba=lerp(2,12,clamp((prog-0.2)/0.8,0,1));
-  return{id:nextPlatId++,x,y,w,h:14,visualY:y,prog,phase:rng.next()*Math.PI*2,freqBin:fb,bobAmp:ba,born:frame}
-}
-
-function generateChunk(wx){
-  const prog=worldProgressAt(wx),chaos=clamp((prog-0.1)/0.9,0,1),res=[];
-  const baseY=GY-100-lavaRise(prog)*0.5;
-  // Long platform (3-6 seconds of walking = ~940-1870px at full speed)
-  const runLen=rng.range(lerp(900,600,chaos),lerp(1800,1000,chaos));
-  // Gentle Y variation
-  const yOff=(rng.next()-0.5)*lerp(20,50,chaos);
-  const py=clamp(baseY+yOff,GY*0.25,GY-100-lavaRise(prog)*0.6);
-  res.push(makePlat(wx,py,runLen,prog));
-  // Small gap after — easy hop
-  const gapW=rng.range(lerp(35,50,chaos),lerp(55,90,chaos));
-  // Optional small step up/down
-  const stepY=rng.range(-25,15)*chaos;
-  return{plats:res,nextX:wx+runLen+gapW,nextY:py+stepY}
-}
-
-function seedPlatforms(){
-  rng=new SeededRNG(12345);nextPlatId=0;platforms=[];genX=0;
-  platforms.push({id:nextPlatId++,x:-100,y:GY-90,w:800,h:14,visualY:GY-90,prog:0,phase:0,freqBin:0,bobAmp:0,born:0});
-  genX=650;
-  while(genX<scrollX+W+1200){const c=generateChunk(genX);platforms.push(...c.plats);genX=c.nextX+10}
-}
-
-function updatePlatforms(){
-  while(genX<scrollX+W+1200){const c=generateChunk(genX);platforms.push(...c.plats);genX=c.nextX+10}
-  const fl=freqLen||1;
-  platforms.forEach(p=>{const bv=smoothBins[clamp(p.freqBin,0,fl-1)]||0;p.visualY=p.y-bv*p.bobAmp*0.5-Math.sin(p.phase+frame*0.02)*p.bobAmp*0.25})
-}
-
-// ═══ REWIND ═══
-const REWIND_MAX=360,REWIND_RATE=2;
-let history=[],rewinding=false,rewindHeld=false,rewindFrameCount=0;
-function snapState(){const ps={};platforms.forEach(p=>{ps[p.id]=p.visualY});return{px:pl.x,py:pl.y,pvx:pl.vx,pvy:pl.vy,ponG:pl.onGround,pcy:pl.coyote,psY:pl.squishY,psX:pl.squishX,pmorph:pl.morph,pdj:pl.doubleJumpUsed,pSt:pl.standingOn,scrollX,camX,frame,score,platSnap:ps}}
-function pushHistory(){history.push(snapState());if(history.length>REWIND_MAX)history.shift()}
-function popHistory(){if(!history.length)return false;const s=history.pop();pl.x=s.px;pl.y=s.py;pl.vx=s.pvx;pl.vy=s.pvy;pl.onGround=s.ponG;pl.coyote=s.pcy;pl.squishY=s.psY;pl.squishX=s.psX;pl.morph=s.pmorph;pl.doubleJumpUsed=s.pdj||false;pl.standingOn=s.pSt;pl.dead=false;pl.deathTimer=0;scrollX=s.scrollX;camX=s.camX;frame=s.frame;score=s.score;if(s.platSnap)platforms.forEach(p=>{if(s.platSnap[p.id]!==undefined)p.visualY=s.platSnap[p.id]});return true}
-
-// ═══ PHYSICS ═══
-function physicsUpdate(){
-  if(pl.dead){pl.deathTimer++;return}
-  pl.vx=lerp(pl.vx,inp('left')?-MOVE_SPD:inp('right')?MOVE_SPD:0,pl.onGround?0.25:0.10);
-  const wj=inp('jump');
-  if(wj&&!pl.jumpedThisPress){
-    if(pl.onGround||pl.coyote>0){pl.vy=-JUMP_MIN;pl.jumpHeld=0;pl.jumpedThisPress=true;pl.coyote=0;pl.doubleJumpUsed=false;pl.squishY=0.55;pl.squishX=1.35;pl.standingOn=null}
-    else if(!pl.doubleJumpUsed){pl.vy=-(JUMP_MIN+4);pl.jumpHeld=JUMP_HOLD;pl.jumpedThisPress=true;pl.doubleJumpUsed=true;pl.squishY=0.65;pl.squishX=1.25;pl.standingOn=null}
+  let tot = 0, bas = 0, mid = 0, hgh = 0;
+  for (let i = 0; i < freqLen; i++) {
+    const v = freqData[i] / 255;
+    tot += v;
+    if (i < 6) bas += v;
+    else if (i < 45) mid += v;
+    else hgh += v;
   }
-  if(wj&&pl.jumpedThisPress&&pl.jumpHeld<JUMP_HOLD&&pl.vy<0&&!pl.doubleJumpUsed){pl.vy-=(JUMP_MAX-JUMP_MIN)/JUMP_HOLD;pl.jumpHeld++}
-  if(!wj)pl.jumpedThisPress=false;
-  pl.vy=Math.min(pl.vy+GRAV,MAX_FALL);pl.x+=pl.vx;pl.y+=pl.vy;
-  pl.squishY=lerp(pl.squishY,1,0.14);pl.squishX=lerp(pl.squishX,1,0.14);pl.tailWag=(pl.tailWag||0)+0.08;
-  if(pl.onGround)pl.coyote=8;else if(pl.coyote>0)pl.coyote--;
-  pl.onGround=false;
-  if(pl.standingOn!==null){const p=platforms.find(pp=>pp.id===pl.standingOn);
-    if(p){if((pl.x+pl.w>p.x+2)&&(pl.x<p.x+p.w-2)&&pl.vy>=0){pl.y=p.visualY-pl.h;pl.vy=0;pl.onGround=true;pl.doubleJumpUsed=false}else pl.standingOn=null}else pl.standingOn=null}
-  if(!pl.onGround){for(const p of platforms){if(!((pl.x+pl.w>p.x+2)&&(pl.x<p.x+p.w-2)))continue;const top=p.visualY,foot=pl.y+pl.h,prev=foot-pl.vy;
-    if(prev<=top+6&&foot>=top-2&&pl.vy>=0){pl.y=top-pl.h;pl.vy=0;pl.onGround=true;pl.squishY=1.3;pl.squishX=0.78;pl.doubleJumpUsed=false;pl.standingOn=p.id;break}}}
-  if(pl.x<scrollX+8){pl.x=scrollX+8;pl.vx=0}
-  if(pl.y+pl.h>=GY-lavaRise(songProgress)&&!pl.dead){pl.dead=true;pl.deathTimer=0;pl.standingOn=null}
-  pl.morph=songProgress;pl.hornGrow=lerp(pl.hornGrow,songProgress,0.01);score=Math.max(score,Math.floor((scrollX+pl.x)/100))
-}
-function updateCamera(){if(pl.dead)return;camX=lerp(camX,pl.x-W*0.25,0.09);scrollX=Math.max(scrollX,camX);scrollX=clamp(scrollX,0,WORLD_WIDTH-W*0.8)}
-
-// ═══ BG ELEMENTS ═══
-let bgElements=[],bgGenX=0;
-function genBgEl(wx){const prog=worldProgressAt(wx),zone=zoneAt(prog),els=[];
-  if(zone===0){if(rng.next()>0.3){const hw=40+rng.next()*60;els.push({type:'house',x:wx,y:GY-90-80-hw*0.6,w:hw,h:hw*0.6,prog})}if(rng.next()>0.4)els.push({type:'tree',x:wx+100,y:GY-90-70,w:20,h:70,prog})}
-  else if(zone===1){if(rng.next()>0.4)els.push({type:'deadtree',x:wx,y:GY-90-60,w:12,h:60,prog});if(rng.next()>0.5)els.push({type:'rock',x:wx+60,y:GY-90-25,w:35,h:25,prog})}
-  else if(zone===2){if(rng.next()>0.35)els.push({type:'pillar',x:wx,y:GY-90-140,w:22,h:140,prog})}
-  else{if(rng.next()>0.3)els.push({type:'spike',x:wx,y:GY-90-40,w:14,h:40,prog});if(rng.next()>0.5)els.push({type:'spike',x:wx+25,y:GY-90-28,w:10,h:28,prog})}
-  return{els,nextX:wx+120+rng.next()*100}}
-function seedBgElements(){bgElements=[];bgGenX=0;rng=new SeededRNG(99999);while(bgGenX<WORLD_WIDTH+200){const g=genBgEl(bgGenX);bgElements.push(...g.els);bgGenX=g.nextX}}
-
-let lavaPhase=0,gameEnded=false,endAnimTimer=0;
-
-// ═══ STORY ART ═══
-function sA(prog,s,p,e){if(prog<s||prog>e)return 0;return prog<p?clamp((prog-s)/(p-s),0,1):clamp((e-prog)/(e-p),0,1)}
-
-function storyStars(ctx,n,seed,bright,twinkle){
-  for(let i=0;i<n;i++){const x=((seed+i*317+i*i*13)%1000)/1000*W,y=((seed+i*197+i*37)%1000)/1000*H*0.7;
-    const b=bright*(0.3+Math.sin(frame*(twinkle||0.02)+i*0.7)*0.35);
-    const sz=0.5+(i%5)*0.3;
-    ctx.fillStyle=`rgba(255,255,${200+i%55},${b})`;ctx.fillRect(x-sz/2,y-sz/2,sz,sz);
-    if(i%7===0&&b>0.4){ctx.fillStyle=`rgba(255,255,255,${b*0.15})`;ctx.beginPath();ctx.arc(x,y,sz*3,0,Math.PI*2);ctx.fill()}}
+  bas /= 6; mid /= 39; hgh /= Math.max(1, freqLen - 45); tot /= freqLen;
+  const bd = bas - prevBass;
+  if (bd > 0.10) beat = 1;
+  prevBass = bas;
+  beat = Math.max(0, beat - 0.055);
+  energy = lerp(energy, tot, 0.12);
+  bassE = lerp(bassE, bas, 0.22);
+  midE = lerp(midE, mid, 0.14);
+  highE = lerp(highE, hgh, 0.11);
 }
 
-function storyNebula(ctx,cx,cy,r,col,a){
-  for(let i=0;i<3;i++){const g=ctx.createRadialGradient(cx+(i-1)*r*0.3,cy+(i-1)*r*0.15,0,cx+(i-1)*r*0.3,cy+(i-1)*r*0.15,r*(0.6+i*0.2));
-    g.addColorStop(0,rgba(col[0],col[1],col[2],a*0.15));g.addColorStop(0.5,rgba(col[0],col[1],col[2],a*0.05));g.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=g;ctx.fillRect(cx-r*2,cy-r*2,r*4,r*4)}
+function updateSongFromScroll() {
+  songProgress = clamp(scrollX / WORLD_WIDTH, 0, 1);
+  songCurrent = songProgress * songDuration;
+  if (decodedBuffer) {
+    scrubTargetSample = Math.floor(songCurrent * decodedBuffer.sampleRate);
+    const delta = scrubTargetSample - prevTargetSample;
+    const spf = decodedBuffer.sampleRate / 60;
+    scrubRate = lerp(scrubRate, delta / spf, 0.12);
+    prevTargetSample = scrubTargetSample;
+  }
 }
 
-function storyPlanet(ctx,cx,cy,r,col,crk,atmo){
-  // Atmosphere
-  if(atmo){const ag=ctx.createRadialGradient(cx,cy,r*0.85,cx,cy,r*1.35);
-    ag.addColorStop(0,rgba(atmo[0],atmo[1],atmo[2],0.25));ag.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=ag;ctx.fillRect(cx-r*2,cy-r*2,r*4,r*4)}
-  // Planet body
-  ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
-  // Surface bands
-  ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();
-  for(let i=0;i<4;i++){const by=cy-r+r*0.3+i*r*0.4;
-    ctx.fillStyle=`rgba(255,255,255,0.04)`;ctx.fillRect(cx-r,by,r*2,r*0.15)}
-  // Specular highlight
-  const hg=ctx.createRadialGradient(cx-r*0.3,cy-r*0.3,0,cx-r*0.3,cy-r*0.3,r*0.8);
-  hg.addColorStop(0,'rgba(255,255,255,0.12)');hg.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=hg;ctx.fillRect(cx-r,cy-r,r*2,r*2);
+// ═══════════════════════════════════════════════
+//  ZONES & COLORS
+// ═══════════════════════════════════════════════
+let WORLD_WIDTH = 0;
+
+function zoneAt(p) {
+  if (p < 0.15) return 0;
+  if (p < 0.40) return 1;
+  if (p < 0.65) return 2;
+  if (p < 0.85) return 3;
+  return 4;
+}
+
+const ZONE_COLORS = [
+  { skyT:[10,18,8], skyB:[30,45,15], gnd:[60,90,30], plt:[180,220,100], acc:[120,200,60] },
+  { skyT:[18,14,6], skyB:[55,35,10], gnd:[100,70,20], plt:[200,160,60], acc:[220,140,20] },
+  { skyT:[12,8,20], skyB:[40,10,50], gnd:[60,20,80], plt:[160,80,200], acc:[200,100,255] },
+  { skyT:[20,4,2], skyB:[70,10,5], gnd:[120,15,5], plt:[255,60,20], acc:[255,140,0] },
+  { skyT:[5,0,0], skyB:[20,0,0], gnd:[40,0,0], plt:[180,0,0], acc:[255,30,0] }
+];
+
+function getZoneColor(prog) {
+  const z = zoneAt(prog);
+  if (z === 4) return ZONE_COLORS[4];
+  const nx = Math.min(z + 1, 4);
+  const bd = [0, 0.15, 0.40, 0.65, 0.85, 1.0];
+  const t = clamp((prog - bd[z]) / (bd[z+1] - bd[z]), 0, 1);
+  const a = ZONE_COLORS[z], b = ZONE_COLORS[nx];
+  return {
+    skyT: lerpC(a.skyT, b.skyT, t), skyB: lerpC(a.skyB, b.skyB, t),
+    gnd: lerpC(a.gnd, b.gnd, t), plt: lerpC(a.plt, b.plt, t), acc: lerpC(a.acc, b.acc, t)
+  };
+}
+
+function lavaRise(p) { return Math.pow(clamp((p - 0.15) / 0.85, 0, 1), 1.5) * 65 }
+
+// ═══════════════════════════════════════════════
+//  INPUT
+// ═══════════════════════════════════════════════
+const keys = {};
+const touchState = { left: false, right: false, jump: false };
+
+addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (['Space','ArrowUp','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
+});
+addEventListener('keyup', e => { keys[e.code] = false });
+
+function inp(c) {
+  if (c === 'left') return keys.ArrowLeft || keys.KeyA || touchState.left;
+  if (c === 'right') return keys.ArrowRight || keys.KeyD || touchState.right;
+  if (c === 'jump') return keys.Space || keys.ArrowUp || keys.KeyW || touchState.jump;
+  return false;
+}
+
+// ═══════════════════════════════════════════════
+//  PLAYER
+// ═══════════════════════════════════════════════
+const GRAV = 0.68, MAX_FALL = 28, JUMP_MIN = 11, JUMP_MAX = 20, JUMP_HOLD = 16;
+const pl = {
+  x:0, y:0, vx:0, vy:0, w:22, h:28, onGround:false, coyote:0,
+  jumpHeld:0, jumpedThisPress:false, doubleJumpUsed:false,
+  dead:false, deathTimer:0, squishY:1, squishX:1, morph:0,
+  hornGrow:0, tailWag:0, standingOn:null
+};
+
+function resetPlayer() {
+  pl.x=100; pl.y=GY-150; pl.vx=0; pl.vy=0; pl.onGround=false; pl.coyote=0;
+  pl.jumpHeld=0; pl.jumpedThisPress=false; pl.doubleJumpUsed=false;
+  pl.dead=false; pl.deathTimer=0; pl.squishY=1; pl.squishX=1;
+  pl.morph=0; pl.hornGrow=0; pl.tailWag=0; pl.standingOn=null;
+}
+
+// ═══════════════════════════════════════════════
+//  PLATFORMS (slightly smaller)
+// ═══════════════════════════════════════════════
+let platforms = [], scrollX = 0, camX = 0, genX = 0, frame = 0, score = 0, nextPlatId = 0;
+
+class SeededRNG {
+  constructor(s = 42) { this.s = s }
+  next() { this.s = (this.s * 16807 + 0) % 2147483647; return (this.s - 1) / 2147483646 }
+  range(a, b) { return a + this.next() * (b - a) }
+}
+let rng = new SeededRNG(12345);
+
+function worldProgressAt(wx) { return clamp(wx / WORLD_WIDTH, 0, 1) }
+
+function makePlat(x, y, w, prog) {
+  const fb = Math.floor(rng.next() * 50);
+  const ba = lerp(2, 12, clamp((prog - 0.2) / 0.8, 0, 1));
+  return {
+    id: nextPlatId++, x, y, w, h: 14, visualY: y, prog,
+    phase: rng.next() * Math.PI * 2, freqBin: fb, bobAmp: ba, born: frame
+  };
+}
+
+function generateChunk(wx) {
+  const prog = worldProgressAt(wx);
+  const chaos = clamp((prog - 0.1) / 0.9, 0, 1);
+  const res = [];
+  const baseY = GY - 100 - lavaRise(prog) * 0.5;
+  // Slightly smaller platforms than original
+  const runLen = rng.range(lerp(780, 500, chaos), lerp(1550, 850, chaos));
+  const yOff = (rng.next() - 0.5) * lerp(20, 50, chaos);
+  const py = clamp(baseY + yOff, GY * 0.25, GY - 100 - lavaRise(prog) * 0.6);
+  res.push(makePlat(wx, py, runLen, prog));
+  const gapW = rng.range(lerp(40, 55, chaos), lerp(60, 95, chaos));
+  const stepY = rng.range(-25, 15) * chaos;
+  return { plats: res, nextX: wx + runLen + gapW, nextY: py + stepY };
+}
+
+function seedPlatforms() {
+  rng = new SeededRNG(12345); nextPlatId = 0; platforms = []; genX = 0;
+  platforms.push({
+    id: nextPlatId++, x: -100, y: GY - 90, w: 700, h: 14,
+    visualY: GY - 90, prog: 0, phase: 0, freqBin: 0, bobAmp: 0, born: 0
+  });
+  genX = 550;
+  while (genX < scrollX + W + 1200) {
+    const c = generateChunk(genX);
+    platforms.push(...c.plats);
+    genX = c.nextX + 10;
+  }
+}
+
+function updatePlatforms() {
+  while (genX < scrollX + W + 1200) {
+    const c = generateChunk(genX);
+    platforms.push(...c.plats);
+    genX = c.nextX + 10;
+  }
+  const fl = freqLen || 1;
+  platforms.forEach(p => {
+    const bv = smoothBins[clamp(p.freqBin, 0, fl - 1)] || 0;
+    p.visualY = p.y - bv * p.bobAmp * 0.5 - Math.sin(p.phase + frame * 0.02) * p.bobAmp * 0.25;
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  REWIND SYSTEM
+// ═══════════════════════════════════════════════
+const REWIND_MAX = 360, REWIND_RATE = 2;
+let history = [], rewinding = false, rewindHeld = false, rewindFrameCount = 0;
+
+function snapState() {
+  const ps = {};
+  platforms.forEach(p => { ps[p.id] = p.visualY });
+  return {
+    px: pl.x, py: pl.y, pvx: pl.vx, pvy: pl.vy, ponG: pl.onGround,
+    pcy: pl.coyote, psY: pl.squishY, psX: pl.squishX, pmorph: pl.morph,
+    pdj: pl.doubleJumpUsed, pSt: pl.standingOn, scrollX, camX, frame, score, platSnap: ps
+  };
+}
+
+function pushHistory() {
+  history.push(snapState());
+  if (history.length > REWIND_MAX) history.shift();
+}
+
+function popHistory() {
+  if (!history.length) return false;
+  const s = history.pop();
+  pl.x = s.px; pl.y = s.py; pl.vx = s.pvx; pl.vy = s.pvy;
+  pl.onGround = s.ponG; pl.coyote = s.pcy; pl.squishY = s.psY; pl.squishX = s.psX;
+  pl.morph = s.pmorph; pl.doubleJumpUsed = s.pdj || false; pl.standingOn = s.pSt;
+  pl.dead = false; pl.deathTimer = 0;
+  scrollX = s.scrollX; camX = s.camX; frame = s.frame; score = s.score;
+  if (s.platSnap) platforms.forEach(p => {
+    if (s.platSnap[p.id] !== undefined) p.visualY = s.platSnap[p.id];
+  });
+  return true;
+}
+
+// ═══════════════════════════════════════════════
+//  PHYSICS
+// ═══════════════════════════════════════════════
+function physicsUpdate() {
+  if (pl.dead) { pl.deathTimer++; return }
+
+  pl.vx = lerp(pl.vx, inp('left') ? -MOVE_SPD : inp('right') ? MOVE_SPD : 0, pl.onGround ? 0.25 : 0.10);
+
+  const wj = inp('jump');
+  if (wj && !pl.jumpedThisPress) {
+    if (pl.onGround || pl.coyote > 0) {
+      pl.vy = -JUMP_MIN; pl.jumpHeld = 0; pl.jumpedThisPress = true;
+      pl.coyote = 0; pl.doubleJumpUsed = false;
+      pl.squishY = 0.55; pl.squishX = 1.35; pl.standingOn = null;
+    } else if (!pl.doubleJumpUsed) {
+      pl.vy = -(JUMP_MIN + 4); pl.jumpHeld = JUMP_HOLD; pl.jumpedThisPress = true;
+      pl.doubleJumpUsed = true; pl.squishY = 0.65; pl.squishX = 1.25; pl.standingOn = null;
+    }
+  }
+  if (wj && pl.jumpedThisPress && pl.jumpHeld < JUMP_HOLD && pl.vy < 0 && !pl.doubleJumpUsed) {
+    pl.vy -= (JUMP_MAX - JUMP_MIN) / JUMP_HOLD; pl.jumpHeld++;
+  }
+  if (!wj) pl.jumpedThisPress = false;
+
+  pl.vy = Math.min(pl.vy + GRAV, MAX_FALL);
+  pl.x += pl.vx; pl.y += pl.vy;
+  pl.squishY = lerp(pl.squishY, 1, 0.14);
+  pl.squishX = lerp(pl.squishX, 1, 0.14);
+  pl.tailWag = (pl.tailWag || 0) + 0.08;
+
+  if (pl.onGround) pl.coyote = 8; else if (pl.coyote > 0) pl.coyote--;
+  pl.onGround = false;
+
+  if (pl.standingOn !== null) {
+    const p = platforms.find(pp => pp.id === pl.standingOn);
+    if (p) {
+      if ((pl.x + pl.w > p.x + 2) && (pl.x < p.x + p.w - 2) && pl.vy >= 0) {
+        pl.y = p.visualY - pl.h; pl.vy = 0; pl.onGround = true; pl.doubleJumpUsed = false;
+      } else pl.standingOn = null;
+    } else pl.standingOn = null;
+  }
+
+  if (!pl.onGround) {
+    for (const p of platforms) {
+      if (!((pl.x + pl.w > p.x + 2) && (pl.x < p.x + p.w - 2))) continue;
+      const top = p.visualY, foot = pl.y + pl.h, prev = foot - pl.vy;
+      if (prev <= top + 6 && foot >= top - 2 && pl.vy >= 0) {
+        pl.y = top - pl.h; pl.vy = 0; pl.onGround = true;
+        pl.squishY = 1.3; pl.squishX = 0.78; pl.doubleJumpUsed = false;
+        pl.standingOn = p.id; break;
+      }
+    }
+  }
+
+  if (pl.x < scrollX + 8) { pl.x = scrollX + 8; pl.vx = 0 }
+  if (pl.y + pl.h >= GY - lavaRise(songProgress) && !pl.dead) {
+    pl.dead = true; pl.deathTimer = 0; pl.standingOn = null;
+  }
+
+  pl.morph = songProgress;
+  pl.hornGrow = lerp(pl.hornGrow, songProgress, 0.01);
+  score = Math.max(score, Math.floor((scrollX + pl.x) / 100));
+}
+
+function updateCamera() {
+  if (pl.dead) return;
+  camX = lerp(camX, pl.x - W * 0.25, 0.09);
+  scrollX = Math.max(scrollX, camX);
+  scrollX = clamp(scrollX, 0, WORLD_WIDTH - W * 0.8);
+}
+
+// ═══════════════════════════════════════════════
+//  BG ELEMENTS
+// ═══════════════════════════════════════════════
+let bgElements = [], bgGenX = 0;
+
+function genBgEl(wx) {
+  const prog = worldProgressAt(wx), zone = zoneAt(prog), els = [];
+  if (zone === 0) {
+    if (rng.next() > 0.3) { const hw = 40 + rng.next()*60; els.push({type:'house',x:wx,y:GY-90-80-hw*0.6,w:hw,h:hw*0.6,prog}) }
+    if (rng.next() > 0.4) els.push({type:'tree',x:wx+100,y:GY-90-70,w:20,h:70,prog});
+  } else if (zone === 1) {
+    if (rng.next() > 0.4) els.push({type:'deadtree',x:wx,y:GY-90-60,w:12,h:60,prog});
+    if (rng.next() > 0.5) els.push({type:'rock',x:wx+60,y:GY-90-25,w:35,h:25,prog});
+  } else if (zone === 2) {
+    if (rng.next() > 0.35) els.push({type:'pillar',x:wx,y:GY-90-140,w:22,h:140,prog});
+  } else {
+    if (rng.next() > 0.3) els.push({type:'spike',x:wx,y:GY-90-40,w:14,h:40,prog});
+    if (rng.next() > 0.5) els.push({type:'spike',x:wx+25,y:GY-90-28,w:10,h:28,prog});
+  }
+  return { els, nextX: wx + 120 + rng.next() * 100 };
+}
+
+function seedBgElements() {
+  bgElements = []; bgGenX = 0; rng = new SeededRNG(99999);
+  while (bgGenX < WORLD_WIDTH + 200) {
+    const g = genBgEl(bgGenX); bgElements.push(...g.els); bgGenX = g.nextX;
+  }
+}
+
+let lavaPhase = 0, gameEnded = false, endAnimTimer = 0;
+
+// ═══════════════════════════════════════════════
+//  CINEMATIC END REWIND
+// ═══════════════════════════════════════════════
+let cinematicRewind = false;
+let cinematicRewindSpeed = 0;
+let cinematicRewindTimer = 0;
+
+function startCinematicRewind() {
+  cinematicRewind = true;
+  cinematicRewindSpeed = 0;
+  cinematicRewindTimer = 0;
+  gameEnded = false;
+  endAnimTimer = 0;
+  pl.dead = false;
+  pl.deathTimer = 0;
+  document.getElementById('end-screen').classList.remove('show');
+}
+
+function updateCinematicRewind() {
+  cinematicRewindTimer++;
+  // Accelerate then cruise then decelerate
+  const totalFrames = Math.max(300, songProgress * 600);
+  const t = cinematicRewindTimer / totalFrames;
+
+  if (t < 0.1) cinematicRewindSpeed = lerp(0, WORLD_WIDTH / totalFrames * 2, t / 0.1);
+  else if (t < 0.85) cinematicRewindSpeed = WORLD_WIDTH / totalFrames * 2;
+  else cinematicRewindSpeed = lerp(WORLD_WIDTH / totalFrames * 2, 0, (t - 0.85) / 0.15);
+
+  scrollX = Math.max(0, scrollX - cinematicRewindSpeed);
+  camX = scrollX;
+
+  // Keep player on screen
+  pl.x = scrollX + W * 0.35;
+  pl.y = GY - 200;
+  pl.morph = songProgress;
+  pl.onGround = false;
+
+  updateSongFromScroll();
+
+  if (scrollX <= 0) {
+    cinematicRewind = false;
+    scrollX = 0; camX = 0;
+    songProgress = 0;
+    pl.morph = 0;
+    // Show restored screen
+    setTimeout(() => {
+      document.getElementById('restored-screen').classList.add('show');
+    }, 500);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  STORY — 12 SCENES, BIG AND DRAMATIC
+// ═══════════════════════════════════════════════
+
+// Scene alpha helper: fade in from s->p, full at p, fade out p->e
+function sA(prog, s, p, e) {
+  if (prog < s || prog > e) return 0;
+  return prog < p ? clamp((prog - s) / (p - s), 0, 1) : clamp((e - prog) / (e - p), 0, 1);
+}
+
+// Draw story caption text
+function storyCaption(text, x, y, alpha, size, color) {
+  if (alpha < 0.01) return;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color || 'rgba(255,255,255,0.9)';
+  ctx.font = `${size || 20}px 'Bebas Neue', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '4px';
+  // Shadow for readability
+  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowBlur = 12;
+  ctx.fillText(text, x, y);
+  ctx.shadowBlur = 0;
   ctx.restore();
+}
+
+function storyStars(n, seed, bright, twinkle) {
+  for (let i = 0; i < n; i++) {
+    const x = ((seed + i*317 + i*i*13) % 1000) / 1000 * W;
+    const y = ((seed + i*197 + i*37) % 1000) / 1000 * H * 0.75;
+    const b = bright * (0.3 + Math.sin(frame * (twinkle || 0.02) + i * 0.7) * 0.35);
+    const sz = 0.6 + (i % 5) * 0.4;
+    ctx.fillStyle = `rgba(255,255,${200+i%55},${b})`;
+    ctx.fillRect(x - sz/2, y - sz/2, sz, sz);
+    if (i % 5 === 0 && b > 0.3) {
+      ctx.fillStyle = `rgba(255,255,255,${b*0.12})`;
+      ctx.beginPath(); ctx.arc(x, y, sz * 4, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+}
+
+function storyNebula(cx, cy, r, col, a) {
+  for (let i = 0; i < 4; i++) {
+    const g = ctx.createRadialGradient(
+      cx + (i-1.5)*r*0.25, cy + (i-1)*r*0.12, 0,
+      cx + (i-1.5)*r*0.25, cy + (i-1)*r*0.12, r * (0.5 + i*0.2)
+    );
+    g.addColorStop(0, rgba(col[0], col[1], col[2], a * 0.18));
+    g.addColorStop(0.5, rgba(col[0], col[1], col[2], a * 0.06));
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(cx - r*2, cy - r*2, r*4, r*4);
+  }
+}
+
+function storyPlanet(cx, cy, r, col, crk, atmo) {
+  if (atmo) {
+    const ag = ctx.createRadialGradient(cx, cy, r * 0.85, cx, cy, r * 1.4);
+    ag.addColorStop(0, rgba(atmo[0], atmo[1], atmo[2], 0.3));
+    ag.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = ag; ctx.fillRect(cx - r*2, cy - r*2, r*4, r*4);
+  }
+  ctx.fillStyle = col;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+
+  // Surface detail
+  ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.clip();
+  for (let i = 0; i < 5; i++) {
+    const by = cy - r + r*0.2 + i * r * 0.35;
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.fillRect(cx - r, by, r*2, r*0.12);
+  }
+  // Highlight
+  const hg = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, 0, cx - r*0.3, cy - r*0.3, r * 0.9);
+  hg.addColorStop(0, 'rgba(255,255,255,0.15)'); hg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = hg; ctx.fillRect(cx-r, cy-r, r*2, r*2);
+  ctx.restore();
+
   // Cracks
-  if(crk>0){ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();
-    for(let i=0;i<8;i++){const a=i*0.785+0.2,l=r*(0.4+crk*0.6);
-      const glow=rgba(255,80+crk*170,0,crk*0.9);ctx.strokeStyle=glow;ctx.lineWidth=1+crk*3;ctx.shadowColor=glow;ctx.shadowBlur=6*crk;
-      ctx.beginPath();ctx.moveTo(cx,cy);const mx=cx+Math.cos(a+0.4)*l*0.4,my=cy+Math.sin(a+0.4)*l*0.4;
-      ctx.quadraticCurveTo(mx,my,cx+Math.cos(a)*l,cy+Math.sin(a)*l);ctx.stroke();
-      // Branch cracks
-      if(crk>0.4&&i%2===0){ctx.lineWidth=crk*1.5;ctx.beginPath();ctx.moveTo(mx,my);
-        ctx.lineTo(mx+Math.cos(a+1)*l*0.3,my+Math.sin(a+1)*l*0.3);ctx.stroke()}}
-    // Magma glow from core
-    const mg=ctx.createRadialGradient(cx,cy,0,cx,cy,r*0.7);mg.addColorStop(0,rgba(255,100,0,crk*0.25));mg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=mg;ctx.fillRect(cx-r,cy-r,r*2,r*2);ctx.shadowBlur=0;ctx.restore()}
+  if (crk > 0) {
+    ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.clip();
+    for (let i = 0; i < 10; i++) {
+      const a = i * 0.628 + 0.2, l = r * (0.4 + crk * 0.6);
+      const glow = rgba(255, 80 + crk*170, 0, crk * 0.9);
+      ctx.strokeStyle = glow; ctx.lineWidth = 1 + crk * 4;
+      ctx.shadowColor = glow; ctx.shadowBlur = 8 * crk;
+      const mx = cx + Math.cos(a + 0.4) * l * 0.4;
+      const my = cy + Math.sin(a + 0.4) * l * 0.4;
+      ctx.beginPath(); ctx.moveTo(cx, cy);
+      ctx.quadraticCurveTo(mx, my, cx + Math.cos(a)*l, cy + Math.sin(a)*l);
+      ctx.stroke();
+      if (crk > 0.3 && i % 2 === 0) {
+        ctx.lineWidth = crk * 2;
+        ctx.beginPath(); ctx.moveTo(mx, my);
+        ctx.lineTo(mx + Math.cos(a+1)*l*0.35, my + Math.sin(a+1)*l*0.35);
+        ctx.stroke();
+      }
+    }
+    const mg = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 0.7);
+    mg.addColorStop(0, rgba(255, 100, 0, crk * 0.3)); mg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = mg; ctx.fillRect(cx-r, cy-r, r*2, r*2);
+    ctx.shadowBlur = 0; ctx.restore();
+  }
 }
 
-function storyAlien(ctx,cx,cy,sz,col,mood,armUp){
-  const hR=sz*0.18,bW=sz*0.09,bH=sz*0.22;
-  const hY=cy-bH-hR*0.5,bTop=cy-bH*0.3;
-  // Body
-  ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(cx,bTop+bH*0.35,bW,bH*0.5,0,0,Math.PI*2);ctx.fill();
-  // Neck
-  ctx.fillRect(cx-bW*0.3,hY+hR*0.8,bW*0.6,bH*0.2);
-  // Head
-  ctx.beginPath();ctx.ellipse(cx,hY,hR,hR*1.2,0,0,Math.PI*2);ctx.fill();
+function storyAlien(cx, cy, sz, col, mood, armUp) {
+  const hR = sz * 0.2, bW = sz * 0.1, bH = sz * 0.24;
+  const hY = cy - bH - hR * 0.5, bTop = cy - bH * 0.3;
+
+  ctx.fillStyle = col;
+  ctx.beginPath(); ctx.ellipse(cx, bTop + bH*0.35, bW, bH*0.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillRect(cx - bW*0.3, hY + hR*0.8, bW*0.6, bH*0.2);
+  ctx.beginPath(); ctx.ellipse(cx, hY, hR, hR*1.2, 0, 0, Math.PI*2); ctx.fill();
+
   // Eyes
-  const eS=hR*0.42,eRx=hR*0.22,eRy=hR*0.32,eY=hY-hR*0.05;
-  ctx.fillStyle='#0a0a0a';ctx.beginPath();ctx.ellipse(cx-eS,eY,eRx,eRy,0,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx+eS,eY,eRx,eRy,0,0,Math.PI*2);ctx.fill();
-  // Eye reflections
-  ctx.fillStyle='rgba(150,255,200,0.3)';
-  ctx.beginPath();ctx.arc(cx-eS-eRx*0.25,eY-eRy*0.3,eRx*0.35,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+eS-eRx*0.25,eY-eRy*0.3,eRx*0.35,0,Math.PI*2);ctx.fill();
-  // Sad brows if mood='sad'
-  if(mood==='sad'){ctx.strokeStyle=col;ctx.lineWidth=sz*0.02;
-    ctx.beginPath();ctx.moveTo(cx-eS-eRx,eY-eRy-sz*0.01);ctx.lineTo(cx-eS+eRx,eY-eRy-sz*0.03);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(cx+eS+eRx,eY-eRy-sz*0.01);ctx.lineTo(cx+eS-eRx,eY-eRy-sz*0.03);ctx.stroke()}
+  const eS = hR * 0.42, eRx = hR * 0.25, eRy = hR * 0.35, eY = hY - hR * 0.05;
+  ctx.fillStyle = '#0a0a0a';
+  ctx.beginPath(); ctx.ellipse(cx - eS, eY, eRx, eRy, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx + eS, eY, eRx, eRy, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(150,255,200,0.35)';
+  ctx.beginPath(); ctx.arc(cx - eS - eRx*0.2, eY - eRy*0.3, eRx*0.35, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + eS - eRx*0.2, eY - eRy*0.3, eRx*0.35, 0, Math.PI*2); ctx.fill();
+
+  if (mood === 'sad') {
+    ctx.strokeStyle = col; ctx.lineWidth = sz * 0.025;
+    ctx.beginPath(); ctx.moveTo(cx-eS-eRx, eY-eRy-sz*0.01); ctx.lineTo(cx-eS+eRx, eY-eRy-sz*0.035); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx+eS+eRx, eY-eRy-sz*0.01); ctx.lineTo(cx+eS-eRx, eY-eRy-sz*0.035); ctx.stroke();
+    // Tears
+    const tY = eY + eRy + sz*0.02 + Math.sin(frame*0.04)*sz*0.006;
+    ctx.fillStyle = 'rgba(100,200,255,0.6)';
+    ctx.beginPath(); ctx.ellipse(cx-eS+eRx*0.3, tY, sz*0.01, sz*0.018, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx+eS-eRx*0.1, tY+sz*0.01, sz*0.008, sz*0.014, 0, 0, Math.PI*2); ctx.fill();
+  }
+
   // Arms
-  const au=armUp||0;ctx.strokeStyle=col;ctx.lineWidth=sz*0.035;ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(cx-bW,bTop+bH*0.05);ctx.quadraticCurveTo(cx-bW*2.8,bTop-bH*au,cx-bW*3.2,bTop-bH*au*0.7);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx+bW,bTop+bH*0.05);ctx.quadraticCurveTo(cx+bW*2.8,bTop-bH*au,cx+bW*3.2,bTop-bH*au*0.7);ctx.stroke();
+  const au = armUp || 0;
+  ctx.strokeStyle = col; ctx.lineWidth = sz * 0.04; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(cx-bW, bTop+bH*0.05);
+  ctx.quadraticCurveTo(cx-bW*2.8, bTop-bH*au, cx-bW*3.5, bTop-bH*au*0.7); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+bW, bTop+bH*0.05);
+  ctx.quadraticCurveTo(cx+bW*2.8, bTop-bH*au, cx+bW*3.5, bTop-bH*au*0.7); ctx.stroke();
+
   // Legs
-  ctx.beginPath();ctx.moveTo(cx-bW*0.4,bTop+bH*0.7);ctx.lineTo(cx-bW*0.7,bTop+bH*1.3);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx+bW*0.4,bTop+bH*0.7);ctx.lineTo(cx+bW*0.7,bTop+bH*1.3);ctx.stroke();
-  // Tears
-  if(mood==='sad'){const tY=eY+eRy+sz*0.02+Math.sin(frame*0.04)*sz*0.005;
-    ctx.fillStyle='rgba(100,200,255,0.6)';ctx.beginPath();ctx.ellipse(cx-eS+eRx*0.3,tY,sz*0.008,sz*0.015,0,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.ellipse(cx+eS-eRx*0.1,tY+sz*0.01,sz*0.006,sz*0.012,0,0,Math.PI*2);ctx.fill()}
+  ctx.beginPath(); ctx.moveTo(cx-bW*0.4, bTop+bH*0.7); ctx.lineTo(cx-bW*0.7, bTop+bH*1.3); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+bW*0.4, bTop+bH*0.7); ctx.lineTo(cx+bW*0.7, bTop+bH*1.3); ctx.stroke();
 }
 
-function storyShip(ctx,cx,cy,sz,ang,glow){
-  ctx.save();ctx.translate(cx,cy);ctx.rotate(ang);
-  // Hull shadow
-  ctx.fillStyle='rgba(0,0,0,0.2)';ctx.beginPath();ctx.ellipse(0,sz*0.02,sz*0.38,sz*0.12,0,0,Math.PI*2);ctx.fill();
-  // Hull
-  const hg=ctx.createLinearGradient(0,-sz*0.15,0,sz*0.15);hg.addColorStop(0,'rgba(180,195,215,1)');hg.addColorStop(1,'rgba(110,125,145,1)');
-  ctx.fillStyle=hg;ctx.beginPath();ctx.moveTo(sz*0.5,0);ctx.bezierCurveTo(sz*0.4,-sz*0.14,-sz*0.2,-sz*0.18,-sz*0.4,-sz*0.08);
-  ctx.lineTo(-sz*0.4,sz*0.08);ctx.bezierCurveTo(-sz*0.2,sz*0.18,sz*0.4,sz*0.14,sz*0.5,0);ctx.closePath();ctx.fill();
-  // Cockpit
-  const cg=ctx.createRadialGradient(sz*0.2,0,0,sz*0.2,0,sz*0.08);cg.addColorStop(0,'rgba(140,220,255,0.8)');cg.addColorStop(1,'rgba(60,150,200,0.6)');
-  ctx.fillStyle=cg;ctx.beginPath();ctx.arc(sz*0.2,0,sz*0.065,0,Math.PI*2);ctx.fill();
-  // Engine glow
-  const eW=sz*0.15+Math.sin(frame*0.12)*sz*0.025;
-  const eg=ctx.createRadialGradient(-sz*0.42,0,0,-sz*0.42,0,eW);
-  eg.addColorStop(0,glow||'rgba(80,180,255,0.7)');eg.addColorStop(0.5,glow?glow.replace(/[\d.]+\)$/,'0.3)'):'rgba(60,140,255,0.3)');eg.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=eg;ctx.fillRect(-sz*0.6,-eW,eW*2,eW*2);
+function storyShip(cx, cy, sz, ang, glow) {
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang);
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.beginPath(); ctx.ellipse(0, sz*0.02, sz*0.4, sz*0.12, 0, 0, Math.PI*2); ctx.fill();
+
+  const hg = ctx.createLinearGradient(0, -sz*0.15, 0, sz*0.15);
+  hg.addColorStop(0, 'rgba(180,195,215,1)'); hg.addColorStop(1, 'rgba(110,125,145,1)');
+  ctx.fillStyle = hg;
+  ctx.beginPath(); ctx.moveTo(sz*0.5, 0);
+  ctx.bezierCurveTo(sz*0.4, -sz*0.14, -sz*0.2, -sz*0.18, -sz*0.4, -sz*0.08);
+  ctx.lineTo(-sz*0.4, sz*0.08);
+  ctx.bezierCurveTo(-sz*0.2, sz*0.18, sz*0.4, sz*0.14, sz*0.5, 0);
+  ctx.closePath(); ctx.fill();
+
+  const cg = ctx.createRadialGradient(sz*0.2, 0, 0, sz*0.2, 0, sz*0.08);
+  cg.addColorStop(0, 'rgba(140,220,255,0.8)'); cg.addColorStop(1, 'rgba(60,150,200,0.6)');
+  ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(sz*0.2, 0, sz*0.07, 0, Math.PI*2); ctx.fill();
+
+  const eW = sz * 0.15 + Math.sin(frame * 0.12) * sz * 0.03;
+  const eg = ctx.createRadialGradient(-sz*0.42, 0, 0, -sz*0.42, 0, eW);
+  eg.addColorStop(0, glow || 'rgba(80,180,255,0.7)');
+  eg.addColorStop(0.5, 'rgba(60,140,255,0.2)'); eg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = eg; ctx.fillRect(-sz*0.6, -eW, eW*2, eW*2);
   ctx.restore();
 }
 
-function storyShadow(ctx,cx,cy,sz,a,reveal){
-  if(a<0.01)return;ctx.save();ctx.globalAlpha=a;
-  const rc=reveal||0;
-  const cR=lerp(15,50,rc)|0,cG=lerp(0,200,rc)|0,cB=lerp(25,90,rc)|0;
-  // Outer aura
-  const ag=ctx.createRadialGradient(cx,cy,0,cx,cy,sz*0.6);
-  ag.addColorStop(0,rgba(cR,cG,cB,0.3));ag.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=ag;ctx.fillRect(cx-sz,cy-sz,sz*2,sz*2);
-  // Core form
-  ctx.fillStyle=rgba(cR,cG,cB,0.65);
-  ctx.beginPath();ctx.ellipse(cx,cy-sz*0.15,sz*0.08,sz*0.12,0,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx,cy+sz*0.12,sz*0.06,sz*0.18,0,0,Math.PI*2);ctx.fill();
-  // Eyes — two faint points
-  const eg=rc>0.5?rgba(80,255,130,0.9):rgba(180,120,255,0.6);
-  ctx.fillStyle=eg;ctx.beginPath();ctx.arc(cx-sz*0.035,cy-sz*0.2,sz*0.015,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+sz*0.035,cy-sz*0.2,sz*0.015,0,Math.PI*2);ctx.fill();
-  // Tendrils
-  ctx.strokeStyle=rgba(cR,cG,cB,0.25);ctx.lineWidth=sz*0.02;
-  for(let i=0;i<4;i++){const ang=-0.8+i*0.53,wave=Math.sin(frame*0.025+i*1.7)*sz*0.06;
-    ctx.beginPath();ctx.moveTo(cx,cy+sz*0.25);ctx.bezierCurveTo(cx+Math.sin(ang)*sz*0.2,cy+sz*0.3+wave,cx+Math.sin(ang+0.5)*sz*0.15,cy+sz*0.4,cx+Math.sin(ang)*sz*0.12,cy+sz*0.5);ctx.stroke()}
+function storyShadow(cx, cy, sz, a, reveal) {
+  if (a < 0.01) return;
+  ctx.save(); ctx.globalAlpha = a;
+  const rc = reveal || 0;
+  const cR = lerp(15, 50, rc)|0, cG = lerp(0, 200, rc)|0, cB = lerp(25, 90, rc)|0;
+
+  const ag = ctx.createRadialGradient(cx, cy, 0, cx, cy, sz * 0.7);
+  ag.addColorStop(0, rgba(cR, cG, cB, 0.35)); ag.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = ag; ctx.fillRect(cx - sz, cy - sz, sz*2, sz*2);
+
+  ctx.fillStyle = rgba(cR, cG, cB, 0.7);
+  ctx.beginPath(); ctx.ellipse(cx, cy - sz*0.15, sz*0.09, sz*0.14, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx, cy + sz*0.12, sz*0.07, sz*0.2, 0, 0, Math.PI*2); ctx.fill();
+
+  const eyeCol = rc > 0.5 ? rgba(80, 255, 130, 0.95) : rgba(180, 120, 255, 0.7);
+  ctx.fillStyle = eyeCol;
+  ctx.beginPath(); ctx.arc(cx - sz*0.04, cy - sz*0.22, sz*0.018, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + sz*0.04, cy - sz*0.22, sz*0.018, 0, Math.PI*2); ctx.fill();
+
+  ctx.strokeStyle = rgba(cR, cG, cB, 0.3); ctx.lineWidth = sz * 0.025;
+  for (let i = 0; i < 5; i++) {
+    const ang = -0.9 + i * 0.45;
+    const wave = Math.sin(frame * 0.025 + i * 1.7) * sz * 0.07;
+    ctx.beginPath(); ctx.moveTo(cx, cy + sz*0.28);
+    ctx.bezierCurveTo(cx + Math.sin(ang)*sz*0.22, cy+sz*0.33+wave, cx+Math.sin(ang+0.5)*sz*0.17, cy+sz*0.45, cx+Math.sin(ang)*sz*0.14, cy+sz*0.55);
+    ctx.stroke();
+  }
   ctx.restore();
 }
 
-function storyDiamond(ctx,cx,cy,sz,hue){
-  const col=`hsla(${hue},80%,70%,0.9)`,shine=`hsla(${hue},60%,90%,0.5)`;
-  ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(cx,cy-sz);ctx.lineTo(cx-sz*0.4,cy-sz*0.3);ctx.lineTo(cx-sz*0.55,cy+sz*0.1);ctx.lineTo(cx,cy+sz*0.7);ctx.lineTo(cx+sz*0.55,cy+sz*0.1);ctx.lineTo(cx+sz*0.4,cy-sz*0.3);ctx.closePath();ctx.fill();
-  // Top facets
-  ctx.fillStyle=shine;ctx.beginPath();ctx.moveTo(cx,cy-sz);ctx.lineTo(cx-sz*0.4,cy-sz*0.3);ctx.lineTo(cx,cy-sz*0.15);ctx.lineTo(cx+sz*0.4,cy-sz*0.3);ctx.closePath();ctx.fill();
-  // Sparkle
-  const sp=0.4+Math.sin(frame*0.08+hue)*0.4;ctx.fillStyle=`rgba(255,255,255,${sp})`;
-  ctx.beginPath();ctx.arc(cx-sz*0.15,cy-sz*0.5,sz*0.08,0,Math.PI*2);ctx.fill();
+function storyDiamond(cx, cy, sz, hue) {
+  const col = `hsla(${hue},80%,70%,0.9)`;
+  const shine = `hsla(${hue},60%,90%,0.5)`;
+  ctx.fillStyle = col;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy-sz); ctx.lineTo(cx-sz*0.4, cy-sz*0.3);
+  ctx.lineTo(cx-sz*0.55, cy+sz*0.1); ctx.lineTo(cx, cy+sz*0.7);
+  ctx.lineTo(cx+sz*0.55, cy+sz*0.1); ctx.lineTo(cx+sz*0.4, cy-sz*0.3);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = shine;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy-sz); ctx.lineTo(cx-sz*0.4, cy-sz*0.3);
+  ctx.lineTo(cx, cy-sz*0.15); ctx.lineTo(cx+sz*0.4, cy-sz*0.3);
+  ctx.closePath(); ctx.fill();
+  const sp = 0.4 + Math.sin(frame * 0.08 + hue) * 0.4;
+  ctx.fillStyle = `rgba(255,255,255,${sp})`;
+  ctx.beginPath(); ctx.arc(cx - sz*0.15, cy - sz*0.5, sz*0.1, 0, Math.PI*2); ctx.fill();
 }
 
-function drawStory(prog){
-  const cx=W*0.5,cy=H*0.35,sz=Math.min(W,H)*0.52;let a;
+// ─── MAIN STORY DRAW ───
+function drawStory(prog) {
+  // Use almost the whole screen for story scenes
+  const cx = W * 0.5, cy = H * 0.38;
+  const sz = Math.min(W, H) * 0.82;
+  let a;
+
   ctx.save();
 
-  // ── 1: HOME (0-16%) — alien on lush planet with twin moons ──
-  a=sA(prog,0.0,0.05,0.16);
-  if(a>0.003){ctx.save();ctx.globalAlpha=a*0.28;
-    storyNebula(ctx,W*0.2,H*0.25,sz*0.5,[60,120,80],0.3);
-    storyStars(ctx,60,111,0.55,0.015);
+  // ━━━ SCENE 1: HOME (0% – 12%) ━━━
+  // Kael stands on lush planet Verdana under twin moons
+  a = sA(prog, 0.0, 0.03, 0.12);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.65;
+    storyNebula(W*0.2, H*0.2, sz*0.5, [40,140,60], 0.4);
+    storyStars(80, 111, 0.6, 0.015);
+
     // Twin moons
-    ctx.fillStyle='rgba(220,215,190,0.6)';ctx.beginPath();ctx.arc(cx-sz*0.4,cy-sz*0.28,sz*0.045,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='rgba(180,195,220,0.45)';ctx.beginPath();ctx.arc(cx+sz*0.45,cy-sz*0.32,sz*0.028,0,Math.PI*2);ctx.fill();
-    storyPlanet(ctx,cx,cy+sz*0.1,sz*0.3,rgba(30,145,55,0.95),0,[80,200,120]);
-    // Trees on surface
-    ctx.save();ctx.beginPath();ctx.arc(cx,cy+sz*0.1,sz*0.3,Math.PI+0.3,Math.PI*2-0.3);ctx.clip();
-    for(let i=0;i<7;i++){const tx=cx+(i-3)*sz*0.065,ty=cy+sz*0.1-sz*0.28;
-      ctx.fillStyle=rgba(20,80+i*8,25,0.9);ctx.beginPath();ctx.arc(tx,ty-sz*0.025,sz*0.03,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=rgba(55,40,18,1);ctx.fillRect(tx-sz*0.004,ty-sz*0.005,sz*0.008,sz*0.025)}
-    ctx.restore();
-    // Alien on top, happy
-    storyAlien(ctx,cx,cy+sz*0.1-sz*0.32,sz*0.4,rgba(50,215,80,1),'happy',0.15);
-    storyShadow(ctx,cx-sz*0.42,cy-sz*0.22,sz*0.11,0.08);
-    ctx.restore()}
+    ctx.fillStyle = 'rgba(220,215,190,0.7)';
+    ctx.beginPath(); ctx.arc(cx - sz*0.32, cy - sz*0.3, sz*0.055, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(180,195,220,0.5)';
+    ctx.beginPath(); ctx.arc(cx + sz*0.38, cy - sz*0.34, sz*0.035, 0, Math.PI*2); ctx.fill();
 
-  // ── 2: EXPLOSION (13-28%) ──
-  a=sA(prog,0.13,0.19,0.28);
-  if(a>0.003){ctx.save();ctx.globalAlpha=a*0.32;
-    storyStars(ctx,35,222,0.2,0.03);
-    const crk=clamp((prog-0.14)/0.12,0,1);
-    // Shockwave ring
-    if(crk>0.25){const rr=sz*0.3+crk*sz*0.5;ctx.strokeStyle=rgba(255,180,50,(1-crk)*0.3);ctx.lineWidth=2+crk*4;
-      ctx.beginPath();ctx.arc(cx,cy+sz*0.05,rr,0,Math.PI*2);ctx.stroke()}
+    // Planet
+    storyPlanet(cx, cy + sz*0.08, sz * 0.35, rgba(25,140,50,0.95), 0, [60,200,100]);
+
+    // Forests on the surface
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy + sz*0.08, sz*0.35, Math.PI + 0.25, Math.PI*2 - 0.25); ctx.clip();
+    for (let i = 0; i < 9; i++) {
+      const tx = cx + (i - 4) * sz * 0.06;
+      const ty = cy + sz*0.08 - sz*0.32;
+      ctx.fillStyle = rgba(15, 70 + i*8, 20, 0.9);
+      ctx.beginPath(); ctx.arc(tx, ty - sz*0.028, sz*0.035, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = rgba(50, 35, 15, 1);
+      ctx.fillRect(tx - sz*0.004, ty - sz*0.005, sz*0.008, sz*0.028);
+    }
+    ctx.restore();
+
+    // Kael standing on top — BIG and visible
+    storyAlien(cx, cy + sz*0.08 - sz*0.37, sz*0.55, rgba(50,215,80,1), 'happy', 0.2);
+
+    // Tiny shadow watching from distance
+    storyShadow(cx - sz*0.42, cy - sz*0.18, sz*0.1, 0.06);
+
+    ctx.restore();
+    storyCaption('V E R D A N A', cx, cy + sz*0.48, a * 0.7, clamp(sz*0.06, 18, 50), 'rgba(120,255,140,0.9)');
+    storyCaption('home', cx, cy + sz*0.48 + clamp(sz*0.04, 14, 30), a * 0.5, clamp(sz*0.035, 12, 28), 'rgba(255,255,255,0.6)');
+  }
+
+  // ━━━ SCENE 2: THE SHADOW ARRIVES (9% – 20%) ━━━
+  a = sA(prog, 0.09, 0.13, 0.20);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.6;
+    storyStars(50, 222, 0.35, 0.02);
+
+    // Planet still green but shadow looms
+    storyPlanet(cx, cy + sz*0.15, sz*0.3, rgba(25,130,45,0.9), 0, [50,180,90]);
+
+    // Dark comet approaching
+    const cometT = clamp((prog - 0.09) / 0.11, 0, 1);
+    const cX = lerp(cx + sz*0.5, cx - sz*0.05, cometT);
+    const cY = lerp(cy - sz*0.45, cy - sz*0.1, cometT);
+
+    // Comet trail
+    ctx.strokeStyle = rgba(120, 0, 180, 0.4);
+    ctx.lineWidth = sz * 0.02;
+    ctx.beginPath(); ctx.moveTo(cX, cY);
+    ctx.lineTo(cX + sz*0.3*(1-cometT), cY - sz*0.25*(1-cometT)); ctx.stroke();
+    for (let i = 0; i < 8; i++) {
+      const tx = cX + (sz*0.03 + i*sz*0.03) * (1-cometT);
+      const ty = cY - (sz*0.02 + i*sz*0.025) * (1-cometT);
+      ctx.fillStyle = rgba(100, 20, 160, 0.3 - i*0.03);
+      ctx.beginPath(); ctx.arc(tx, ty, sz*0.008, 0, Math.PI*2); ctx.fill();
+    }
+
+    // Shadow entity in the comet
+    storyShadow(cX, cY, sz * 0.2, 0.5 * cometT);
+
+    // Kael looking up in alarm
+    storyAlien(cx + sz*0.22, cy + sz*0.15 - sz*0.33, sz*0.4, rgba(50,215,80,1), 'sad', 0.8);
+
+    ctx.restore();
+    storyCaption('something approaches', cx, cy + sz*0.48, a * 0.65, clamp(sz*0.05, 16, 40), 'rgba(180,120,255,0.9)');
+  }
+
+  // ━━━ SCENE 3: CATACLYSM (17% – 28%) ━━━
+  a = sA(prog, 0.17, 0.21, 0.28);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.7;
+    storyStars(30, 333, 0.15, 0.03);
+
+    const crk = clamp((prog - 0.17) / 0.10, 0, 1);
+
     // Flash
-    if(crk>0.2&&crk<0.7){const fg=ctx.createRadialGradient(cx,cy+sz*0.05,0,cx,cy+sz*0.05,sz*0.55);
-      fg.addColorStop(0,rgba(255,230,100,(0.7-crk)*0.5));fg.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=fg;ctx.fillRect(0,0,W,H)}
-    storyPlanet(ctx,cx,cy+sz*0.05,sz*0.28*(1+crk*0.06),rgba(lerp(30,210,crk)|0,lerp(145,25,crk)|0,lerp(55,8,crk)|0,1),crk,[lerp(80,255,crk),lerp(200,80,crk),lerp(120,30,crk)]);
+    if (crk > 0.15 && crk < 0.6) {
+      const fg = ctx.createRadialGradient(cx, cy + sz*0.05, 0, cx, cy + sz*0.05, sz*0.6);
+      fg.addColorStop(0, rgba(255,230,100, (0.6-crk)*0.6)); fg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
+    }
+
+    // Shockwave
+    if (crk > 0.2) {
+      const rr = sz*0.35 + crk*sz*0.45;
+      ctx.strokeStyle = rgba(255, 180, 50, (1-crk)*0.4);
+      ctx.lineWidth = 3 + crk * 5;
+      ctx.beginPath(); ctx.arc(cx, cy + sz*0.05, rr, 0, Math.PI*2); ctx.stroke();
+    }
+
+    // Cracking planet
+    storyPlanet(cx, cy + sz*0.05, sz*0.32 * (1 + crk*0.08),
+      rgba(lerp(25,220,crk)|0, lerp(130,20,crk)|0, lerp(45,5,crk)|0, 1),
+      crk, [lerp(60,255,crk), lerp(180,60,crk), lerp(90,20,crk)]);
+
     // Flying debris
-    for(let i=0;i<14;i++){const ang=i*0.449+0.3,d=sz*(0.32+crk*0.35*(0.3+((i*41)%10)/10)),
-      rx=cx+Math.cos(ang)*d,ry=cy+sz*0.05+Math.sin(ang)*d,rs=sz*(0.01+((i*17)%6)*0.004);
-      ctx.fillStyle=rgba(90+i*10,55+i*5,20,0.85);ctx.beginPath();ctx.arc(rx,ry,rs,0,Math.PI*2);ctx.fill();
-      // Debris trails
-      ctx.strokeStyle=rgba(255,140,40,0.15*crk);ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(rx,ry);ctx.lineTo(rx-Math.cos(ang)*rs*6,ry-Math.sin(ang)*rs*6);ctx.stroke()}
-    // Alien recoiling
-    storyAlien(ctx,cx+sz*0.38+crk*sz*0.1,cy+sz*0.1,sz*0.3,rgba(50,215,80,1),'sad',0.7);
-    storyShadow(ctx,cx-sz*0.1,cy-sz*0.18,sz*0.2,0.12+crk*0.2);
-    ctx.restore()}
+    for (let i = 0; i < 18; i++) {
+      const ang = i * 0.349 + 0.2;
+      const d = sz * (0.35 + crk * 0.35 * (0.3 + ((i*41)%10)/10));
+      const rx = cx + Math.cos(ang) * d;
+      const ry = cy + sz*0.05 + Math.sin(ang) * d;
+      const rs = sz * (0.008 + ((i*17)%6) * 0.005);
+      ctx.fillStyle = rgba(80 + i*8, 50 + i*4, 15, 0.9);
+      ctx.beginPath(); ctx.arc(rx, ry, rs, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = rgba(255, 140, 40, 0.2 * crk); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(rx, ry);
+      ctx.lineTo(rx - Math.cos(ang)*rs*7, ry - Math.sin(ang)*rs*7); ctx.stroke();
+    }
 
-  // ── 3: ESCAPE (25-40%) ──
-  a=sA(prog,0.25,0.31,0.40);
-  if(a>0.003){ctx.save();ctx.globalAlpha=a*0.28;
-    storyNebula(ctx,W*0.3,H*0.4,sz*0.4,[80,40,20],0.2);
-    storyStars(ctx,55,333,0.4,0.02);
-    // Distant explosion remnant
-    const eg=ctx.createRadialGradient(cx-sz*0.45,cy+sz*0.05,0,cx-sz*0.45,cy+sz*0.05,sz*0.25);
-    eg.addColorStop(0,rgba(255,80,10,0.25));eg.addColorStop(0.5,rgba(255,40,5,0.08));eg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=eg;ctx.fillRect(0,0,W,H);
-    // Streaming star field for speed effect
-    for(let i=0;i<25;i++){const sx=((i*87+frame*0.3)%(W*0.8))+W*0.1,sy=cy+((i*53)%140-70)*sz*0.003;
-      const len=5+i%8;ctx.strokeStyle=rgba(200,210,230,0.2);ctx.lineWidth=0.8;
-      ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx-len,sy);ctx.stroke()}
-    storyShip(ctx,cx+sz*0.1,cy-sz*0.02,sz*0.35,0);
-    storyShadow(ctx,cx-sz*0.25,cy+sz*0.12,sz*0.18,0.18);
-    ctx.restore()}
+    // Kael recoiling in horror
+    storyAlien(cx + sz*0.38 + crk*sz*0.08, cy + sz*0.08, sz*0.4, rgba(50,215,80,1), 'sad', 0.85);
 
-  // ── 4: DIAMONDS (37-53%) ──
-  a=sA(prog,0.37,0.44,0.53);
-  if(a>0.003){ctx.save();ctx.globalAlpha=a*0.3;
-    storyStars(ctx,40,444,0.35,0.025);
-    // Asteroid
-    ctx.fillStyle=rgba(72,65,55,1);ctx.beginPath();ctx.ellipse(cx,cy+sz*0.14,sz*0.32,sz*0.17,0.12,0,Math.PI*2);ctx.fill();
-    // Asteroid craters
-    ctx.fillStyle='rgba(0,0,0,0.12)';
-    ctx.beginPath();ctx.arc(cx-sz*0.12,cy+sz*0.1,sz*0.04,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(cx+sz*0.18,cy+sz*0.16,sz*0.025,0,Math.PI*2);ctx.fill();
-    // Asteroid highlight
-    const ah=ctx.createLinearGradient(cx-sz*0.3,cy,cx+sz*0.3,cy+sz*0.3);ah.addColorStop(0,'rgba(255,255,255,0.07)');ah.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=ah;ctx.beginPath();ctx.ellipse(cx,cy+sz*0.14,sz*0.32,sz*0.17,0.12,0,Math.PI*2);ctx.fill();
-    // Diamonds in an arc
-    const hues=[180,260,55,310,140,200,35];
-    for(let i=0;i<7;i++){const da=Math.PI+0.3+i*0.25,dr=sz*0.28+Math.sin(i*1.3)*sz*0.02,
-      dx=cx+Math.cos(da)*dr,dy=cy+sz*0.14+Math.sin(da)*dr-sz*0.04;
-      const bob=Math.sin(frame*0.05+i*1.2)*sz*0.008;
-      storyDiamond(ctx,dx,dy+bob,sz*0.028+((i%3)*sz*0.006),hues[i])}
-    // Alien reaching
-    storyAlien(ctx,cx-sz*0.15,cy+sz*0.14-sz*0.2,sz*0.35,rgba(50,215,80,1),'happy',0.85);
-    storyShadow(ctx,cx+sz*0.38,cy+sz*0.2,sz*0.18,0.18);
-    ctx.restore()}
+    // Shadow consuming
+    storyShadow(cx - sz*0.08, cy - sz*0.15, sz*0.25, 0.15 + crk*0.4);
 
-  // ── 5: SADNESS (50-65%) ──
-  a=sA(prog,0.50,0.56,0.65);
-  if(a>0.003){ctx.save();ctx.globalAlpha=a*0.32;
-    storyStars(ctx,25,555,0.18,0.01);
-    storyNebula(ctx,W*0.6,H*0.3,sz*0.4,[40,30,80],0.25);
-    // Alien sitting in ship interior (dark)
-    ctx.fillStyle='rgba(20,22,28,0.5)';ctx.fillRect(cx-sz*0.35,cy-sz*0.15,sz*0.7,sz*0.55);
-    ctx.strokeStyle='rgba(60,70,90,0.3)';ctx.lineWidth=1;ctx.strokeRect(cx-sz*0.35,cy-sz*0.15,sz*0.7,sz*0.55);
-    // Alien hunched
-    storyAlien(ctx,cx-sz*0.08,cy+sz*0.22,sz*0.38,rgba(35,165,55,0.85),'sad',0.35);
-    // Hologram planet
-    const flk=0.3+Math.sin(frame*0.07)*0.12+Math.sin(frame*0.11)*0.08;
-    ctx.save();ctx.globalAlpha=flk;
-    // Hologram glow
-    const hgg=ctx.createRadialGradient(cx+sz*0.04,cy-sz*0.06,0,cx+sz*0.04,cy-sz*0.06,sz*0.15);
-    hgg.addColorStop(0,rgba(80,255,150,0.12));hgg.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=hgg;ctx.fillRect(cx-sz*0.3,cy-sz*0.3,sz*0.7,sz*0.5);
-    // Planet outline
-    ctx.strokeStyle=rgba(90,240,140,0.6);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx+sz*0.04,cy-sz*0.06,sz*0.09,0,Math.PI*2);ctx.stroke();
-    ctx.fillStyle=rgba(60,200,100,0.08);ctx.beginPath();ctx.arc(cx+sz*0.04,cy-sz*0.06,sz*0.09,0,Math.PI*2);ctx.fill();
-    // Scan lines
-    for(let i=0;i<5;i++){const ly=cy-sz*0.06-sz*0.09+i*sz*0.036+Math.sin(frame*0.05+i)*sz*0.005;
-      ctx.strokeStyle=rgba(80,220,130,0.15);ctx.beginPath();ctx.moveTo(cx+sz*0.04-sz*0.09,ly);ctx.lineTo(cx+sz*0.04+sz*0.09,ly);ctx.stroke()}
-    // Tiny surface detail in hologram
-    ctx.fillStyle=rgba(100,255,160,0.2);
-    for(let i=0;i<3;i++){const tx=cx+sz*0.04+(i-1)*sz*0.03,ty=cy-sz*0.06-sz*0.08;
-      ctx.beginPath();ctx.arc(tx,ty,sz*0.012,0,Math.PI*2);ctx.fill()}
     ctx.restore();
-    // Projection beam from hand
-    ctx.strokeStyle=rgba(80,220,130,0.08);ctx.lineWidth=sz*0.04;
-    ctx.beginPath();ctx.moveTo(cx-sz*0.08+sz*0.1,cy+sz*0.08);ctx.lineTo(cx+sz*0.04,cy-sz*0.06+sz*0.09);ctx.stroke();
-    storyShadow(ctx,cx+sz*0.34,cy+sz*0.05,sz*0.22,0.28);
-    ctx.restore()}
+    storyCaption('V E R D A N A   F A L L S', cx, cy + sz*0.48, a * 0.8, clamp(sz*0.06, 18, 48), 'rgba(255,100,30,0.95)');
+  }
 
-  // ── 6: RETURN (62-77%) ──
-  a=sA(prog,0.62,0.68,0.77);
-  if(a>0.003){ctx.save();ctx.globalAlpha=a*0.26;
-    storyStars(ctx,50,666,0.45,0.02);
-    // Distant warm glow (false hope)
-    const lg=ctx.createRadialGradient(cx+sz*0.4,cy,0,cx+sz*0.4,cy,sz*0.2);
-    lg.addColorStop(0,rgba(150,255,150,0.25));lg.addColorStop(0.5,rgba(80,200,100,0.08));lg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=lg;ctx.fillRect(0,0,W,H);
-    // Ship flying left
-    storyShip(ctx,cx-sz*0.05,cy,sz*0.3,Math.PI,rgba(100,255,150,0.5));
-    // Hope particles ahead of ship
-    for(let i=0;i<12;i++){const tx=cx-sz*0.05-sz*0.18-i*sz*0.035+Math.sin(frame*0.035+i)*sz*0.01,
-      ty=cy+Math.cos(frame*0.025+i*1.3)*sz*0.03;const pa=0.35-i*0.025;
-      ctx.fillStyle=rgba(100,255,150,pa);ctx.beginPath();ctx.arc(tx,ty,sz*0.006+Math.sin(frame*0.06+i)*sz*0.002,0,Math.PI*2);ctx.fill()}
-    storyShadow(ctx,cx+sz*0.38,cy-sz*0.05,sz*0.22,0.3);
-    ctx.restore()}
+  // ━━━ SCENE 4: ESCAPE (25% – 36%) ━━━
+  a = sA(prog, 0.25, 0.29, 0.36);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.6;
+    storyNebula(W*0.25, H*0.35, sz*0.45, [100,40,15], 0.25);
+    storyStars(55, 444, 0.4, 0.02);
 
-  // ── 7: DESTROYED (74-89%) ──
-  a=sA(prog,0.74,0.80,0.89);
-  if(a>0.003){ctx.save();ctx.globalAlpha=a*0.32;
-    storyStars(ctx,40,777,0.22,0.015);
-    // Dark void
-    const vg=ctx.createRadialGradient(cx,cy,0,cx,cy,sz*0.15);vg.addColorStop(0,'rgba(0,0,0,0.35)');vg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=vg;ctx.fillRect(cx-sz*0.5,cy-sz*0.5,sz,sz);
-    // Rock ring
-    for(let i=0;i<18;i++){const ang=i*0.349+Math.sin(frame*0.006+i*0.6)*0.15,
-      d=sz*(0.12+((i*7)%5)*0.04+Math.sin(frame*0.008+i)*0.012),
-      rx=cx+Math.cos(ang)*d,ry=cy+Math.sin(ang)*d*0.7,rs=sz*(0.008+((i*11)%5)*0.004);
-      // Subtle glow on some rocks
-      if(i%4===0){ctx.fillStyle=rgba(80,60,40,0.15);ctx.beginPath();ctx.arc(rx,ry,rs*3,0,Math.PI*2);ctx.fill()}
-      ctx.fillStyle=rgba(65+i*4,48+i*3,28+i*2,0.85);ctx.beginPath();ctx.arc(rx,ry,rs,0,Math.PI*2);ctx.fill()}
-    // Ghost outline
-    ctx.strokeStyle=rgba(60,180,80,0.06+Math.sin(frame*0.02)*0.02);ctx.lineWidth=1;ctx.setLineDash([3,5]);
-    ctx.beginPath();ctx.arc(cx,cy,sz*0.2,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
-    // Alien floating, small, curled up
-    storyAlien(ctx,cx-sz*0.3,cy+sz*0.12,sz*0.22,rgba(30,115,40,0.7),'sad',0.15);
-    // Shadow among the rocks
-    storyShadow(ctx,cx+sz*0.05,cy-sz*0.03,sz*0.28,0.4);
-    ctx.restore()}
+    // Burning remnant behind
+    const eg = ctx.createRadialGradient(cx - sz*0.4, cy + sz*0.05, 0, cx - sz*0.4, cy + sz*0.05, sz*0.2);
+    eg.addColorStop(0, rgba(255,80,10,0.35)); eg.addColorStop(0.6, rgba(255,40,5,0.1)); eg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = eg; ctx.fillRect(0, 0, W, H);
 
-  // ── 8: TRUTH / REWIND (86-100%) ──
-  a=sA(prog,0.86,0.92,1.00);
-  if(a>0.003){ctx.save();ctx.globalAlpha=a*0.38;
-    storyStars(ctx,18,888,0.12,0.01);
-    const dissolve=clamp((prog-0.90)/0.09,0,1);
-    // Glitching hologram of planet
-    for(let i=0;i<4;i++){const ox=Math.sin(frame*0.17+i*2)*sz*0.015*(i+1),oy=Math.cos(frame*0.13+i)*sz*0.008;
-      const ha=0.35*(1-dissolve)*(0.3+i*0.2);
-      ctx.strokeStyle=rgba(80,230,130,ha);ctx.lineWidth=1+i*0.3;
-      ctx.beginPath();ctx.arc(cx+ox,cy+oy,sz*0.14*(1+dissolve*0.15+i*0.02),0,Math.PI*2);ctx.stroke()}
-    // Filled ghost planet (fading)
-    ctx.fillStyle=rgba(60,200,100,(1-dissolve)*0.08);ctx.beginPath();ctx.arc(cx,cy,sz*0.14,0,Math.PI*2);ctx.fill();
-    // Fragmentation particles
-    if(dissolve>0.2){for(let i=0;i<12;i++){const fa=i*0.524,fd=sz*(0.14+dissolve*0.15*(0.3+((i*7)%10)/10)),
-        fx=cx+Math.cos(fa)*fd,fy=cy+Math.sin(fa)*fd;
-        ctx.fillStyle=rgba(80,230,130,(1-dissolve)*0.3);ctx.beginPath();ctx.arc(fx,fy,sz*0.005,0,Math.PI*2);ctx.fill()}}
-    // Alien reaching toward dissolving planet
-    storyAlien(ctx,cx-sz*0.3,cy+sz*0.15,sz*0.3,rgba(30,110,40,0.6),'sad',0.95);
-    // Shadow REVEALED
-    const reveal=clamp((prog-0.91)/0.07,0,1);
-    storyShadow(ctx,cx+sz*0.1,cy-sz*0.02,sz*0.3,0.45*(1-reveal*0.4),reveal);
-    // Revealed spirit form
-    if(reveal>0.01){const sg=ctx.createRadialGradient(cx+sz*0.1,cy-sz*0.02,0,cx+sz*0.1,cy-sz*0.02,sz*0.12*reveal);
-      sg.addColorStop(0,rgba(80,255,140,0.3*reveal));sg.addColorStop(0.6,rgba(60,220,120,0.1*reveal));sg.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=sg;ctx.fillRect(cx-sz*0.3,cy-sz*0.4,sz*0.8,sz*0.8);
-      ctx.fillStyle=rgba(80,255,140,0.2*reveal);ctx.beginPath();ctx.arc(cx+sz*0.1,cy-sz*0.02,sz*0.06*reveal,0,Math.PI*2);ctx.fill()}
-    // "REWIND"
-    const rA=clamp((prog-0.94)/0.05,0,1);
-    if(rA>0.01){ctx.fillStyle=rgba(180,255,200,0.22*rA);ctx.font=`${sz*0.08}px 'Bebas Neue',sans-serif`;ctx.textAlign='center';
-      ctx.fillText('R E W I N D',cx,cy+sz*0.45)}
-    ctx.restore()}
+    // Speed lines
+    for (let i = 0; i < 30; i++) {
+      const sx = ((i * 87 + frame * 0.4) % (W * 0.8)) + W * 0.1;
+      const sy = cy + ((i * 53) % 160 - 80) * sz * 0.003;
+      ctx.strokeStyle = rgba(200, 210, 230, 0.25); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - 6 - i%10, sy); ctx.stroke();
+    }
+
+    // Ship fleeing
+    storyShip(cx + sz*0.08, cy - sz*0.02, sz*0.4, 0);
+
+    // Shadow behind
+    storyShadow(cx - sz*0.3, cy + sz*0.08, sz*0.2, 0.2);
+
+    ctx.restore();
+    storyCaption('the last ship out', cx, cy + sz*0.48, a * 0.65, clamp(sz*0.05, 16, 40), 'rgba(200,220,255,0.85)');
+  }
+
+  // ━━━ SCENE 5: ALONE IN THE VOID (33% – 44%) ━━━
+  a = sA(prog, 0.33, 0.37, 0.44);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.55;
+    storyStars(100, 555, 0.5, 0.01);
+    storyNebula(W*0.6, H*0.4, sz*0.5, [20,20,50], 0.2);
+
+    // Tiny ship, vast emptiness
+    storyShip(cx, cy, sz*0.18, 0.05);
+
+    // Kael visible through cockpit - implied by glow
+    const cg = ctx.createRadialGradient(cx + sz*0.18*0.2, cy, 0, cx + sz*0.18*0.2, cy, sz*0.04);
+    cg.addColorStop(0, 'rgba(50,215,80,0.15)'); cg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = cg; ctx.fillRect(cx - sz*0.1, cy - sz*0.1, sz*0.2, sz*0.2);
+
+    // Distant fading explosion glow (home, far behind)
+    const dg = ctx.createRadialGradient(cx - sz*0.45, cy + sz*0.1, 0, cx - sz*0.45, cy + sz*0.1, sz*0.06);
+    dg.addColorStop(0, 'rgba(255,80,20,0.2)'); dg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = dg; ctx.fillRect(cx - sz*0.55, cy, sz*0.2, sz*0.2);
+
+    ctx.restore();
+    storyCaption('alone', cx, cy + sz*0.35, a * 0.7, clamp(sz*0.08, 22, 60), 'rgba(150,160,200,0.8)');
+  }
+
+  // ━━━ SCENE 6: TEMPTATION - THE CRYSTALS (41% – 53%) ━━━
+  a = sA(prog, 0.41, 0.45, 0.53);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.65;
+    storyStars(45, 666, 0.35, 0.025);
+
+    // Big asteroid
+    ctx.fillStyle = rgba(68, 60, 50, 1);
+    ctx.beginPath(); ctx.ellipse(cx, cy + sz*0.12, sz*0.38, sz*0.2, 0.1, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.12)';
+    ctx.beginPath(); ctx.arc(cx - sz*0.14, cy + sz*0.08, sz*0.05, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + sz*0.2, cy + sz*0.15, sz*0.03, 0, Math.PI*2); ctx.fill();
+
+    // Diamonds embedded — big, glowing, alluring
+    const hues = [180, 260, 55, 310, 140, 200, 35, 280, 100];
+    for (let i = 0; i < 9; i++) {
+      const da = Math.PI + 0.2 + i * 0.22;
+      const dr = sz * 0.3 + Math.sin(i * 1.3) * sz * 0.025;
+      const dx = cx + Math.cos(da) * dr;
+      const dy = cy + sz*0.12 + Math.sin(da) * dr - sz*0.05;
+      const bob = Math.sin(frame * 0.05 + i * 1.2) * sz * 0.01;
+      storyDiamond(dx, dy + bob, sz * 0.035 + ((i%3) * sz * 0.008), hues[i]);
+      // Individual glow
+      const gg = ctx.createRadialGradient(dx, dy+bob, 0, dx, dy+bob, sz*0.05);
+      gg.addColorStop(0, `hsla(${hues[i]},80%,70%,0.15)`); gg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gg; ctx.fillRect(dx - sz*0.06, dy+bob - sz*0.06, sz*0.12, sz*0.12);
+    }
+
+    // Kael reaching greedily
+    storyAlien(cx - sz*0.18, cy + sz*0.12 - sz*0.25, sz*0.45, rgba(50,215,80,1), 'happy', 0.9);
+
+    // Shadow lurking nearby
+    storyShadow(cx + sz*0.4, cy + sz*0.18, sz*0.18, 0.2);
+
+    ctx.restore();
+    storyCaption('the crystals called to kael', cx, cy + sz*0.48, a * 0.65, clamp(sz*0.045, 14, 36), 'rgba(200,150,255,0.9)');
+    storyCaption('and kael answered', cx, cy + sz*0.48 + clamp(sz*0.035, 12, 26), a * 0.5, clamp(sz*0.035, 11, 26), 'rgba(255,200,100,0.7)');
+  }
+
+  // ━━━ SCENE 7: CORRUPTION (50% – 62%) ━━━
+  a = sA(prog, 0.50, 0.54, 0.62);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.65;
+    storyStars(25, 777, 0.18, 0.015);
+    storyNebula(W*0.5, H*0.3, sz*0.4, [60,10,40], 0.3);
+
+    const corruptT = clamp((prog - 0.50) / 0.12, 0, 1);
+
+    // Kael in center, corruption spreading
+    const alienCol = rgba(lerp(50,30,corruptT)|0, lerp(215,60,corruptT)|0, lerp(80,120,corruptT)|0, 1);
+    storyAlien(cx, cy + sz*0.05, sz*0.6, alienCol, 'sad', 0.4);
+
+    // Dark veins spreading from crystals held in hands
+    for (let i = 0; i < 6; i++) {
+      const ang = -0.5 + i * 0.6;
+      const len = sz * 0.15 * corruptT;
+      ctx.strokeStyle = rgba(80, 0, 120, 0.5 * corruptT);
+      ctx.lineWidth = 1 + corruptT * 2;
+      const sx = cx + Math.cos(ang) * sz * 0.04;
+      const sy = cy + sz*0.05 + Math.sin(ang) * sz * 0.04;
+      ctx.beginPath(); ctx.moveTo(sx, sy);
+      ctx.bezierCurveTo(
+        sx + Math.cos(ang)*len*0.5, sy + Math.sin(ang)*len*0.5 + Math.sin(frame*0.03+i)*sz*0.02,
+        sx + Math.cos(ang)*len*0.8, sy + Math.sin(ang)*len*0.9,
+        sx + Math.cos(ang)*len, sy + Math.sin(ang)*len
+      );
+      ctx.stroke();
+    }
+
+    // Dark aura growing
+    const dg = ctx.createRadialGradient(cx, cy + sz*0.05, 0, cx, cy + sz*0.05, sz*0.25*(0.3+corruptT*0.7));
+    dg.addColorStop(0, rgba(60, 0, 80, 0.2 * corruptT)); dg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = dg; ctx.fillRect(cx - sz*0.4, cy - sz*0.3, sz*0.8, sz*0.7);
+
+    // Floating crystal fragments
+    for (let i = 0; i < 5; i++) {
+      const fx = cx + Math.sin(frame*0.03 + i*1.5) * sz * 0.12;
+      const fy = cy + sz*0.05 + Math.cos(frame*0.025 + i*2) * sz * 0.08 - sz*0.15;
+      storyDiamond(fx, fy, sz * 0.02, [180,260,310,140,55][i]);
+    }
+
+    ctx.restore();
+    storyCaption('the crystals were a poison', cx, cy + sz*0.48, a * 0.7, clamp(sz*0.05, 16, 40), 'rgba(180,80,255,0.9)');
+  }
+
+  // ━━━ SCENE 8: MEMORY (58% – 70%) ━━━
+  a = sA(prog, 0.58, 0.62, 0.70);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.6;
+    storyStars(20, 888, 0.15, 0.01);
+    storyNebula(W*0.55, H*0.3, sz*0.4, [30,25,60], 0.2);
+
+    // Ship interior (dark rectangle)
+    ctx.fillStyle = 'rgba(15,18,25,0.6)';
+    ctx.fillRect(cx - sz*0.4, cy - sz*0.2, sz*0.8, sz*0.6);
+    ctx.strokeStyle = 'rgba(50,60,80,0.3)'; ctx.lineWidth = 1.5;
+    ctx.strokeRect(cx - sz*0.4, cy - sz*0.2, sz*0.8, sz*0.6);
+
+    // Alien hunched, sad, darkened
+    storyAlien(cx - sz*0.12, cy + sz*0.2, sz*0.45, rgba(30,140,50,0.75), 'sad', 0.3);
+
+    // Hologram of Verdana — flickering
+    const flk = 0.35 + Math.sin(frame*0.07)*0.15 + Math.sin(frame*0.11)*0.1;
+    ctx.save(); ctx.globalAlpha = flk;
+
+    const hgx = cx + sz*0.08, hgy = cy - sz*0.05;
+    const hgg = ctx.createRadialGradient(hgx, hgy, 0, hgx, hgy, sz*0.15);
+    hgg.addColorStop(0, rgba(80,255,150,0.15)); hgg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = hgg; ctx.fillRect(hgx - sz*0.2, hgy - sz*0.2, sz*0.4, sz*0.4);
+
+    ctx.strokeStyle = rgba(90,240,140,0.7); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(hgx, hgy, sz*0.1, 0, Math.PI*2); ctx.stroke();
+    ctx.fillStyle = rgba(60,200,100,0.1);
+    ctx.beginPath(); ctx.arc(hgx, hgy, sz*0.1, 0, Math.PI*2); ctx.fill();
+
+    // Scan lines
+    for (let i = 0; i < 6; i++) {
+      const ly = hgy - sz*0.1 + i*sz*0.033 + Math.sin(frame*0.05+i)*sz*0.005;
+      ctx.strokeStyle = rgba(80,220,130,0.2);
+      ctx.beginPath(); ctx.moveTo(hgx - sz*0.1, ly); ctx.lineTo(hgx + sz*0.1, ly); ctx.stroke();
+    }
+
+    // Tiny trees on hologram
+    ctx.fillStyle = rgba(100,255,160,0.25);
+    for (let i = 0; i < 4; i++) {
+      const tx = hgx + (i-1.5)*sz*0.035, ty = hgy - sz*0.085;
+      ctx.beginPath(); ctx.arc(tx, ty, sz*0.013, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+
+    // Projection beam
+    ctx.strokeStyle = rgba(80,220,130,0.1); ctx.lineWidth = sz*0.035;
+    ctx.beginPath(); ctx.moveTo(cx - sz*0.06, cy + sz*0.05); ctx.lineTo(hgx, hgy + sz*0.1); ctx.stroke();
+
+    // Shadow reflected in the darkness
+    storyShadow(cx + sz*0.35, cy + sz*0.05, sz*0.22, 0.3);
+
+    ctx.restore();
+    storyCaption('kael tried to remember', cx, cy + sz*0.48, a * 0.65, clamp(sz*0.045, 14, 36), 'rgba(100,220,150,0.85)');
+    storyCaption('but the memory was fading', cx, cy + sz*0.48 + clamp(sz*0.035, 12, 26), a * 0.45, clamp(sz*0.035, 11, 24), 'rgba(255,200,150,0.6)');
+  }
+
+  // ━━━ SCENE 9: FALSE HOPE (66% – 78%) ━━━
+  a = sA(prog, 0.66, 0.70, 0.78);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.6;
+    storyStars(55, 999, 0.45, 0.02);
+
+    // Green glow in distance - false hope
+    const hopeg = ctx.createRadialGradient(cx + sz*0.35, cy, 0, cx + sz*0.35, cy, sz*0.22);
+    hopeg.addColorStop(0, rgba(100,255,120,0.3)); hopeg.addColorStop(0.5, rgba(60,200,80,0.1)); hopeg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = hopeg; ctx.fillRect(0, 0, W, H);
+
+    // Ship flying toward the light (reversed - facing left = going home)
+    storyShip(cx - sz*0.08, cy, sz*0.35, Math.PI, rgba(100,255,150,0.6));
+
+    // Hope particles
+    for (let i = 0; i < 15; i++) {
+      const tx = cx - sz*0.08 - sz*0.2 - i*sz*0.03 + Math.sin(frame*0.035+i)*sz*0.012;
+      const ty = cy + Math.cos(frame*0.025 + i*1.3) * sz*0.035;
+      ctx.fillStyle = rgba(100,255,150, 0.4 - i*0.025);
+      ctx.beginPath(); ctx.arc(tx, ty, sz*0.007 + Math.sin(frame*0.06+i)*sz*0.003, 0, Math.PI*2); ctx.fill();
+    }
+
+    // Shadow following unseen
+    storyShadow(cx + sz*0.4, cy - sz*0.05, sz*0.22, 0.35);
+
+    ctx.restore();
+    storyCaption('a green light in the dark', cx, cy + sz*0.42, a * 0.7, clamp(sz*0.05, 16, 40), 'rgba(120,255,150,0.9)');
+    storyCaption('could it be?', cx, cy + sz*0.42 + clamp(sz*0.035, 12, 26), a * 0.5, clamp(sz*0.04, 12, 28), 'rgba(255,255,200,0.65)');
+  }
+
+  // ━━━ SCENE 10: RUINS (75% – 86%) ━━━
+  a = sA(prog, 0.75, 0.79, 0.86);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.65;
+    storyStars(35, 1111, 0.2, 0.012);
+
+    // Void where planet was
+    const vg = ctx.createRadialGradient(cx, cy, 0, cx, cy, sz*0.18);
+    vg.addColorStop(0, 'rgba(0,0,0,0.4)'); vg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = vg; ctx.fillRect(cx - sz*0.4, cy - sz*0.4, sz*0.8, sz*0.8);
+
+    // Debris ring — all that remains of Verdana
+    for (let i = 0; i < 22; i++) {
+      const ang = i * 0.286 + Math.sin(frame * 0.005 + i * 0.6) * 0.12;
+      const d = sz * (0.14 + ((i*7)%5)*0.04 + Math.sin(frame*0.007+i)*0.015);
+      const rx = cx + Math.cos(ang) * d;
+      const ry = cy + Math.sin(ang) * d * 0.65;
+      const rs = sz * (0.009 + ((i*11)%5)*0.005);
+      if (i % 3 === 0) {
+        ctx.fillStyle = rgba(60,50,35,0.12);
+        ctx.beginPath(); ctx.arc(rx, ry, rs*3.5, 0, Math.PI*2); ctx.fill();
+      }
+      ctx.fillStyle = rgba(55 + i*4, 42 + i*3, 25 + i*2, 0.9);
+      ctx.beginPath(); ctx.arc(rx, ry, rs, 0, Math.PI*2); ctx.fill();
+    }
+
+    // Ghost outline of the planet
+    ctx.strokeStyle = rgba(50,150,70, 0.08 + Math.sin(frame*0.02)*0.03);
+    ctx.lineWidth = 1.5; ctx.setLineDash([4, 6]);
+    ctx.beginPath(); ctx.arc(cx, cy, sz*0.22, 0, Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Alien floating, tiny, devastated
+    storyAlien(cx - sz*0.32, cy + sz*0.1, sz*0.3, rgba(25,100,35,0.65), 'sad', 0.1);
+
+    // Shadow among the debris
+    storyShadow(cx + sz*0.06, cy - sz*0.04, sz*0.3, 0.45);
+
+    ctx.restore();
+    storyCaption('nothing remained', cx, cy + sz*0.45, a * 0.8, clamp(sz*0.06, 18, 48), 'rgba(255,80,50,0.9)');
+  }
+
+  // ━━━ SCENE 11: REVELATION (83% – 94%) ━━━
+  a = sA(prog, 0.83, 0.87, 0.94);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.7;
+    storyStars(15, 1222, 0.1, 0.008);
+
+    const revealT = clamp((prog - 0.83) / 0.10, 0, 1);
+
+    // Kael in center — shadow merging with them
+    const mergeCol = rgba(lerp(25,10,revealT)|0, lerp(100,20,revealT)|0, lerp(35,10,revealT)|0, 1);
+    storyAlien(cx, cy + sz*0.08, sz*0.55, mergeCol, 'sad', 0.5);
+
+    // Shadow emerging FROM Kael
+    const shadowAlpha = 0.3 + revealT * 0.5;
+    const shadowOff = sz * 0.08 * (1 - revealT);
+    storyShadow(cx + shadowOff, cy - sz*0.05, sz * 0.35, shadowAlpha, revealT);
+
+    // Dark energy lines connecting them
+    for (let i = 0; i < 8; i++) {
+      const lx = cx + Math.sin(frame*0.04 + i*0.8) * sz * 0.1 * revealT;
+      const ly = cy + Math.cos(frame*0.03 + i*1.2) * sz * 0.08;
+      ctx.strokeStyle = rgba(120, 0, 180, 0.2 * revealT);
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(cx, cy + sz*0.08); ctx.lineTo(lx, ly); ctx.stroke();
+    }
+
+    // Shattering mirror effect
+    if (revealT > 0.4) {
+      for (let i = 0; i < 6; i++) {
+        const fx = cx + (Math.random() * 2 - 1) * sz * 0.3 * revealT;
+        const fy = cy + (Math.random() * 2 - 1) * sz * 0.2 * revealT;
+        ctx.strokeStyle = rgba(255,255,255, 0.05 * (revealT - 0.4));
+        ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(fx + sz*0.05, fy + sz*0.03); ctx.stroke();
+      }
+    }
+
+    ctx.restore();
+    const t1a = sA(prog, 0.83, 0.87, 0.90);
+    const t2a = sA(prog, 0.88, 0.91, 0.94);
+    storyCaption('the shadow was never behind you', cx, cy + sz*0.48, t1a * 0.8, clamp(sz*0.045, 14, 38), 'rgba(200,100,255,0.9)');
+    storyCaption('it was always you', cx, cy + sz*0.48, t2a * 0.9, clamp(sz*0.06, 20, 50), 'rgba(255,60,30,1)');
+  }
+
+  // ━━━ SCENE 12: REWIND CALL (91% – 100%) ━━━
+  a = sA(prog, 0.91, 0.94, 1.0);
+  if (a > 0.005) {
+    ctx.save(); ctx.globalAlpha = a * 0.75;
+    storyStars(12, 1333, 0.08, 0.006);
+
+    const dissolve = clamp((prog - 0.92) / 0.07, 0, 1);
+
+    // Glitching echoes of Verdana
+    for (let i = 0; i < 5; i++) {
+      const ox = Math.sin(frame*0.17 + i*2) * sz*0.02 * (i+1);
+      const oy = Math.cos(frame*0.13 + i) * sz*0.01;
+      ctx.strokeStyle = rgba(80, 230, 130, 0.3*(1-dissolve)*(0.2 + i*0.15));
+      ctx.lineWidth = 1.5 + i*0.4;
+      ctx.beginPath(); ctx.arc(cx + ox, cy + oy, sz*(0.16 + dissolve*0.1 + i*0.015), 0, Math.PI*2); ctx.stroke();
+    }
+
+    // Fading planet ghost
+    ctx.fillStyle = rgba(60, 200, 100, (1-dissolve)*0.1);
+    ctx.beginPath(); ctx.arc(cx, cy, sz*0.16, 0, Math.PI*2); ctx.fill();
+
+    // Dissolving particles
+    if (dissolve > 0.15) {
+      for (let i = 0; i < 16; i++) {
+        const fa = i * 0.393;
+        const fd = sz * (0.16 + dissolve * 0.18 * (0.3 + ((i*7)%10)/10));
+        const fx = cx + Math.cos(fa) * fd;
+        const fy = cy + Math.sin(fa) * fd;
+        ctx.fillStyle = rgba(80, 230, 130, (1-dissolve) * 0.35);
+        ctx.beginPath(); ctx.arc(fx, fy, sz*0.006, 0, Math.PI*2); ctx.fill();
+      }
+    }
+
+    // Kael dissolving
+    storyAlien(cx - sz*0.25, cy + sz*0.15, sz*0.35, rgba(20, 70 - dissolve*50, 30, 0.6*(1-dissolve*0.5)), 'sad', 0.95);
+
+    ctx.restore();
+
+    // BIG rewind text
+    const rA = clamp((prog - 0.95) / 0.04, 0, 1);
+    const pulse = 0.7 + Math.sin(frame * 0.08) * 0.3;
+    storyCaption('R E W I N D', cx, cy + sz*0.1, rA * pulse, clamp(sz*0.12, 30, 90), 'rgba(255,200,0,0.95)');
+    storyCaption('undo what you\'ve become', cx, cy + sz*0.1 + clamp(sz*0.06, 20, 45), rA * 0.6, clamp(sz*0.04, 12, 30), 'rgba(255,200,150,0.7)');
+  }
 
   ctx.restore();
 }
 
-// ═══ DRAW ═══
-function drawBg(prog,zc){
-  const grd=ctx.createLinearGradient(0,0,0,H);grd.addColorStop(0,rgba(...zc.skyT,1));grd.addColorStop(1,rgba(...zc.skyB,1));
-  ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
-  if(beat>0.04){ctx.fillStyle=`rgba(255,255,255,${beat*0.03})`;ctx.fillRect(0,0,W,H)}
-  if(prog>0.40){const ec=Math.floor(clamp((prog-0.40)/0.60,0,1)*12);for(let i=0;i<ec;i++){const ex=((frame*0.8+i*137)%W),ey=H-((frame*1.2+i*73)%(H*0.8)),er=0.5+Math.sin(frame*0.04+i)*0.5;ctx.beginPath();ctx.arc(ex,ey,er,0,Math.PI*2);ctx.fillStyle=rgba(255,clamp(180-i*20,60,200),0,clamp((prog-0.4)*2,0,1)*0.6);ctx.fill()}}
-  if(prog>0.65){const hg=ctx.createLinearGradient(0,H*0.6,0,H);hg.addColorStop(0,'rgba(255,30,0,0)');hg.addColorStop(1,`rgba(255,30,0,${(prog-0.65)*0.5})`);ctx.fillStyle=hg;ctx.fillRect(0,H*0.6,W,H*0.4)}
-  if(prog>0.25){for(let i=0;i<30;i++){const sx=((i*317+scrollX*0.05)%W),sy=((i*197)%(H*0.6)),sa=Math.sin(frame*0.02+i)*0.3+0.4;ctx.fillStyle=prog>0.65?rgba(255,80,0,sa*prog):rgba(255,255,255,sa*(1-prog)*0.6);ctx.fillRect(sx,sy,1,1)}}
+// ═══════════════════════════════════════════════
+//  DRAWING
+// ═══════════════════════════════════════════════
+function drawBg(prog, zc) {
+  const grd = ctx.createLinearGradient(0, 0, 0, H);
+  grd.addColorStop(0, rgba(...zc.skyT, 1)); grd.addColorStop(1, rgba(...zc.skyB, 1));
+  ctx.fillStyle = grd; ctx.fillRect(0, 0, W, H);
+
+  if (beat > 0.04) {
+    ctx.fillStyle = `rgba(255,255,255,${beat*0.03})`; ctx.fillRect(0, 0, W, H);
+  }
+  if (prog > 0.40) {
+    const ec = Math.floor(clamp((prog - 0.40)/0.60, 0, 1) * 12);
+    for (let i = 0; i < ec; i++) {
+      const ex = ((frame*0.8 + i*137) % W);
+      const ey = H - ((frame*1.2 + i*73) % (H*0.8));
+      const er = 0.5 + Math.sin(frame*0.04 + i)*0.5;
+      ctx.beginPath(); ctx.arc(ex, ey, er, 0, Math.PI*2);
+      ctx.fillStyle = rgba(255, clamp(180-i*20,60,200), 0, clamp((prog-0.4)*2,0,1)*0.6);
+      ctx.fill();
+    }
+  }
+  if (prog > 0.65) {
+    const hg = ctx.createLinearGradient(0, H*0.6, 0, H);
+    hg.addColorStop(0, 'rgba(255,30,0,0)');
+    hg.addColorStop(1, `rgba(255,30,0,${(prog-0.65)*0.5})`);
+    ctx.fillStyle = hg; ctx.fillRect(0, H*0.6, W, H*0.4);
+  }
+  if (prog > 0.25) {
+    for (let i = 0; i < 30; i++) {
+      const sx = ((i*317 + scrollX*0.05) % W);
+      const sy = ((i*197) % (H*0.6));
+      const sa = Math.sin(frame*0.02 + i)*0.3 + 0.4;
+      ctx.fillStyle = prog > 0.65 ? rgba(255,80,0,sa*prog) : rgba(255,255,255,sa*(1-prog)*0.6);
+      ctx.fillRect(sx, sy, 1, 1);
+    }
+  }
 }
-function drawBgElements(){bgElements.forEach(el=>{const sx=el.x-scrollX;if(sx+el.w<-10||sx>W+10)return;const zc=getZoneColor(el.prog);ctx.save();ctx.globalAlpha=0.5+el.prog*0.2;if(el.type==='house'){ctx.fillStyle=rgba(...zc.gnd,1);ctx.fillRect(sx,el.y+el.h*0.4,el.w,el.h*0.6);ctx.beginPath();ctx.moveTo(sx-5,el.y+el.h*0.4);ctx.lineTo(sx+el.w*0.5,el.y);ctx.lineTo(sx+el.w+5,el.y+el.h*0.4);ctx.closePath();ctx.fillStyle=rgba(...lerpC(zc.plt,zc.gnd,0.4),1);ctx.fill();ctx.fillStyle=rgba(220,200,120,0.6);ctx.fillRect(sx+el.w*0.3,el.y+el.h*0.55,el.w*0.25,el.h*0.25)}else if(el.type==='tree'){ctx.fillStyle=rgba(80,50,20,1);ctx.fillRect(sx+el.w*0.35,el.y+el.h*0.4,el.w*0.3,el.h*0.6);ctx.beginPath();ctx.arc(sx+el.w*0.5,el.y+el.h*0.35,el.w*1.1,0,Math.PI*2);ctx.fillStyle=rgba(...zc.acc,0.85);ctx.fill()}else if(el.type==='deadtree'){ctx.fillStyle=rgba(60,45,30,1);ctx.fillRect(sx,el.y+el.h*0.55,el.w*0.3,el.h*0.45);ctx.strokeStyle=rgba(60,45,30,1);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(sx+el.w*0.15,el.y+el.h*0.55);ctx.lineTo(sx-15,el.y+el.h*0.2);ctx.stroke();ctx.beginPath();ctx.moveTo(sx+el.w*0.15,el.y+el.h*0.4);ctx.lineTo(sx+20,el.y+el.h*0.1);ctx.stroke()}else if(el.type==='rock'){ctx.fillStyle=rgba(...lerpC(zc.gnd,zc.plt,0.3),1);ctx.beginPath();ctx.ellipse(sx+el.w*0.5,el.y+el.h*0.6,el.w*0.5,el.h*0.4,0,0,Math.PI*2);ctx.fill()}else if(el.type==='pillar'){ctx.fillStyle=rgba(...lerpC(zc.gnd,[60,40,70],0.5),0.7);ctx.fillRect(sx,el.y,el.w,el.h);ctx.fillStyle=rgba(...zc.acc,0.3);ctx.fillRect(sx,el.y,el.w,6)}else if(el.type==='spike'){ctx.fillStyle=rgba(...zc.gnd,0.9);ctx.beginPath();ctx.moveTo(sx,el.y+el.h);ctx.lineTo(sx+el.w*0.5,el.y);ctx.lineTo(sx+el.w,el.y+el.h);ctx.closePath();ctx.fill();ctx.fillStyle=rgba(...zc.acc,0.2*beat);ctx.fill()}ctx.restore()})}
-function drawGround(prog,zc){const eGY=GY-lavaRise(prog);ctx.fillStyle=rgba(...zc.gnd,1);ctx.fillRect(0,eGY,W,H-eGY+5);ctx.fillStyle=rgba(...zc.acc,0.3);ctx.fillRect(0,eGY,W,3)}
-function drawLava(prog){lavaPhase+=0.018+energy*0.025+bassE*0.015;const lR=lavaRise(prog),lY=GY-lR,danger=clamp((prog-0.15)/0.85,0,1);const gH=clamp(50+danger*120+bassE*50,40,200);const lg=ctx.createLinearGradient(0,lY-gH,0,lY);lg.addColorStop(0,'rgba(255,40,0,0)');lg.addColorStop(0.6,`rgba(255,60,0,${0.04+danger*0.18})`);lg.addColorStop(1,`rgba(255,120,0,${0.2+danger*0.4})`);ctx.fillStyle=lg;ctx.fillRect(0,lY-gH,W,gH);ctx.beginPath();ctx.moveTo(-1,lY);for(let i=0;i<=80;i++){const lx=(i/80)*W,wx=lx+scrollX*0.25;ctx.lineTo(lx,lY+Math.sin(wx*0.01+lavaPhase)*7+Math.sin(wx*0.022+lavaPhase*1.6)*4+bassE*Math.sin(wx*0.007+frame*0.06)*12*danger)}ctx.lineTo(W+1,H);ctx.lineTo(-1,H);ctx.closePath();const lG=ctx.createLinearGradient(0,lY,0,H);lG.addColorStop(0,'#ff5500');lG.addColorStop(0.25,'#ff2200');lG.addColorStop(1,'#660000');ctx.fillStyle=lG;ctx.fill();ctx.save();ctx.globalAlpha=0.12+beat*0.18;ctx.strokeStyle='#ffcc00';ctx.lineWidth=1.5;for(let i=0;i<6;i++){const lx=((frame*1.1+i*130)%(W+120))-60;ctx.beginPath();ctx.moveTo(lx,lY+3);ctx.lineTo(lx+50,lY+3);ctx.stroke()}ctx.restore();ctx.save();ctx.globalAlpha=0.04+danger*0.07+Math.sin(frame*0.03)*0.02;ctx.fillStyle='#ff8800';ctx.font=`bold ${clamp(W*0.055,28,64)}px 'Bebas Neue',sans-serif`;ctx.textAlign='center';ctx.fillText('ROCK BOTTOM',W/2,lY+38+Math.sin(frame*0.025)*5);ctx.restore()}
-function drawPlatforms(){platforms.forEach(p=>{const sx=p.x-scrollX;if(sx+p.w<-10||sx>W+10)return;const vy=p.visualY,pzc=getZoneColor(p.prog||0),popSc=Math.min(1,(frame-p.born)/7);ctx.save();ctx.translate(sx+p.w*0.5,vy);ctx.scale(popSc,1);ctx.translate(-p.w*0.5,0);const gH=30+bassE*25;const ug=ctx.createLinearGradient(0,0,0,gH);ug.addColorStop(0,rgba(...pzc.plt,0.5));ug.addColorStop(1,rgba(...pzc.plt,0));ctx.fillStyle=ug;ctx.fillRect(-6,0,p.w+12,gH);ctx.shadowColor=rgba(...pzc.plt,1);ctx.shadowBlur=8+energy*10+beat*12;ctx.fillStyle=rgba(...pzc.plt,0.9);ctx.fillRect(0,0,p.w,p.h);ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillRect(0,0,p.w,2);if(p.prog<0.15){ctx.fillStyle=rgba(...pzc.acc,0.8);ctx.fillRect(0,-3,p.w,3)}else if(p.prog>0.65){ctx.strokeStyle=rgba(0,0,0,0.4);ctx.lineWidth=1;const cr=Math.floor(p.w/25);for(let i=1;i<cr;i++){const cx=p.w*i/cr;ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx+4,p.h);ctx.stroke()}}ctx.restore()})}
-function drawPlayer(){if(pl.dead&&pl.deathTimer>30)return;const m=pl.morph,sx=pl.x-scrollX,sy=pl.y,w=pl.w,h=pl.h;ctx.save();ctx.translate(sx+w*0.5,sy+h*0.5);ctx.scale(pl.squishX/pl.squishY,pl.squishY);ctx.translate(-w*0.5,-h*0.5);const bR=lerp(240,200,m)|0,bG=lerp(235,10,m)|0,bB=lerp(225,10,m)|0;ctx.shadowColor=m<0.3?'rgba(255,255,200,0.4)':rgba(255,lerp(200,30,m)|0,0,0.8);ctx.shadowBlur=8+m*30+beat*15;ctx.fillStyle=rgba(bR,bG,bB,1);const bto=lerp(0,4,m);ctx.beginPath();ctx.moveTo(w*0.1,h);ctx.lineTo(0,h*0.6);ctx.lineTo(0,h*0.2+bto);ctx.lineTo(w*0.5,0);ctx.lineTo(w,h*0.2+bto);ctx.lineTo(w,h*0.6);ctx.lineTo(w*0.9,h);ctx.closePath();ctx.fill();ctx.shadowBlur=0;const eyeY=h*0.28,eyeR=lerp(2.5,5,m),eyeS=lerp(w*0.25,w*0.2,m);ctx.fillStyle=m<0.3?rgba(60,40,20,1):rgba(255,lerp(200,20,m)|0,0,1);if(m>0.3){ctx.shadowColor=rgba(255,50,0,1);ctx.shadowBlur=8+m*10}ctx.beginPath();ctx.arc(w*0.5-eyeS,eyeY,eyeR,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(w*0.5+eyeS,eyeY,eyeR,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;if(m<0.5){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.beginPath();ctx.arc(w*0.5-eyeS+1,eyeY-1,1,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(w*0.5+eyeS+1,eyeY-1,1,0,Math.PI*2);ctx.fill()}const mY=h*0.55,mW=lerp(5,9,m);if(m<0.4){ctx.strokeStyle=rgba(60,40,20,1);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(w*0.5,mY,mW,0.1*Math.PI,0.9*Math.PI);ctx.stroke()}else{ctx.fillStyle=rgba(255,255,255,0.9);const fL=lerp(0,5,clamp((m-0.4)/0.6,0,1));ctx.beginPath();ctx.moveTo(w*0.5-mW,mY);ctx.lineTo(w*0.5-mW/2,mY+fL);ctx.lineTo(w*0.5,mY);ctx.lineTo(w*0.5+mW/2,mY+fL);ctx.lineTo(w*0.5+mW,mY);ctx.closePath();ctx.fill()}if(m>0.25){const ht=clamp((m-0.25)/0.75,0,1),hh=ht*22,hw=ht*7;ctx.fillStyle=rgba(lerp(200,130,m)|0,lerp(40,0,m)|0,lerp(40,0,m)|0,1);ctx.shadowColor=rgba(255,30,0,0.6);ctx.shadowBlur=4+ht*8;ctx.beginPath();ctx.moveTo(w*0.2,0);ctx.lineTo(w*0.2-hw*0.6,-hh);ctx.lineTo(w*0.2+hw,0);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(w*0.8,0);ctx.lineTo(w*0.8+hw*0.6,-hh);ctx.lineTo(w*0.8-hw,0);ctx.closePath();ctx.fill();ctx.shadowBlur=0}if(m>0.6){const wt=clamp((m-0.6)/0.4,0,1),ws=wt*50,fl=Math.sin(pl.tailWag*2)*(pl.onGround?0:8)*wt;ctx.fillStyle=rgba(100,0,0,0.6+wt*0.3);ctx.shadowColor='rgba(255,0,0,0.3)';ctx.shadowBlur=10*wt;ctx.beginPath();ctx.moveTo(0,h*0.3);ctx.bezierCurveTo(-ws,h*0.1+fl,-ws*0.7,h*0.5+fl,0,h*0.7);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(w,h*0.3);ctx.bezierCurveTo(w+ws,h*0.1+fl,w+ws*0.7,h*0.5+fl,w,h*0.7);ctx.closePath();ctx.fill();ctx.shadowBlur=0}if(m>0.45){const tt=clamp((m-0.45)/0.55,0,1),tw=frame*0.07;ctx.strokeStyle=rgba(150,0,0,tt);ctx.lineWidth=2+tt*2;ctx.lineCap='round';ctx.shadowColor='rgba(255,0,0,0.4)';ctx.shadowBlur=6*tt;ctx.beginPath();ctx.moveTo(w*0.5,h);ctx.bezierCurveTo(w*0.5+Math.sin(tw)*15*tt,h+10+tt*15,w*0.5+Math.sin(tw*0.7+1)*20*tt,h+20+tt*20,w*0.5+Math.sin(tw*0.5+2)*8*tt,h+28+tt*10);ctx.stroke();ctx.shadowBlur=0}ctx.restore();if(pl.dead&&pl.deathTimer<30){ctx.save();ctx.globalAlpha=1-pl.deathTimer/30;ctx.fillStyle='rgba(255,80,0,0.4)';ctx.fillRect(sx-20,sy-20,w+40,h+40);ctx.restore()}}
-function drawEndAnimation(){if(!gameEnded)return;endAnimTimer++;const t=clamp(endAnimTimer/120,0,1);const sx=pl.x-scrollX,sy=pl.y,r=t*W*0.8;const fg=ctx.createRadialGradient(sx,sy,0,sx,sy,r);fg.addColorStop(0,`rgba(255,100,0,${0.5*t})`);fg.addColorStop(0.4,`rgba(255,20,0,${0.3*t})`);fg.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=fg;ctx.fillRect(0,0,W,H);if(endAnimTimer>90)document.getElementById('end-screen').classList.add('show')}
 
-// ═══ HUD ═══
-const zoneColors=['#7fff44','#ffcc44','#cc88ff','#ff4400','#cc0000'],zoneLabels=['village','wasteland','purgatory','hellscape','abyss'];
-function updateHUD(){const z=zoneAt(songProgress);document.getElementById('progress-bar-fill').style.width=(songProgress*100)+'%';document.getElementById('progress-bar-fill').style.background=zoneColors[z];document.getElementById('progress-label').textContent=zoneLabels[z];document.getElementById('rewind-btn').classList.toggle('active',rewindHeld)}
-
-// ═══ MAIN LOOP ═══
-let gameRunning=false;
-function loop(){
-  if(!gameRunning)return;requestAnimationFrame(loop);
-  const prog=songProgress,zc=getZoneColor(prog);
-  if(!gameEnded){
-    if(rewindHeld&&history.length>0){if(!rewinding){rewinding=true;rewindFrameCount=0}rewindFrameCount++;if(rewindFrameCount%REWIND_RATE===0)popHistory()}
-    else{if(rewinding)rewinding=false}
-    if(!rewinding&&!pl.dead){pushHistory();updatePlatforms();physicsUpdate();updateCamera();frame++}
-    else if(!rewinding&&pl.dead)pl.deathTimer++;
-    updateSongFromScroll();if(songProgress>=0.98&&!gameEnded)gameEnded=true}
-  drawBg(prog,zc);drawStory(prog);drawBgElements();drawGround(prog,zc);drawPlatforms();drawLava(prog);drawPlayer();drawMobileHint();
-  if(gameEnded)drawEndAnimation();updateHUD();audioTick();
-  if(pl.dead&&pl.deathTimer>40&&!rewinding)document.getElementById('death-screen').classList.add('show');
+function drawBgElements() {
+  bgElements.forEach(el => {
+    const sx = el.x - scrollX;
+    if (sx + el.w < -10 || sx > W + 10) return;
+    const zc = getZoneColor(el.prog);
+    ctx.save(); ctx.globalAlpha = 0.5 + el.prog * 0.2;
+    if (el.type === 'house') {
+      ctx.fillStyle = rgba(...zc.gnd, 1);
+      ctx.fillRect(sx, el.y + el.h*0.4, el.w, el.h*0.6);
+      ctx.beginPath(); ctx.moveTo(sx - 5, el.y + el.h*0.4);
+      ctx.lineTo(sx + el.w*0.5, el.y); ctx.lineTo(sx + el.w + 5, el.y + el.h*0.4);
+      ctx.closePath(); ctx.fillStyle = rgba(...lerpC(zc.plt, zc.gnd, 0.4), 1); ctx.fill();
+      ctx.fillStyle = rgba(220,200,120,0.6);
+      ctx.fillRect(sx + el.w*0.3, el.y + el.h*0.55, el.w*0.25, el.h*0.25);
+    } else if (el.type === 'tree') {
+      ctx.fillStyle = rgba(80,50,20,1);
+      ctx.fillRect(sx + el.w*0.35, el.y + el.h*0.4, el.w*0.3, el.h*0.6);
+      ctx.beginPath(); ctx.arc(sx + el.w*0.5, el.y + el.h*0.35, el.w*1.1, 0, Math.PI*2);
+      ctx.fillStyle = rgba(...zc.acc, 0.85); ctx.fill();
+    } else if (el.type === 'deadtree') {
+      ctx.fillStyle = rgba(60,45,30,1);
+      ctx.fillRect(sx, el.y + el.h*0.55, el.w*0.3, el.h*0.45);
+      ctx.strokeStyle = rgba(60,45,30,1); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(sx + el.w*0.15, el.y + el.h*0.55);
+      ctx.lineTo(sx - 15, el.y + el.h*0.2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(sx + el.w*0.15, el.y + el.h*0.4);
+      ctx.lineTo(sx + 20, el.y + el.h*0.1); ctx.stroke();
+    } else if (el.type === 'rock') {
+      ctx.fillStyle = rgba(...lerpC(zc.gnd, zc.plt, 0.3), 1);
+      ctx.beginPath(); ctx.ellipse(sx+el.w*0.5, el.y+el.h*0.6, el.w*0.5, el.h*0.4, 0, 0, Math.PI*2); ctx.fill();
+    } else if (el.type === 'pillar') {
+      ctx.fillStyle = rgba(...lerpC(zc.gnd, [60,40,70], 0.5), 0.7);
+      ctx.fillRect(sx, el.y, el.w, el.h);
+      ctx.fillStyle = rgba(...zc.acc, 0.3); ctx.fillRect(sx, el.y, el.w, 6);
+    } else if (el.type === 'spike') {
+      ctx.fillStyle = rgba(...zc.gnd, 0.9);
+      ctx.beginPath(); ctx.moveTo(sx, el.y+el.h); ctx.lineTo(sx+el.w*0.5, el.y);
+      ctx.lineTo(sx+el.w, el.y+el.h); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  });
 }
 
-// ═══ BOOT ═══
-function startGame(){seedPlatforms();seedBgElements();resetPlayer();history=[];scrollX=0;camX=0;frame=0;score=0;scrubTargetSample=0;scrubCurrentSample=0;scrubRate=0;prevTargetSample=0;gameEnded=false;endAnimTimer=0;document.getElementById('death-screen').classList.remove('show');document.getElementById('end-screen').classList.remove('show');document.getElementById('hud').classList.add('on');gameRunning=true;loop()}
+function drawGround(prog, zc) {
+  const eGY = GY - lavaRise(prog);
+  ctx.fillStyle = rgba(...zc.gnd, 1); ctx.fillRect(0, eGY, W, H - eGY + 5);
+  ctx.fillStyle = rgba(...zc.acc, 0.3); ctx.fillRect(0, eGY, W, 3);
+}
 
-// ═══ TOUCH ═══
-canvas.addEventListener('touchstart',onTouch,{passive:false});canvas.addEventListener('touchend',onTouchEnd,{passive:false});canvas.addEventListener('touchmove',onTouch,{passive:false});
-function getTouchZone(x){if(x<W*0.30)return'left';if(x>W*0.70)return'right';return'jump'}
-function onTouch(e){e.preventDefault();touchState.left=false;touchState.right=false;touchState.jump=false;for(const t of e.touches){const z=getTouchZone(t.clientX);if(z==='left')touchState.left=true;if(z==='right')touchState.right=true;if(z==='jump')touchState.jump=true}}
-function onTouchEnd(e){e.preventDefault();touchState.left=false;touchState.right=false;touchState.jump=false;for(const t of e.touches){const z=getTouchZone(t.clientX);if(z==='left')touchState.left=true;if(z==='right')touchState.right=true;if(z==='jump')touchState.jump=true}}
-function drawMobileHint(){ctx.save();ctx.globalAlpha=0.04;ctx.fillStyle='#fff';ctx.fillRect(0,0,W*0.30,H);ctx.fillRect(W*0.70,0,W*0.30,H);ctx.globalAlpha=0.025;ctx.fillRect(W*0.30,0,W*0.40,H);ctx.globalAlpha=0.15;ctx.font='bold 14px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.fillText('◄',W*0.15,H*0.92);ctx.fillText('JUMP',W*0.5,H*0.92);ctx.fillText('►',W*0.85,H*0.92);ctx.restore()}
+function drawLava(prog) {
+  lavaPhase += 0.018 + energy*0.025 + bassE*0.015;
+  const lR = lavaRise(prog), lY = GY - lR;
+  const danger = clamp((prog - 0.15) / 0.85, 0, 1);
+  const gH = clamp(50 + danger*120 + bassE*50, 40, 200);
 
-// ═══ REWIND BUTTONS ═══
-function setRewindHeld(v){rewindHeld=v;document.getElementById('rewind-btn').classList.toggle('active',v);document.getElementById('death-rewind-btn').classList.toggle('active',v)}
-const drb=document.getElementById('death-rewind-btn');
-drb.addEventListener('mousedown',e=>{e.preventDefault();document.getElementById('death-screen').classList.remove('show');setRewindHeld(true)});
-drb.addEventListener('touchstart',e=>{e.preventDefault();document.getElementById('death-screen').classList.remove('show');setRewindHeld(true)},{passive:false});
-addEventListener('mouseup',()=>{if(rewindHeld)setRewindHeld(false)});
-addEventListener('touchend',e=>{if(rewindHeld&&e.touches.length===0)setRewindHeld(false)});
-const rwb=document.getElementById('rewind-btn');
-rwb.addEventListener('mousedown',e=>{e.preventDefault();setRewindHeld(true)});
-rwb.addEventListener('touchstart',e=>{e.preventDefault();setRewindHeld(true)},{passive:false});
-document.getElementById('retry-btn').addEventListener('click',()=>{document.getElementById('death-screen').classList.remove('show');resetPlayer();history=[];scrollX=0;camX=0;scrubTargetSample=0;scrubCurrentSample=0;scrubRate=0;prevTargetSample=0;seedPlatforms()});
-document.getElementById('end-rewind').addEventListener('click',()=>{document.getElementById('end-screen').classList.remove('show');gameEnded=false;endAnimTimer=0;while(history.length>0)popHistory();seedPlatforms();resetPlayer();scrollX=0;camX=0});
+  const lg = ctx.createLinearGradient(0, lY - gH, 0, lY);
+  lg.addColorStop(0, 'rgba(255,40,0,0)');
+  lg.addColorStop(0.6, `rgba(255,60,0,${0.04 + danger*0.18})`);
+  lg.addColorStop(1, `rgba(255,120,0,${0.2 + danger*0.4})`);
+  ctx.fillStyle = lg; ctx.fillRect(0, lY - gH, W, gH);
 
-document.getElementById('start-btn').addEventListener('click',async()=>{
-  const btn=document.getElementById('start-btn'),pw=document.getElementById('prog-wrap'),pf=document.getElementById('prog-fill'),lt=document.getElementById('load-txt');
-  btn.style.display='none';pw.style.display='block';lt.style.display='block';lt.textContent='loading song...';
-  try{    const res=await fetch('https://yoobalandgame.com/hmm.mp3');const total=parseInt(res.headers.get('Content-Length')||'0');const reader=res.body.getReader();let received=0;const chunks=[];
-    while(true){const{done,value}=await reader.read();if(done)break;chunks.push(value);received+=value.length;if(total)pf.style.width=Math.min(95,received/total*100)+'%'}
-    pf.style.width='97%';lt.textContent='decoding...';const blob=new Blob(chunks,{type:'audio/mpeg'}),ab=await blob.arrayBuffer();
-    audioCtx=new(AudioContext||webkitAudioContext)();if(audioCtx.state==='suspended')await audioCtx.resume();
-    analyser=audioCtx.createAnalyser();analyser.fftSize=256;freqLen=analyser.frequencyBinCount;freqData=new Uint8Array(freqLen);smoothBins=new Array(freqLen).fill(0);
-    decodedBuffer=await audioCtx.decodeAudioData(ab);songDuration=decodedBuffer.duration;
-    pf.style.width='100%';lt.textContent='ready';
-    WORLD_WIDTH=Math.ceil(MOVE_SPD*60*songDuration);
+  ctx.beginPath(); ctx.moveTo(-1, lY);
+  for (let i = 0; i <= 80; i++) {
+    const lx = (i/80) * W, wx = lx + scrollX * 0.25;
+    ctx.lineTo(lx, lY + Math.sin(wx*0.01 + lavaPhase)*7 + Math.sin(wx*0.022 + lavaPhase*1.6)*4 + bassE*Math.sin(wx*0.007+frame*0.06)*12*danger);
+  }
+  ctx.lineTo(W+1, H); ctx.lineTo(-1, H); ctx.closePath();
+  const lG = ctx.createLinearGradient(0, lY, 0, H);
+  lG.addColorStop(0, '#ff5500'); lG.addColorStop(0.25, '#ff2200'); lG.addColorStop(1, '#660000');
+  ctx.fillStyle = lG; ctx.fill();
+
+  ctx.save(); ctx.globalAlpha = 0.12 + beat*0.18;
+  ctx.strokeStyle = '#ffcc00'; ctx.lineWidth = 1.5;
+  for (let i = 0; i < 6; i++) {
+    const lx = ((frame*1.1 + i*130) % (W+120)) - 60;
+    ctx.beginPath(); ctx.moveTo(lx, lY+3); ctx.lineTo(lx+50, lY+3); ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.globalAlpha = 0.04 + danger*0.07 + Math.sin(frame*0.03)*0.02;
+  ctx.fillStyle = '#ff8800';
+  ctx.font = `bold ${clamp(W*0.055,28,64)}px 'Bebas Neue',sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('ROCK BOTTOM', W/2, lY + 38 + Math.sin(frame*0.025)*5);
+  ctx.restore();
+}
+
+function drawPlatforms() {
+  platforms.forEach(p => {
+    const sx = p.x - scrollX;
+    if (sx + p.w < -10 || sx > W + 10) return;
+    const vy = p.visualY;
+    const pzc = getZoneColor(p.prog || 0);
+    const popSc = Math.min(1, (frame - p.born) / 7);
+
+    ctx.save();
+    ctx.translate(sx + p.w*0.5, vy); ctx.scale(popSc, 1); ctx.translate(-p.w*0.5, 0);
+
+    const gH = 30 + bassE*25;
+    const ug = ctx.createLinearGradient(0, 0, 0, gH);
+    ug.addColorStop(0, rgba(...pzc.plt, 0.5)); ug.addColorStop(1, rgba(...pzc.plt, 0));
+    ctx.fillStyle = ug; ctx.fillRect(-6, 0, p.w+12, gH);
+
+    ctx.shadowColor = rgba(...pzc.plt, 1);
+    ctx.shadowBlur = 8 + energy*10 + beat*12;
+    ctx.fillStyle = rgba(...pzc.plt, 0.9);
+    ctx.fillRect(0, 0, p.w, p.h);
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fillRect(0, 0, p.w, 2);
+
+    if (p.prog < 0.15) {
+      ctx.fillStyle = rgba(...pzc.acc, 0.8); ctx.fillRect(0, -3, p.w, 3);
+    } else if (p.prog > 0.65) {
+      ctx.strokeStyle = rgba(0,0,0,0.4); ctx.lineWidth = 1;
+      const cr = Math.floor(p.w / 25);
+      for (let i = 1; i < cr; i++) {
+        const cx = p.w * i / cr;
+        ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx+4, p.h); ctx.stroke();
+      }
+    }
+    ctx.restore();
+  });
+}
+
+function drawPlayer() {
+  if (pl.dead && pl.deathTimer > 30) return;
+  if (cinematicRewind) {
+    // Draw a ghostly player during cinematic rewind
+    const sx = pl.x - scrollX, sy = pl.y;
+    ctx.save();
+    ctx.globalAlpha = 0.4 + Math.sin(frame * 0.1) * 0.2;
+    ctx.fillStyle = rgba(200, 200, 180, 0.7);
+    ctx.shadowColor = 'rgba(255,200,0,0.6)'; ctx.shadowBlur = 20;
+    ctx.beginPath();
+    ctx.moveTo(sx + pl.w*0.1, sy + pl.h); ctx.lineTo(sx, sy + pl.h*0.6);
+    ctx.lineTo(sx, sy + pl.h*0.2); ctx.lineTo(sx + pl.w*0.5, sy);
+    ctx.lineTo(sx + pl.w, sy + pl.h*0.2); ctx.lineTo(sx + pl.w, sy + pl.h*0.6);
+    ctx.lineTo(sx + pl.w*0.9, sy + pl.h); ctx.closePath(); ctx.fill();
+    ctx.shadowBlur = 0;
+    // Eyes
+    ctx.fillStyle = 'rgba(100,255,150,0.8)';
+    ctx.beginPath(); ctx.arc(sx + pl.w*0.3, sy + pl.h*0.28, 3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(sx + pl.w*0.7, sy + pl.h*0.28, 3, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+    return;
+  }
+
+  const m = pl.morph, sx = pl.x - scrollX, sy = pl.y, w = pl.w, h = pl.h;
+  ctx.save();
+  ctx.translate(sx + w*0.5, sy + h*0.5);
+  ctx.scale(pl.squishX / pl.squishY, pl.squishY);
+  ctx.translate(-w*0.5, -h*0.5);
+
+  const bR = lerp(240,200,m)|0, bG = lerp(235,10,m)|0, bB = lerp(225,10,m)|0;
+  ctx.shadowColor = m < 0.3 ? 'rgba(255,255,200,0.4)' : rgba(255, lerp(200,30,m)|0, 0, 0.8);
+  ctx.shadowBlur = 8 + m*30 + beat*15;
+  ctx.fillStyle = rgba(bR, bG, bB, 1);
+  const bto = lerp(0, 4, m);
+  ctx.beginPath();
+  ctx.moveTo(w*0.1, h); ctx.lineTo(0, h*0.6); ctx.lineTo(0, h*0.2 + bto);
+  ctx.lineTo(w*0.5, 0); ctx.lineTo(w, h*0.2 + bto); ctx.lineTo(w, h*0.6);
+  ctx.lineTo(w*0.9, h); ctx.closePath(); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  const eyeY = h*0.28, eyeR = lerp(2.5,5,m), eyeS = lerp(w*0.25, w*0.2, m);
+  ctx.fillStyle = m < 0.3 ? rgba(60,40,20,1) : rgba(255, lerp(200,20,m)|0, 0, 1);
+  if (m > 0.3) { ctx.shadowColor = rgba(255,50,0,1); ctx.shadowBlur = 8+m*10 }
+  ctx.beginPath(); ctx.arc(w*0.5 - eyeS, eyeY, eyeR, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(w*0.5 + eyeS, eyeY, eyeR, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  if (m < 0.5) {
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath(); ctx.arc(w*0.5 - eyeS + 1, eyeY - 1, 1, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w*0.5 + eyeS + 1, eyeY - 1, 1, 0, Math.PI*2); ctx.fill();
+  }
+
+  const mY = h * 0.55, mW = lerp(5, 9, m);
+  if (m < 0.4) {
+    ctx.strokeStyle = rgba(60,40,20,1); ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(w*0.5, mY, mW, 0.1*Math.PI, 0.9*Math.PI); ctx.stroke();
+  } else {
+    ctx.fillStyle = rgba(255,255,255,0.9);
+    const fL = lerp(0, 5, clamp((m-0.4)/0.6, 0, 1));
+    ctx.beginPath();
+    ctx.moveTo(w*0.5-mW, mY); ctx.lineTo(w*0.5-mW/2, mY+fL); ctx.lineTo(w*0.5, mY);
+    ctx.lineTo(w*0.5+mW/2, mY+fL); ctx.lineTo(w*0.5+mW, mY); ctx.closePath(); ctx.fill();
+  }
+
+  // Horns
+  if (m > 0.25) {
+    const ht = clamp((m-0.25)/0.75, 0, 1), hh = ht*22, hw = ht*7;
+    ctx.fillStyle = rgba(lerp(200,130,m)|0, lerp(40,0,m)|0, lerp(40,0,m)|0, 1);
+    ctx.shadowColor = rgba(255,30,0,0.6); ctx.shadowBlur = 4 + ht*8;
+    ctx.beginPath(); ctx.moveTo(w*0.2, 0); ctx.lineTo(w*0.2-hw*0.6, -hh); ctx.lineTo(w*0.2+hw, 0); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(w*0.8, 0); ctx.lineTo(w*0.8+hw*0.6, -hh); ctx.lineTo(w*0.8-hw, 0); ctx.closePath(); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // Wings
+  if (m > 0.6) {
+    const wt = clamp((m-0.6)/0.4, 0, 1), ws = wt*50;
+    const fl = Math.sin(pl.tailWag*2) * (pl.onGround ? 0 : 8) * wt;
+    ctx.fillStyle = rgba(100,0,0, 0.6+wt*0.3);
+    ctx.shadowColor = 'rgba(255,0,0,0.3)'; ctx.shadowBlur = 10*wt;
+    ctx.beginPath(); ctx.moveTo(0, h*0.3);
+    ctx.bezierCurveTo(-ws, h*0.1+fl, -ws*0.7, h*0.5+fl, 0, h*0.7); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(w, h*0.3);
+    ctx.bezierCurveTo(w+ws, h*0.1+fl, w+ws*0.7, h*0.5+fl, w, h*0.7); ctx.closePath(); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // Tail
+  if (m > 0.45) {
+    const tt = clamp((m-0.45)/0.55, 0, 1), tw = frame*0.07;
+    ctx.strokeStyle = rgba(150,0,0,tt); ctx.lineWidth = 2+tt*2; ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(255,0,0,0.4)'; ctx.shadowBlur = 6*tt;
+    ctx.beginPath(); ctx.moveTo(w*0.5, h);
+    ctx.bezierCurveTo(w*0.5+Math.sin(tw)*15*tt, h+10+tt*15, w*0.5+Math.sin(tw*0.7+1)*20*tt, h+20+tt*20, w*0.5+Math.sin(tw*0.5+2)*8*tt, h+28+tt*10);
+    ctx.stroke(); ctx.shadowBlur = 0;
+  }
+
+  ctx.restore();
+
+  if (pl.dead && pl.deathTimer < 30) {
+    ctx.save(); ctx.globalAlpha = 1 - pl.deathTimer / 30;
+    ctx.fillStyle = 'rgba(255,80,0,0.4)';
+    ctx.fillRect(sx - 20, sy - 20, w + 40, h + 40);
+    ctx.restore();
+  }
+}
+
+function drawEndAnimation() {
+  if (!gameEnded) return;
+  endAnimTimer++;
+  const t = clamp(endAnimTimer / 120, 0, 1);
+  const sx = pl.x - scrollX, sy = pl.y;
+  const r = t * W * 0.8;
+  const fg = ctx.createRadialGradient(sx, sy, 0, sx, sy, r);
+  fg.addColorStop(0, `rgba(255,100,0,${0.5*t})`);
+  fg.addColorStop(0.4, `rgba(255,20,0,${0.3*t})`);
+  fg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
+  if (endAnimTimer > 90) document.getElementById('end-screen').classList.add('show');
+}
+
+// Cinematic rewind overlay effect
+function drawCinematicRewindEffect() {
+  if (!cinematicRewind) return;
+
+  // Golden time-rewind aura
+  const t = Math.sin(cinematicRewindTimer * 0.05) * 0.5 + 0.5;
+  ctx.save();
+  ctx.globalAlpha = 0.08 + t * 0.06;
+  ctx.fillStyle = 'rgba(255,200,0,1)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+
+  // VHS-style scan lines
+  ctx.save();
+  ctx.globalAlpha = 0.04;
+  for (let y = 0; y < H; y += 3) {
+    ctx.fillStyle = y % 6 === 0 ? 'rgba(255,200,0,0.1)' : 'rgba(0,0,0,0.05)';
+    ctx.fillRect(0, y, W, 1);
+  }
+  ctx.restore();
+
+  // "REWINDING" text
+  const pulse = 0.6 + Math.sin(cinematicRewindTimer * 0.08) * 0.4;
+  storyCaption('⟲  R E W I N D I N G  ⟲', W*0.5, H*0.9, pulse * 0.7, clamp(W*0.035, 16, 32), 'rgba(255,200,0,0.8)');
+}
+
+function drawMobileHint() {
+  if (!isTouchDevice) return;
+  ctx.save();
+
+  // Show drag direction feedback when actively moving
+  if (moveTouchId !== null) {
+    const dx = moveCurrentX - moveStartX;
+    const absDx = Math.abs(dx);
+
+    // Origin ring (faint)
+    ctx.globalAlpha = 0.1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(moveStartX, H * 0.5, MOVE_DEADZONE, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Direction arrow when past deadzone
+    if (absDx > MOVE_DEADZONE) {
+      const dir = dx > 0 ? 1 : -1;
+      const intensity = clamp(absDx / 120, 0.15, 0.55);
+
+      // Arrow line from origin
+      ctx.globalAlpha = intensity * 0.6;
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(moveStartX + dir * MOVE_DEADZONE, H * 0.5);
+      ctx.lineTo(moveStartX + dx * 0.4, H * 0.5);
+      ctx.stroke();
+
+      // Arrow head
+      const tipX = moveStartX + dx * 0.4;
+      ctx.globalAlpha = intensity * 0.8;
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 22px IBM Plex Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(dir > 0 ? '►' : '◄', tipX + dir * 14, H * 0.5 + 7);
+    }
+  }
+
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+//  HUD
+// ═══════════════════════════════════════════════
+const zoneColors = ['#7fff44','#ffcc44','#cc88ff','#ff4400','#cc0000'];
+const zoneLabels = ['verdana','wasteland','purgatory','hellscape','abyss'];
+
+function updateHUD() {
+  const z = zoneAt(songProgress);
+  document.getElementById('progress-bar-fill').style.width = (songProgress * 100) + '%';
+  document.getElementById('progress-bar-fill').style.background = zoneColors[z];
+  document.getElementById('progress-label').textContent = zoneLabels[z];
+  document.getElementById('rewind-btn').classList.toggle('active', rewindHeld);
+}
+
+// ═══════════════════════════════════════════════
+//  MAIN LOOP
+// ═══════════════════════════════════════════════
+let gameRunning = false;
+
+function loop() {
+  if (!gameRunning) return;
+  requestAnimationFrame(loop);
+
+  const prog = songProgress;
+  const zc = getZoneColor(prog);
+
+  if (cinematicRewind) {
+    updateCinematicRewind();
+    frame++;
+  } else if (!gameEnded) {
+    if (rewindHeld && history.length > 0) {
+      if (!rewinding) { rewinding = true; rewindFrameCount = 0 }
+      rewindFrameCount++;
+      if (rewindFrameCount % REWIND_RATE === 0) popHistory();
+    } else {
+      if (rewinding) rewinding = false;
+    }
+
+    if (!rewinding && !pl.dead) {
+      pushHistory(); updatePlatforms(); physicsUpdate(); updateCamera(); frame++;
+    } else if (!rewinding && pl.dead) {
+      pl.deathTimer++;
+    }
+
+    updateSongFromScroll();
+    if (songProgress >= 0.98 && !gameEnded) gameEnded = true;
+  }
+
+  drawBg(prog, zc);
+  drawStory(prog);
+  drawBgElements();
+  drawGround(prog, zc);
+  drawPlatforms();
+  drawLava(prog);
+  drawPlayer();
+  drawMobileHint();
+  drawCinematicRewindEffect();
+
+  if (gameEnded && !cinematicRewind) drawEndAnimation();
+  updateHUD();
+  audioTick();
+
+  if (pl.dead && pl.deathTimer > 40 && !rewinding && !cinematicRewind)
+    document.getElementById('death-screen').classList.add('show');
+}
+
+// ═══════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════
+function startGame() {
+  seedPlatforms(); seedBgElements(); resetPlayer();
+  history = []; scrollX = 0; camX = 0; frame = 0; score = 0;
+  scrubTargetSample = 0; scrubCurrentSample = 0; scrubRate = 0; prevTargetSample = 0;
+  gameEnded = false; endAnimTimer = 0; cinematicRewind = false;
+  document.getElementById('death-screen').classList.remove('show');
+  document.getElementById('end-screen').classList.remove('show');
+  document.getElementById('restored-screen').classList.remove('show');
+  document.getElementById('hud').classList.add('on');
+  gameRunning = true;
+  loop();
+}
+
+// ═══════════════════════════════════════════════
+//  TOUCH CONTROLS
+// ═══════════════════════════════════════════════
+// ─── MOBILE: Drag-to-move + Jump button ───
+let moveTouchId = null;
+let moveStartX = 0;
+let moveCurrentX = 0;
+const MOVE_DEADZONE = 18;
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+if (isTouchDevice) {
+  document.getElementById('jump-btn').style.display = 'flex';
+  document.getElementById('move-indicator').style.display = 'block';
+}
+
+// Jump button (HTML element, captures its own touches)
+const jumpBtnEl = document.getElementById('jump-btn');
+jumpBtnEl.addEventListener('touchstart', e => {
+  e.preventDefault();
+  e.stopPropagation();
+  touchState.jump = true;
+  jumpBtnEl.classList.add('active');
+}, { passive: false });
+jumpBtnEl.addEventListener('touchend', e => {
+  e.preventDefault();
+  e.stopPropagation();
+  touchState.jump = false;
+  jumpBtnEl.classList.remove('active');
+}, { passive: false });
+jumpBtnEl.addEventListener('touchcancel', () => {
+  touchState.jump = false;
+  jumpBtnEl.classList.remove('active');
+});
+
+// Canvas drag-to-move
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (moveTouchId === null) {
+      moveTouchId = t.identifier;
+      moveStartX = t.clientX;
+      moveCurrentX = t.clientX;
+    }
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (t.identifier === moveTouchId) {
+      moveCurrentX = t.clientX;
+      const dx = moveCurrentX - moveStartX;
+      touchState.left = dx < -MOVE_DEADZONE;
+      touchState.right = dx > MOVE_DEADZONE;
+    }
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchend', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (t.identifier === moveTouchId) {
+      moveTouchId = null;
+      touchState.left = false;
+      touchState.right = false;
+    }
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchcancel', () => {
+  moveTouchId = null;
+  touchState.left = false;
+  touchState.right = false;
+});
+
+// ═══════════════════════════════════════════════
+//  REWIND BUTTONS
+// ═══════════════════════════════════════════════
+function setRewindHeld(v) {
+  rewindHeld = v;
+  document.getElementById('rewind-btn').classList.toggle('active', v);
+  document.getElementById('death-rewind-btn').classList.toggle('active', v);
+}
+
+const drb = document.getElementById('death-rewind-btn');
+drb.addEventListener('mousedown', e => {
+  e.preventDefault();
+  document.getElementById('death-screen').classList.remove('show');
+  setRewindHeld(true);
+});
+drb.addEventListener('touchstart', e => {
+  e.preventDefault();
+  document.getElementById('death-screen').classList.remove('show');
+  setRewindHeld(true);
+}, { passive: false });
+
+addEventListener('mouseup', () => { if (rewindHeld) setRewindHeld(false) });
+addEventListener('touchend', e => { if (rewindHeld && e.touches.length === 0) setRewindHeld(false) });
+
+const rwb = document.getElementById('rewind-btn');
+rwb.addEventListener('mousedown', e => { e.preventDefault(); setRewindHeld(true) });
+rwb.addEventListener('touchstart', e => { e.preventDefault(); setRewindHeld(true) }, { passive: false });
+
+document.getElementById('retry-btn').addEventListener('click', () => {
+  document.getElementById('death-screen').classList.remove('show');
+  resetPlayer(); history = []; scrollX = 0; camX = 0;
+  scrubTargetSample = 0; scrubCurrentSample = 0; scrubRate = 0; prevTargetSample = 0;
+  seedPlatforms();
+});
+
+// END REWIND — starts cinematic reverse playback
+document.getElementById('end-rewind').addEventListener('click', () => {
+  startCinematicRewind();
+});
+
+// ═══════════════════════════════════════════════
+//  LOAD & START
+// ═══════════════════════════════════════════════
+document.getElementById('start-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('start-btn');
+  const pw = document.getElementById('prog-wrap');
+  const pf = document.getElementById('prog-fill');
+  const lt = document.getElementById('load-txt');
+
+  btn.style.display = 'none'; pw.style.display = 'block';
+  lt.style.display = 'block'; lt.textContent = 'loading song...';
+
+  try {
+    const res = await fetch('https://yoobalandgame.com/hmm.mp3');
+    const total = parseInt(res.headers.get('Content-Length') || '0');
+    const reader = res.body.getReader();
+    let received = 0;
+    const chunks = [];
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value); received += value.length;
+      if (total) pf.style.width = Math.min(95, received / total * 100) + '%';
+    }
+
+    pf.style.width = '97%'; lt.textContent = 'decoding...';
+    const blob = new Blob(chunks, { type: 'audio/mpeg' });
+    const ab = await blob.arrayBuffer();
+
+    audioCtx = new (AudioContext || webkitAudioContext)();
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+    analyser = audioCtx.createAnalyser(); analyser.fftSize = 256;
+    freqLen = analyser.frequencyBinCount;
+    freqData = new Uint8Array(freqLen);
+    smoothBins = new Array(freqLen).fill(0);
+
+    decodedBuffer = await audioCtx.decodeAudioData(ab);
+    songDuration = decodedBuffer.duration;
+
+    pf.style.width = '100%'; lt.textContent = 'ready';
+    WORLD_WIDTH = Math.ceil(MOVE_SPD * 60 * songDuration);
+
     initScrubAudio();
-    document.getElementById('overlay').classList.add('gone');setTimeout(()=>document.getElementById('overlay').style.display='none',900);
+
+    document.getElementById('overlay').classList.add('gone');
+    setTimeout(() => document.getElementById('overlay').style.display = 'none', 900);
     startGame();
-  }catch(e){lt.textContent='error: '+e.message;btn.style.display='block';pw.style.display='none';console.error(e)}
-});</script></body></html>
+  } catch(e) {
+    lt.textContent = 'error: ' + e.message;
+    btn.style.display = 'block'; pw.style.display = 'none';
+    console.error(e);
+  }
+});
+</script>
+</body>
+</html>
