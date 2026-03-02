@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Rise</title>
+<title>Up</title>
 <style>
 @import url(https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&display=swap);
 *{margin:0;padding:0;box-sizing:border-box}
@@ -58,7 +58,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 <div id="move-hint">↕ drag to steer</div>
 
 <div id="hud">
-  <div id="hud-title">RISE</div>
+  <div id="hud-title">UP</div>
   <div id="progress-bar-wrap">
     <div id="progress-bar-fill"></div>
     <div id="progress-label">inferno</div>
@@ -68,21 +68,21 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 
 <div id="crash-screen">
   <div id="crash-msg">oh no...</div>
-  <div id="crash-sub">you lost all your hearts</div>
+  <div id="crash-sub">you didn't make it</div>
   <button id="crash-rewind-btn">⟲ hold to rewind</button>
   <button id="crash-continue">continue without hearts</button>
 </div>
 
 <div id="end-screen">
   <div id="end-title">YOU MADE IT</div>
-  <div id="end-sub">you escaped the depths and touched the sky</div>
+  <div id="end-sub">you rose above it all</div>
   <div id="end-hearts">♥ 0</div>
   <button id="end-replay">fly again</button>
 </div>
 
 <div id="overlay">
-  <div class="ov-title">RISE</div>
-  <div class="ov-sub">escape the depths<br>collect every heart<br>touch the sky</div>
+  <div class="ov-title">UP</div>
+  <div class="ov-sub">rise up<br>collect every heart<br>never look down</div>
   <div class="ov-controls">
     <b>↑ ↓</b>&nbsp; steer &nbsp;&nbsp;&nbsp;<b>→</b>&nbsp; boost<br>
     <b>drag</b>&nbsp; on mobile to fly<br>
@@ -202,8 +202,8 @@ const pl = { x:0, y:0, vx:0, vy:0, w:36, h:16, tilt:0, hearts:0, maxHearts:0,
 let scrollX = 0, camX = 0, frame = 0;
 
 function resetPlane() {
-  pl.x = 80; pl.y = H * 0.4; pl.vx = 0; pl.vy = 0; pl.tilt = 0;
-  pl.hearts = 0; pl.maxHearts = 0; pl.crashed = false; pl.crashTimer = 0; pl.invince = 0; pl.boostGlow = 0;
+  pl.x = 80; pl.y = H * 0.28; pl.vx = 0; pl.vy = 0; pl.tilt = 0;
+  pl.hearts = 0; pl.maxHearts = 0; pl.crashed = false; pl.crashTimer = 0; pl.invince = 180; pl.boostGlow = 0;
 }
 
 // ════════════════════════════════════════════
