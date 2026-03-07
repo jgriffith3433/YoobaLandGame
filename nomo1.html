@@ -606,7 +606,7 @@ let musicPlaying=false,audioBuffer=null;
 
 async function preloadAudio(){
   try{
-    const res=await fetch('http://yoobalandgame.com/nomo.mp3');
+    const res=await fetch('https://yoobalandgame.com/nomo.mp3');
     const total=parseInt(res.headers.get('content-length')||'0');
     const rdr=res.body.getReader();let rx=0;const chs=[];
     const fill=document.getElementById('load-fill');
