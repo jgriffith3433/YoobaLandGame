@@ -11,7 +11,7 @@ canvas{display:block;}
 #hint{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
   font-family:monospace;font-size:10px;letter-spacing:4px;color:rgba(255,255,255,.18);
   pointer-events:none;text-align:center;}
-#loading{position:fixed;inset:0;background:#020208;display:flex;flex-direction:column;
+#loading{position:fixed;inset:0;background:#010106;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:16px;z-index:10;}
 #loading p{font-family:monospace;font-size:9px;letter-spacing:6px;color:rgba(180,255,200,.3);}
 #load-bar{width:160px;height:1px;background:rgba(255,255,255,.07);}
@@ -30,7 +30,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.6;
+renderer.toneMappingExposure=1.2;
 document.body.appendChild(renderer.domElement);
 window.addEventListener('resize',()=>{
   renderer.setSize(innerWidth,innerHeight);
@@ -39,8 +39,8 @@ window.addEventListener('resize',()=>{
 });
 
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x040408);
-scene.fog=new THREE.Fog(0x040408,14,26);
+scene.background=new THREE.Color(0x020206);
+scene.fog=new THREE.Fog(0x020206,12,25);
 
 const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,0.1,40);
 camera.position.set(0,9.8,13.5);
@@ -52,9 +52,9 @@ const Ba=c=>new THREE.MeshBasicMaterial({color:c});
 const Em=(col,i=1.0)=>new THREE.MeshPhongMaterial({color:col,emissive:new THREE.Color(col),emissiveIntensity:i,shininess:5});
 
 // ── LIGHTS ────────────────────────────────────
-scene.add(new THREE.AmbientLight(0x2a3355,1.5));
+scene.add(new THREE.AmbientLight(0x141830,0.6));
 
-const mainL=new THREE.PointLight(0xffddaa,3.5,20);
+const mainL=new THREE.PointLight(0xffddaa,1.8,20);
 mainL.position.set(0,6.5,0);mainL.castShadow=true;
 mainL.shadow.mapSize.set(1024,1024);mainL.shadow.radius=4;
 scene.add(mainL);
@@ -62,18 +62,18 @@ scene.add(mainL);
 const rpLight=new THREE.PointLight(0xff2255,0,7);
 rpLight.position.set(-3.8,2.2,0.5);scene.add(rpLight);
 
-const lapLight=new THREE.PointLight(0x2244ff,1.4,6);
+const lapLight=new THREE.PointLight(0x2244ff,0.8,6);
 lapLight.position.set(3.6,2.2,-2.5);scene.add(lapLight);
 
-const ledL=new THREE.PointLight(0x00ffee,1.2,10);
+const ledL=new THREE.PointLight(0x00ffee,0.6,10);
 ledL.position.set(-5.5,6.2,0);scene.add(ledL);
-const ledR=new THREE.PointLight(0x9933ff,1.2,10);
+const ledR=new THREE.PointLight(0x9933ff,0.6,10);
 ledR.position.set(5.5,6.2,0);scene.add(ledR);
 
-const moonL=new THREE.PointLight(0x5577cc,1.0,9);
+const moonL=new THREE.PointLight(0x5577cc,0.7,9);
 moonL.position.set(-5.2,4.2,-1);scene.add(moonL);
 
-const signL=new THREE.PointLight(0xff44aa,0.8,5);
+const signL=new THREE.PointLight(0xff44aa,0.5,5);
 signL.position.set(-0.5,5.0,-5.2);scene.add(signL);
 
 const discoArm=new THREE.Group();
@@ -81,6 +81,20 @@ discoArm.position.set(0,5.5,-0.5);scene.add(discoArm);
 const dL1=new THREE.PointLight(0xff44cc,0,9);dL1.position.set(2.5,0,0);discoArm.add(dL1);
 const dL2=new THREE.PointLight(0x44ffcc,0,9);dL2.position.set(-2.5,0,0);discoArm.add(dL2);
 const dL3=new THREE.PointLight(0xffaa00,0,9);dL3.position.set(0,0,2.5);discoArm.add(dL3);
+
+// ── STORY LIGHTS ─────────────────────────────
+// 6 lights that turn on in sequence to tell the light story
+const SL=[];
+[{p:[0,5.5,-5.5],c:0xff44bb,r:15},   // 0 back-top pink
+ {p:[-4.5,4.5,1],c:0x44eeff,r:13},   // 1 left teal
+ {p:[4.5,4.5,1],c:0xff7700,r:13},    // 2 right amber
+ {p:[0,2.8,4.5],c:0x4455ff,r:11},    // 3 front floor blue
+ {p:[-2.5,5,3],c:0xffee00,r:12},     // 4 front-left gold
+ {p:[2.5,5,3],c:0xcc44ff,r:12},      // 5 front-right purple
+].forEach(({p,c,r})=>{
+  const l=new THREE.PointLight(c,0,r);
+  l.position.set(...p);scene.add(l);SL.push(l);
+});
 
 // ── CANVAS TEXTURES ───────────────────────────
 function makeStarTex(){
@@ -95,7 +109,6 @@ function makeStarTex(){
     c.fillStyle=`rgba(255,${180+Math.random()*75},255,${Math.random()*.7+.3})`;
     c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();
   }
-  // faint nebula wisps
   for(let i=0;i<6;i++){
     const gn=c.createRadialGradient(Math.random()*400+50,Math.random()*300+50,5,Math.random()*400+50,Math.random()*300+50,90);
     gn.addColorStop(0,`hsla(${220+Math.random()*120},80%,55%,.12)`);gn.addColorStop(1,'rgba(0,0,0,0)');
@@ -103,13 +116,11 @@ function makeStarTex(){
   }
   return new THREE.CanvasTexture(cv);
 }
-
 function makeFloorTex(){
   const cv=document.createElement('canvas');cv.width=512;cv.height=512;
   const c=cv.getContext('2d');
   for(let i=0;i<8;i++){
-    c.fillStyle=i%2===0?'#190d05':'#1f1008';
-    c.fillRect(0,i*64,512,64);
+    c.fillStyle=i%2===0?'#190d05':'#1f1008';c.fillRect(0,i*64,512,64);
     c.strokeStyle='rgba(0,0,0,.25)';c.lineWidth=1;
     c.beginPath();c.moveTo(0,i*64);c.lineTo(512,i*64);c.stroke();
     for(let j=0;j<6;j++){
@@ -119,7 +130,6 @@ function makeFloorTex(){
   }
   const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3,3);return t;
 }
-
 function makeNeonSign(txt,col){
   const cv=document.createElement('canvas');cv.width=512;cv.height=96;
   const c=cv.getContext('2d');c.clearRect(0,0,512,96);
@@ -128,7 +138,6 @@ function makeNeonSign(txt,col){
   for(let i=0;i<4;i++)c.fillText(txt,256,48);
   return new THREE.CanvasTexture(cv);
 }
-
 function makeHintTex(){
   const cv=document.createElement('canvas');cv.width=320;cv.height=56;
   const c=cv.getContext('2d');c.clearRect(0,0,320,56);
@@ -137,59 +146,49 @@ function makeHintTex(){
   c.fillText('▶  click to play',160,28);
   return new THREE.CanvasTexture(cv);
 }
-
 const starTex=makeStarTex(),floorTex=makeFloorTex();
 
 // ── ROOM ──────────────────────────────────────
-// Floor
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(12,12),
-  new THREE.MeshPhongMaterial({color:0x1a0e06,map:floorTex,shininess:65,specular:0x111108}));
+  new THREE.MeshPhongMaterial({color:0x1a0e06,map:floorTex,shininess:55,specular:0x111108}));
 floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
-
-// Rug
 const rug=new THREE.Mesh(new THREE.PlaneGeometry(6,4.5),Ph(0x1a0a28,4));
 rug.rotation.x=-Math.PI/2;rug.position.set(-0.2,0.003,1.5);scene.add(rug);
 const rugB=new THREE.Mesh(new THREE.PlaneGeometry(6.24,4.74),Ph(0x2e1240,3));
 rugB.rotation.x=-Math.PI/2;rugB.position.set(-0.2,0.002,1.5);scene.add(rugB);
-
-// Walls
-const wM=Ph(0x0b0b18,4),wM2=Ph(0x0a0b15,4);
+const wM=Ph(0x080810,4),wM2=Ph(0x070810,4);
 const bWall=new THREE.Mesh(new THREE.PlaneGeometry(12,7),wM);
 bWall.position.set(0,3.5,-6);scene.add(bWall);
 const rWall=new THREE.Mesh(new THREE.PlaneGeometry(12,7),wM2);
 rWall.rotation.y=-Math.PI/2;rWall.position.set(6,3.5,0);scene.add(rWall);
-// Left wall — split for window
 [[12,2.2,-0.5,1.1],[12,2.4,-0.5,5.9],[3.5,7,-3.925,3.5],[3.5,7,2.875,3.5]].forEach(([w,h,z,y])=>{
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),wM2);
   m.rotation.y=Math.PI/2;m.position.set(-6,y,z);scene.add(m);
 });
-const ceil=new THREE.Mesh(new THREE.PlaneGeometry(12,12),Ph(0x07070f,3));
+const ceil=new THREE.Mesh(new THREE.PlaneGeometry(12,12),Ph(0x050509,3));
 ceil.rotation.x=Math.PI/2;ceil.position.y=7;scene.add(ceil);
 
-// ── CEILING LED STRIPS ────────────────────────
-const cLedM=Em(0x00ffee,0.95),cLedM2=Em(0xaa33ff,0.95);
+// Ceiling LED strips
+const cLedM=Em(0x00ffee,0.9),cLedM2=Em(0xaa33ff,0.9);
 [{x:0,z:-5.97,w:12,d:0.05,m:cLedM},{x:0,z:5.97,w:12,d:0.05,m:cLedM2},
  {x:-5.97,z:0,w:0.05,d:12,m:cLedM},{x:5.97,z:0,w:0.05,d:12,m:cLedM2}].forEach(s=>{
   const strip=new THREE.Mesh(new THREE.BoxGeometry(s.w,0.04,s.d),s.m);
   strip.position.set(s.x,6.96,s.z);scene.add(strip);
 });
-// Under-shelf LED strip (warm, on bookshelf side)
 const shelfLed=new THREE.Mesh(new THREE.BoxGeometry(2,0.03,0.05),Em(0xff9933,0.8));
 shelfLed.position.set(-5.1,3.1,-4.8);scene.add(shelfLed);
 
-// ── SPACE WINDOW ─────────────────────────────
+// Space window
 const winW=3.2,winH=2.8,winY=3.4,winZ=0.5;
 const winPane=new THREE.Mesh(new THREE.PlaneGeometry(winW,winH),
   new THREE.MeshBasicMaterial({map:starTex}));
 winPane.rotation.y=Math.PI/2;winPane.position.set(-5.92,winY,winZ);scene.add(winPane);
-// Frame
 const fM=Ph(0x1e1410,35,0x050200,0x2a1a08);
 [[0,winH/2+0.07,winW+0.14,0.14],[0,-winH/2-0.07,winW+0.14,0.14],
- [-winW/2-0.07,0,0.14,winH],[ winW/2+0.07,0,0.14,winH]].forEach(([fx,fy,fw,fh])=>{
+ [-winW/2-0.07,0,0.14,winH],[winW/2+0.07,0,0.14,winH]].forEach(([fx,fy,fw,fh])=>{
   const fr=new THREE.Mesh(new THREE.BoxGeometry(0.12,fh,fw),fM);
   fr.position.set(-5.95,winY+fy,winZ+fx);fr.rotation.y=Math.PI/2;scene.add(fr);
 });
-// Moon visible through window
 const moonDisc=new THREE.Mesh(new THREE.CircleGeometry(0.22,24),
   new THREE.MeshBasicMaterial({color:0xddeeff}));
 moonDisc.rotation.y=Math.PI/2;moonDisc.position.set(-5.91,winY+0.55,winZ-0.9);scene.add(moonDisc);
@@ -197,19 +196,17 @@ const moonGlow=new THREE.Mesh(new THREE.CircleGeometry(0.38,24),
   new THREE.MeshBasicMaterial({color:0x7799cc,transparent:true,opacity:0.22}));
 moonGlow.rotation.y=Math.PI/2;moonGlow.position.set(-5.915,winY+0.55,winZ-0.9);scene.add(moonGlow);
 
-// ── NEON SIGN ─────────────────────────────────
+// Neon signs
 const signTex=makeNeonSign('GROOVE','#ff44bb');
 const neonSign=new THREE.Mesh(new THREE.PlaneGeometry(2.6,0.5),
   new THREE.MeshBasicMaterial({map:signTex,transparent:true}));
 neonSign.position.set(-0.5,5.0,-5.92);scene.add(neonSign);
-
-// Second smaller sign
 const sign2Tex=makeNeonSign('♪','#44ffcc');
 const neonSign2=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.5),
   new THREE.MeshBasicMaterial({map:sign2Tex,transparent:true}));
 neonSign2.position.set(2.2,4.8,-5.92);scene.add(neonSign2);
 
-// ── WALL RECORDS (decorative) ─────────────────
+// Wall records
 const recCols=[0x881122,0x114488,0x228833,0x884422,0x662288];
 for(let i=0;i<5;i++){
   const rG=new THREE.Group();rG.position.set(-3+i*1.3,3.9,-5.9);scene.add(rG);
@@ -225,24 +222,19 @@ const rpCab=new THREE.Group();rpCab.position.set(-3.8,0,0.4);scene.add(rpCab);
 const cabM=Ph(0x2e1c0a,30,0x060300,0x1a0c04);
 const cab=new THREE.Mesh(new THREE.BoxGeometry(2.1,1.2,1.0),cabM);
 cab.position.y=0.6;cab.castShadow=true;rpCab.add(cab);
-// Cabinet door panels
 const cdM=Ph(0x3e2410,22,0x090402,0x221408);
 [[-0.53,0.6,0.51],[0.53,0.6,0.51]].forEach(([x,y,z])=>{
   const cd=new THREE.Mesh(new THREE.BoxGeometry(0.98,0.88,0.022),cdM);
   cd.position.set(x,y,z);rpCab.add(cd);
-  // Door groove lines
   const groove=new THREE.Mesh(new THREE.BoxGeometry(0.88,0.78,0.005),Ph(0x281408,5));
   groove.position.set(x,y,z+0.013);rpCab.add(groove);
 });
-// Handles
 [[-0.07,0.6,0.525],[0.07,0.6,0.525]].forEach(([x,y,z])=>{
   const h=new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.065),Ph(0x998866,60,0,0x665533));
   h.rotation.z=Math.PI/2;h.position.set(x,y,z);rpCab.add(h);
 });
-// Speaker grille (back face)
 const grille=new THREE.Mesh(new THREE.BoxGeometry(1.9,0.9,0.018),Ph(0x0e0a09,6));
 grille.position.set(0,0.6,-0.51);rpCab.add(grille);
-// Legs (tapered metal)
 [[-0.85,-0.5],[-0.85,0.42],[0.85,-0.5],[0.85,0.42]].forEach(([x,z])=>{
   const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.038,0.36),Ph(0x666658,70,0,0x555548));
   leg.position.set(x,-0.18,z);rpCab.add(leg);
@@ -252,19 +244,15 @@ grille.position.set(0,0.6,-0.51);rpCab.add(grille);
 
 // ── RECORD PLAYER ─────────────────────────────
 const rpG=new THREE.Group();rpG.position.set(-3.8,1.2,0.35);scene.add(rpG);
-
 const rpBase=new THREE.Mesh(new THREE.BoxGeometry(1.52,0.1,1.08),Ph(0x2e1e0c,35,0x060300,0x1a0c04));
 rpBase.position.y=0.05;rpBase.castShadow=true;rpG.add(rpBase);
 const rpSurround=new THREE.Mesh(new THREE.BoxGeometry(1.56,0.022,1.12),Ph(0x999988,80,0,0x555548));
 rpSurround.position.y=0.111;rpG.add(rpSurround);
-
-// Platter assembly
 const platG=new THREE.Group();platG.position.set(-0.22,0.12,0.07);rpG.add(platG);
 const platBase=new THREE.Mesh(new THREE.CylinderGeometry(0.44,0.44,0.032,40),Ph(0x2a2a28,70,0,0x444440));
 platBase.castShadow=true;platG.add(platBase);
 const vinyl=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,0.024,40),Ph(0x0d0d0d,110,0,0x1e1e1c));
 vinyl.position.y=0.028;platG.add(vinyl);
-// Groove rings
 for(let r=0;r<5;r++){
   const gv=new THREE.Mesh(new THREE.CylinderGeometry(0.1+r*0.056,0.1+r*0.056,0.026,36,1,true),
     new THREE.MeshPhongMaterial({color:0x141414,shininess:130,specular:0x282826,side:THREE.BackSide}));
@@ -273,8 +261,6 @@ for(let r=0;r<5;r++){
 const vinylLabel=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,0.028,16),Ph(0xcc1133,20,0x280008));
 vinylLabel.position.y=0.03;platG.add(vinylLabel);
 const spinParts=[platBase,vinyl,vinylLabel,...platG.children.slice(2,7)];
-
-// Tonearm
 const taGrp=new THREE.Group();taGrp.position.set(0.52,0.13,-0.34);rpG.add(taGrp);
 const taPiv=new THREE.Mesh(new THREE.CylinderGeometry(0.036,0.036,0.08,10),Ph(0xaaaaaa,80,0,0x888880));
 taGrp.add(taPiv);
@@ -287,40 +273,45 @@ const taNeedle=new THREE.Mesh(new THREE.CylinderGeometry(0.006,0.003,0.044),Ph(0
 taNeedle.position.set(0,-0.028,0);taHead.add(taNeedle);
 const TA_REST=0.65,TA_PLAY=0.02;
 taSwing.rotation.y=TA_REST;
-
-// Knob + speed dots
 const knobM=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.058,12),Ph(0x555548,65,0,0x888878));
 knobM.position.set(0.58,0.09,0.22);rpG.add(knobM);
 const rpMeshes=[rpBase,rpSurround,platBase,vinyl,vinylLabel,taPiv,taArm,taHead,knobM];
-[[0xaa2020,0.32],[0x22aa44,0.18]].forEach(([c,z],i)=>{
+[[0xaa2020,0.32],[0x22aa44,0.18]].forEach(([c,z])=>{
   const b=new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.016,8),Ph(c,25));
   b.position.set(0.58,0.106,z);rpG.add(b);rpMeshes.push(b);
 });
-// Hint floating sign above record player
 const hintTex=makeHintTex();
 const hintSign=new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.28),
   new THREE.MeshBasicMaterial({map:hintTex,transparent:true,opacity:0.85,depthWrite:false}));
-hintSign.position.set(-3.8,3.1,0.35);
-scene.add(hintSign);
+hintSign.position.set(-3.8,3.1,0.35);scene.add(hintSign);
 let hintOpacity=0.85;
+
+// ── DISCO BALL GROUP (starts above ceiling) ───
+const discoGroup=new THREE.Group();
+discoGroup.position.set(0,2.0,0); // offset pushed UP, descends to 0
+scene.add(discoGroup);
+const discoBall=new THREE.Mesh(new THREE.SphereGeometry(0.32,28,20),
+  new THREE.MeshPhongMaterial({color:0x999999,specular:new THREE.Color(1,1,1),shininess:320}));
+discoBall.position.set(0.8,6.32,-0.5);discoGroup.add(discoBall);
+const dbCord=new THREE.Mesh(new THREE.CylinderGeometry(0.01,0.01,0.55),Ph(0x303030,20));
+dbCord.position.set(0.8,6.655,-0.5);discoGroup.add(dbCord);
+const dbRing=new THREE.Mesh(new THREE.TorusGeometry(0.36,0.024,8,28),
+  new THREE.MeshPhongMaterial({color:0x999999,specular:new THREE.Color(1,1,1),shininess:250}));
+dbRing.position.set(0.8,6.32,-0.5);discoGroup.add(dbRing);
 
 // ── LAPTOP DESK ───────────────────────────────
 const deskG=new THREE.Group();deskG.position.set(3.6,0,-2.2);scene.add(deskG);
 const dTop=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.06,1.5),Ph(0x211408,32,0x050200,0x180e04));
 dTop.position.y=0.92;dTop.castShadow=true;deskG.add(dTop);
-// Hairpin legs
 [[-1.1,0.92],[1.1,-0.62],[-1.1,-0.62],[1.1,0.92]].forEach(([x,z])=>{
   const ll=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.92),Ph(0x888880,80,0,0x666660));
   ll.position.set(x,0.46,z);deskG.add(ll);
 });
-
-// Laptop
 const lapG=new THREE.Group();lapG.position.set(3.6,0.95,-2.7);scene.add(lapG);
 const lapBase=new THREE.Mesh(new THREE.BoxGeometry(1.05,0.034,0.72),Ph(0x202028,65,0,0x303038));
 lapBase.castShadow=true;lapG.add(lapBase);
 const kbA=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.005,0.58),Ph(0x1a1a22,18));
 kbA.position.set(0,0.02,0.02);lapG.add(kbA);
-// Key rows (decorative)
 for(let r=0;r<4;r++)for(let k=0;k<10;k++){
   const key=new THREE.Mesh(new THREE.BoxGeometry(0.072,0.004,0.058),Ph(0x222230,10));
   key.position.set(-0.38+k*0.086,0.024,-0.2+r*0.1);lapG.add(key);
@@ -336,8 +327,6 @@ const screenFX=new THREE.Mesh(new THREE.PlaneGeometry(0.90,0.54),
   new THREE.MeshBasicMaterial({color:0x0d22aa,transparent:true,opacity:0.75}));
 screenFX.position.set(0,0.32,-0.005);lidG.add(screenFX);
 lidG.rotation.x=-1.15;
-
-// Monitor
 const monG=new THREE.Group();monG.position.set(3.6,0.95,-4.0);scene.add(monG);
 const monStandB=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.028,0.34),Ph(0x1a1a22,30));
 monStandB.position.y=0;monG.add(monStandB);
@@ -350,8 +339,6 @@ monScreen.position.set(0,1.1,-0.042);monG.add(monScreen);
 const monFX=new THREE.Mesh(new THREE.PlaneGeometry(1.84,1.02),
   new THREE.MeshBasicMaterial({color:0x0a1d48,transparent:true,opacity:0.9}));
 monFX.position.set(0,1.1,-0.044);monG.add(monFX);
-
-// Desk accessories
 const mug=new THREE.Group();mug.position.set(2.45,0.955,-1.7);scene.add(mug);
 const mugBody=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.07,0.18,16),Ph(0x2a2a38,20,0x050508));
 mugBody.position.y=0.09;mug.add(mugBody);
@@ -359,8 +346,20 @@ const mugLiq=new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.075,0.01,16),Em(0
 mugLiq.position.y=0.17;mug.add(mugLiq);
 const mugHandle=new THREE.Mesh(new THREE.TorusGeometry(0.055,0.012,6,12,Math.PI),Ph(0x2a2a38,20));
 mugHandle.position.set(0.09,0.09,0);mugHandle.rotation.y=Math.PI/2;mug.add(mugHandle);
+{const lg=new THREE.Group();lg.position.set(2.5,0.955,-1.85);scene.add(lg);
+const lb=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.16,0.04,12),Ph(0x888878,60,0,0x666658));
+lb.position.y=0.02;lg.add(lb);
+const ls1=new THREE.Mesh(new THREE.CylinderGeometry(0.016,0.016,0.52),Ph(0x888878,65,0,0x666658));
+ls1.position.set(0.04,0.3,-0.04);ls1.rotation.z=0.18;ls1.rotation.x=0.1;lg.add(ls1);
+const ls2=new THREE.Mesh(new THREE.CylinderGeometry(0.016,0.016,0.38),Ph(0x888878,65,0,0x666658));
+ls2.position.set(0.14,0.65,-0.1);ls2.rotation.z=-0.35;ls2.rotation.x=-0.15;lg.add(ls2);
+const lhead=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.09,0.24,14,1,true),Ph(0x1a1a24,18));
+lhead.position.set(0.18,0.78,-0.16);lhead.rotation.z=Math.PI*0.58;lhead.rotation.x=-0.3;lg.add(lhead);
+const deskLL=new THREE.PointLight(0xffcc55,0.9,5);
+deskLL.position.set(2.64,1.5,-2.0);scene.add(deskLL);}
 
 // ── BOOKSHELF ─────────────────────────────────
+function rI(a,b){return Math.floor(a+Math.random()*(b-a));}
 const bsG=new THREE.Group();bsG.position.set(-5.5,0,-3.5);scene.add(bsG);
 const bsBody=new THREE.Mesh(new THREE.BoxGeometry(0.38,4.5,2.2),Ph(0x1c0e06,14,0x040200));
 bsBody.position.set(0.01,2.25,0);bsG.add(bsBody);
@@ -375,22 +374,12 @@ bsCrown.position.set(0.01,4.53,0);bsG.add(bsCrown);
     const book=new THREE.Mesh(new THREE.BoxGeometry(bw,bh,0.55),Ph(bc,12));
     book.position.set(0.04,y+0.04+bh/2,-0.92+i*0.29+Math.random()*0.04);
     book.rotation.y=(Math.random()-0.5)*0.1;bsG.add(book);
-    // Spine stripe
-    const spine=new THREE.Mesh(new THREE.BoxGeometry(bw+0.001,0.022,0.56),Ph(0xffffff,5,0,0x000000));
-    spine.material.color.setHSL(Math.random(),0.4,0.7);
-    spine.position.set(0.04,y+0.04+bh-0.025,-0.92+i*0.29);bsG.add(spine);
   }
 });
-// Top shelf decor
 {const pot=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.1,0.22,12),Ph(0x8B4513,18));
 pot.position.set(0.04,4.6,0.7);bsG.add(pot);
 const plant=new THREE.Mesh(new THREE.SphereGeometry(0.2,8,6),Ph(0x1e6624,10,0x0a1e0c));
-plant.position.set(0.04,4.88,0.7);plant.scale.set(1,0.8,1);bsG.add(plant);
-for(let i=0;i<4;i++){
-  const b=new THREE.Mesh(new THREE.SphereGeometry(0.1,6,5),Ph(0x1e6624,10,0x0a1e0c));
-  b.position.set(0.04+Math.sin(i*1.6)*0.14,4.88+Math.random()*0.12,0.7+Math.cos(i*1.6)*0.14);bsG.add(b);
-}}
-function rI(a,b){return Math.floor(a+Math.random()*(b-a));}
+plant.position.set(0.04,4.88,0.7);plant.scale.set(1,0.8,1);bsG.add(plant);}
 
 // ── COUCH ─────────────────────────────────────
 const couchG=new THREE.Group();couchG.position.set(-1.2,0,4.0);scene.add(couchG);
@@ -408,16 +397,12 @@ cBack.position.set(0,0.96,-0.34);cBack.rotation.x=0.08;couchG.add(cBack);
 });
 const pillow=new THREE.Mesh(new THREE.BoxGeometry(0.56,0.24,0.44),Ph(0x2e1a55,10));
 pillow.position.set(0.95,0.78,-0.2);pillow.rotation.y=0.18;couchG.add(pillow);
-const pillow2=new THREE.Mesh(new THREE.BoxGeometry(0.48,0.22,0.4),Ph(0x1a3355,10));
-pillow2.position.set(-0.85,0.77,-0.22);pillow2.rotation.y=-0.12;couchG.add(pillow2);
 
 // ── PLANTS ────────────────────────────────────
 function makePlant(x,z,h,pc,gc){
   const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
   const pot=new THREE.Mesh(new THREE.CylinderGeometry(h*.3,h*.23,h*.48,12),Ph(pc,20));
   pot.position.y=h*.24;g.add(pot);
-  const soil=new THREE.Mesh(new THREE.CylinderGeometry(h*.29,h*.29,0.022,12),Ph(0x2a1808,5));
-  soil.position.y=h*.48;g.add(soil);
   const base=new THREE.Mesh(new THREE.SphereGeometry(h*.42,8,6),Ph(gc,9,0x0a1a0a));
   base.position.y=h*.82;g.add(base);
   for(let i=0;i<5;i++){
@@ -429,175 +414,140 @@ function makePlant(x,z,h,pc,gc){
 makePlant(-5.4,4.6,0.72,0x6a3a18,0x1d7733);
 makePlant(5.5,4.2,0.58,0x7a4422,0x226622);
 makePlant(5.4,-4.5,0.8,0x8a3a12,0x2a8840);
-// Cactus corner
 {const cg=new THREE.Group();cg.position.set(-5.1,0,3.8);scene.add(cg);
 const cpot=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.15,0.34,12),Ph(0xbb5522,18));
 cpot.position.y=0.17;cg.add(cpot);
 const ctrunk=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.13,0.75,9),Ph(0x2a7a3a,10,0x0a2a14));
-ctrunk.position.y=0.715;cg.add(ctrunk);
-const ctop=new THREE.Mesh(new THREE.SphereGeometry(0.1,8,6),Ph(0x2a7a3a,10,0x0a2a14));
-ctop.position.y=1.1;cg.add(ctop);
-const carm=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.34,8),Ph(0x2a7a3a,10,0x0a2a14));
-carm.position.set(0.2,0.9,0);carm.rotation.z=-1.15;cg.add(carm);
-const carmTop=new THREE.Mesh(new THREE.SphereGeometry(0.072,7,6),Ph(0x2a7a3a,10,0x0a2a14));
-carmTop.position.set(0.34,1.05,0);cg.add(carmTop);}
-
-// ── DISCO BALL ────────────────────────────────
-const discoBall=new THREE.Mesh(new THREE.SphereGeometry(0.32,28,20),
-  new THREE.MeshPhongMaterial({color:0x999999,specular:new THREE.Color(1,1,1),shininess:320}));
-discoBall.position.set(0.8,6.32,-0.5);scene.add(discoBall);
-const dbCord=new THREE.Mesh(new THREE.CylinderGeometry(0.01,0.01,0.55),Ph(0x303030,20));
-dbCord.position.set(0.8,6.65,-0.5);scene.add(dbCord);
-// Decorative equator ring
-const dbRing=new THREE.Mesh(new THREE.TorusGeometry(0.36,0.024,8,28),
-  new THREE.MeshPhongMaterial({color:0x999999,specular:new THREE.Color(1,1,1),shininess:250}));
-dbRing.position.copy(discoBall.position);scene.add(dbRing);
-
-// ── DESK LAMP ─────────────────────────────────
-{const lg=new THREE.Group();lg.position.set(2.5,0.955,-1.85);scene.add(lg);
-new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.16,0.04,12),Ph(0x888878,60,0,0x666658));
-const lb=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.16,0.04,12),Ph(0x888878,60,0,0x666658));
-lb.position.y=0.02;lg.add(lb);
-const ls1=new THREE.Mesh(new THREE.CylinderGeometry(0.016,0.016,0.52),Ph(0x888878,65,0,0x666658));
-ls1.position.set(0.04,0.3,-0.04);ls1.rotation.z=0.18;ls1.rotation.x=0.1;lg.add(ls1);
-const ls2=new THREE.Mesh(new THREE.CylinderGeometry(0.016,0.016,0.38),Ph(0x888878,65,0,0x666658));
-ls2.position.set(0.14,0.65,-0.1);ls2.rotation.z=-0.35;ls2.rotation.x=-0.15;lg.add(ls2);
-const lhead=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.09,0.24,14,1,true),Ph(0x1a1a24,18));
-lhead.position.set(0.18,0.78,-0.16);lhead.rotation.z=Math.PI*0.58;lhead.rotation.x=-0.3;lg.add(lhead);
-const deskLL=new THREE.PointLight(0xffcc55,1.1,5);
-deskLL.position.set(2.64,1.5,-2.0);scene.add(deskLL);}
+ctrunk.position.y=0.715;cg.add(ctrunk);}
 
 // ── TARGET RING ───────────────────────────────
 const targetRing=new THREE.Mesh(new THREE.RingGeometry(0.12,0.22,24),
   new THREE.MeshBasicMaterial({color:0x55ffaa,transparent:true,opacity:0,side:THREE.DoubleSide}));
 targetRing.rotation.x=-Math.PI/2;targetRing.position.y=0.005;scene.add(targetRing);
 
-// ── ALIEN ─────────────────────────────────────
+// ══════════════════════════════════════════════
+// ── ALIEN (rebuilt – legs pivot at hips) ──────
+// ══════════════════════════════════════════════
 const alienGroup=new THREE.Group();alienGroup.position.set(0,0,2.5);scene.add(alienGroup);
 const bodyRoot=new THREE.Group();alienGroup.add(bodyRoot);
 
-const aSkin=new THREE.MeshPhongMaterial({color:0x2ec844,specular:new THREE.Color(0.4,1,0.5),shininess:62,emissive:new THREE.Color(0.04,0.12,0.05)});
-const aDark=new THREE.MeshPhongMaterial({color:0x1a8830,specular:new THREE.Color(0.25,0.7,0.35),shininess:45,emissive:new THREE.Color(0.02,0.08,0.03)});
-const aLight=new THREE.MeshPhongMaterial({color:0x58ee70,specular:new THREE.Color(0.6,1,0.65),shininess:80,emissive:new THREE.Color(0.1,0.25,0.12)});
-const eyeGlowM=new THREE.MeshPhongMaterial({color:0xccffcc,emissive:new THREE.Color(0.1,0.7,0.2),emissiveIntensity:0.8,shininess:130,specular:new THREE.Color(1,1,1)});
-const pupilM=new THREE.MeshBasicMaterial({color:0x030d04});
+const aSkin=new THREE.MeshPhongMaterial({color:0x28c03c,specular:new THREE.Color(0.35,0.9,0.45),shininess:55,emissive:new THREE.Color(0.04,0.10,0.05)});
+const aDark=new THREE.MeshPhongMaterial({color:0x178028,specular:new THREE.Color(0.2,0.6,0.3),shininess:38,emissive:new THREE.Color(0.02,0.06,0.03)});
+const aLight=new THREE.MeshPhongMaterial({color:0x50e860,specular:new THREE.Color(0.5,1,0.6),shininess:70,emissive:new THREE.Color(0.08,0.22,0.10)});
+const eyeM=new THREE.MeshPhongMaterial({color:0xbbffcc,emissive:new THREE.Color(0.08,0.65,0.18),emissiveIntensity:0.85,shininess:140,specular:new THREE.Color(1,1,1)});
+const pupilM=new THREE.MeshBasicMaterial({color:0x020b04});
 
-// Feet
-[-0.15,0.15].forEach(x=>{
+// Feet (static, at ground level)
+[-0.16,0.16].forEach(x=>{
   const f=new THREE.Mesh(new THREE.SphereGeometry(0.13,8,6),aSkin);
-  f.position.set(x,0.1,0.1);f.scale.set(1.1,0.55,1.55);bodyRoot.add(f);
+  f.position.set(x,0.05,0.08);f.scale.set(1.0,0.42,1.55);bodyRoot.add(f);
 });
 
-// Legs
-const legLG=new THREE.Group();legLG.position.set(-0.15,0.1,0);bodyRoot.add(legLG);
-const legRG=new THREE.Group();legRG.position.set( 0.15,0.1,0);bodyRoot.add(legRG);
+// ── LEGS: pivot group at HIP (y=0.82) ─────────
+const legLG=new THREE.Group();legLG.position.set(-0.15,0.82,0);bodyRoot.add(legLG);
+const legRG=new THREE.Group();legRG.position.set( 0.15,0.82,0);bodyRoot.add(legRG);
 [legLG,legRG].forEach(lg=>{
-  const thigh=new THREE.Mesh(new THREE.CylinderGeometry(0.105,0.088,0.48),aSkin);
-  thigh.position.y=0.24;thigh.castShadow=true;lg.add(thigh);
-  const kG=new THREE.Group();kG.position.y=0.5;lg.add(kG);
-  const kbump=new THREE.Mesh(new THREE.SphereGeometry(0.092,7,6),aDark);kbump.position.y=0;kG.add(kbump);
-  const shin=new THREE.Mesh(new THREE.CylinderGeometry(0.085,0.067,0.44),aSkin);
-  shin.position.y=0.22;kG.add(shin);
+  // thigh hangs DOWN from hip pivot
+  const thigh=new THREE.Mesh(new THREE.CylinderGeometry(0.092,0.076,0.46),aSkin);
+  thigh.position.y=-0.23;thigh.castShadow=true;lg.add(thigh);
+  // knee group anchored at bottom of thigh
+  const kG=new THREE.Group();kG.position.y=-0.46;lg.add(kG);
+  const kBump=new THREE.Mesh(new THREE.SphereGeometry(0.084,7,6),aDark);kG.add(kBump);
+  // shin hangs down from knee
+  const shin=new THREE.Mesh(new THREE.CylinderGeometry(0.074,0.058,0.43),aSkin);
+  shin.position.y=-0.215;kG.add(shin);
   lg.userData={kG};
 });
 
 // Pelvis
-const pelvis=new THREE.Mesh(new THREE.CylinderGeometry(0.21,0.24,0.25,10),aDark);
-pelvis.position.y=0.72;pelvis.castShadow=true;bodyRoot.add(pelvis);
+const pelvis=new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.21,0.22,10),aDark);
+pelvis.position.y=0.70;bodyRoot.add(pelvis);
 
-// Torso (shaped)
-const torso=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.21,0.58,10),aSkin);
-torso.position.y=1.14;torso.castShadow=true;bodyRoot.add(torso);
-const belly=new THREE.Mesh(new THREE.SphereGeometry(0.21,8,6),aSkin);
-belly.position.set(0,1.0,0.16);belly.scale.set(1,0.82,0.82);bodyRoot.add(belly);
-// Chest markings (darker patches)
-const chest=new THREE.Mesh(new THREE.SphereGeometry(0.12,7,6),aDark);
-chest.position.set(0,1.25,0.22);chest.scale.set(0.8,0.55,0.45);bodyRoot.add(chest);
+// Torso
+const torso=new THREE.Mesh(new THREE.CylinderGeometry(0.21,0.19,0.52,10),aSkin);
+torso.position.y=1.12;torso.castShadow=true;bodyRoot.add(torso);
+const belly=new THREE.Mesh(new THREE.SphereGeometry(0.18,8,6),aSkin);
+belly.position.set(0,0.98,0.13);belly.scale.set(1,0.8,0.72);bodyRoot.add(belly);
+const chestMark=new THREE.Mesh(new THREE.SphereGeometry(0.09,7,6),aDark);
+chestMark.position.set(0,1.20,0.19);chestMark.scale.set(0.8,0.5,0.4);bodyRoot.add(chestMark);
 
 // Neck
-const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.11,0.15,0.22),aDark);
-neck.position.y=1.46;bodyRoot.add(neck);
+const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.10,0.14,0.20),aDark);
+neck.position.y=1.42;bodyRoot.add(neck);
 
-// Head
-const headGroup=new THREE.Group();headGroup.position.y=1.76;bodyRoot.add(headGroup);
-const headBase=new THREE.Mesh(new THREE.SphereGeometry(0.35,14,10),aSkin);
+// Head group
+const headGroup=new THREE.Group();headGroup.position.y=1.70;bodyRoot.add(headGroup);
+const headBase=new THREE.Mesh(new THREE.SphereGeometry(0.30,14,10),aSkin);
 headBase.castShadow=true;headGroup.add(headBase);
-const skull=new THREE.Mesh(new THREE.SphereGeometry(0.25,10,8),aSkin);
-skull.position.set(0,0.32,-0.04);skull.scale.set(0.8,1.65,0.76);headGroup.add(skull);
-const chin=new THREE.Mesh(new THREE.SphereGeometry(0.18,8,6),aSkin);
-chin.position.set(0,-0.28,0.12);chin.scale.set(0.84,0.62,0.75);headGroup.add(chin);
-// Brow ridge
-const brow=new THREE.Mesh(new THREE.SphereGeometry(0.32,10,5),aDark);
-brow.position.set(0,0.1,0.2);brow.scale.set(0.9,0.3,0.45);headGroup.add(brow);
-
+const skull=new THREE.Mesh(new THREE.SphereGeometry(0.20,10,8),aSkin);
+skull.position.set(0,0.26,-0.04);skull.scale.set(0.82,1.6,0.76);headGroup.add(skull);
+const chin=new THREE.Mesh(new THREE.SphereGeometry(0.15,8,6),aSkin);
+chin.position.set(0,-0.22,0.09);chin.scale.set(0.8,0.6,0.70);headGroup.add(chin);
+const brow=new THREE.Mesh(new THREE.SphereGeometry(0.27,10,5),aDark);
+brow.position.set(0,0.07,0.17);brow.scale.set(0.88,0.28,0.40);headGroup.add(brow);
 // Eyes
 const antennaBalls=[];
 [-1,1].forEach(side=>{
   const eG=new THREE.Group();
-  eG.position.set(side*0.17,0.08,0.26);eG.rotation.z=side*0.34;eG.rotation.x=-0.12;
+  eG.position.set(side*0.148,0.05,0.22);eG.rotation.z=side*0.28;eG.rotation.x=-0.10;
   headGroup.add(eG);
-  const socket=new THREE.Mesh(new THREE.SphereGeometry(0.135,9,8),aDark);
-  socket.scale.set(0.88,0.72,0.42);eG.add(socket);
-  const eyeOuter=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),eyeGlowM);
-  eyeOuter.scale.set(0.104,0.076,0.06);eG.add(eyeOuter);
-  const pupil=new THREE.Mesh(new THREE.SphereGeometry(0.054,8,6),pupilM);
-  pupil.position.set(0,0,0.054);eG.add(pupil);
-  const shine=new THREE.Mesh(new THREE.SphereGeometry(0.022,5,4),new THREE.MeshBasicMaterial({color:0xffffff}));
-  shine.position.set(side*-0.024,0.022,0.067);eG.add(shine);
+  const socket=new THREE.Mesh(new THREE.SphereGeometry(0.11,9,8),aDark);
+  socket.scale.set(0.85,0.68,0.38);eG.add(socket);
+  const eyeOuter=new THREE.Mesh(new THREE.SphereGeometry(0.088,12,8),eyeM);eG.add(eyeOuter);
+  const pupil=new THREE.Mesh(new THREE.SphereGeometry(0.044,8,6),pupilM);
+  pupil.position.z=0.044;eG.add(pupil);
+  const shine=new THREE.Mesh(new THREE.SphereGeometry(0.016,5,4),new THREE.MeshBasicMaterial({color:0xffffff}));
+  shine.position.set(side*-0.018,0.016,0.058);eG.add(shine);
 });
 // Nostrils
-[-0.06,0.06].forEach(x=>{
-  const n=new THREE.Mesh(new THREE.SphereGeometry(0.024,6,5),aDark);
-  n.position.set(x,-0.14,0.33);n.scale.set(0.65,0.48,0.55);headGroup.add(n);
+[-0.05,0.05].forEach(x=>{
+  const n=new THREE.Mesh(new THREE.SphereGeometry(0.020,6,5),aDark);
+  n.position.set(x,-0.11,0.28);n.scale.set(0.6,0.45,0.5);headGroup.add(n);
 });
-// Mouth — thin curved slit
-const mouthSlit=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.018,0.018),new THREE.MeshBasicMaterial({color:0x0c3010}));
-mouthSlit.position.set(0,-0.22,0.32);headGroup.add(mouthSlit);
+// Mouth slit
+const mouthSlit=new THREE.Mesh(new THREE.BoxGeometry(0.11,0.015,0.015),new THREE.MeshBasicMaterial({color:0x0a2a0e}));
+mouthSlit.position.set(0,-0.19,0.28);headGroup.add(mouthSlit);
 // Ears
 [-1,1].forEach(s=>{
-  const ear=new THREE.Mesh(new THREE.SphereGeometry(0.07,7,6),aDark);
-  ear.position.set(s*0.36,0.04,0.02);ear.scale.set(0.45,0.92,0.58);headGroup.add(ear);
+  const ear=new THREE.Mesh(new THREE.SphereGeometry(0.058,7,6),aDark);
+  ear.position.set(s*0.31,0.02,0.02);ear.scale.set(0.42,0.85,0.52);headGroup.add(ear);
 });
 // Antennae
 [-1,1].forEach(s=>{
-  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.014,0.014,0.42),aDark);
-  stem.position.set(s*0.15,0.5,-0.03);stem.rotation.z=s*-0.33;headGroup.add(stem);
-  const ball=new THREE.Mesh(new THREE.SphereGeometry(0.055,8,6),
-    new THREE.MeshPhongMaterial({color:0x88ffaa,emissive:new THREE.Color(0.22,0.75,0.3),emissiveIntensity:0.65,shininess:85}));
-  ball.position.set(s*0.26,0.68,-0.04);headGroup.add(ball);
-  antennaBalls.push(ball);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.36),aDark);
+  stem.position.set(s*0.12,0.44,-0.03);stem.rotation.z=s*-0.28;headGroup.add(stem);
+  const ball=new THREE.Mesh(new THREE.SphereGeometry(0.048,8,6),
+    new THREE.MeshPhongMaterial({color:0x88ffaa,emissive:new THREE.Color(0.2,0.72,0.28),emissiveIntensity:0.65,shininess:85}));
+  ball.position.set(s*0.20,0.60,-0.04);headGroup.add(ball);antennaBalls.push(ball);
 });
 
-// Arms
-const armLG=new THREE.Group();armLG.position.set(-0.28,1.22,0);bodyRoot.add(armLG);
-const armRG=new THREE.Group();armRG.position.set( 0.28,1.22,0);bodyRoot.add(armRG);
+// ── ARMS: pivot at shoulder (y=1.40) ─────────
+const armLG=new THREE.Group();armLG.position.set(-0.25,1.40,0);bodyRoot.add(armLG);
+const armRG=new THREE.Group();armRG.position.set( 0.25,1.40,0);bodyRoot.add(armRG);
 [armLG,armRG].forEach((ag,i)=>{
-  const s=i===0?-1:1;
-  const sph=new THREE.Mesh(new THREE.SphereGeometry(0.1,8,6),aDark);
-  sph.position.set(s*0.04,-0.02,0);ag.add(sph); // shoulder
-  const uArm=new THREE.Mesh(new THREE.CylinderGeometry(0.082,0.065,0.48),aSkin);
-  uArm.position.set(s*0.15,-0.22,0);uArm.rotation.z=s*0.44;ag.add(uArm);
-  const elbow=new THREE.Mesh(new THREE.SphereGeometry(0.068,8,6),aDark);
-  elbow.position.set(s*0.28,-0.38,0);ag.add(elbow);
-  const elbG=new THREE.Group();elbG.position.set(s*0.28,-0.38,0);ag.add(elbG);
-  const fArm=new THREE.Mesh(new THREE.CylinderGeometry(0.065,0.05,0.42),aSkin);
-  fArm.position.y=-0.21;elbG.add(fArm);
-  const handG=new THREE.Group();handG.position.y=-0.44;elbG.add(handG);
-  const palm=new THREE.Mesh(new THREE.SphereGeometry(0.085,8,6),aSkin);handG.add(palm);
+  const shoulder=new THREE.Mesh(new THREE.SphereGeometry(0.085,8,6),aDark);ag.add(shoulder);
+  // upper arm hangs down
+  const uArm=new THREE.Mesh(new THREE.CylinderGeometry(0.072,0.058,0.42),aSkin);
+  uArm.position.y=-0.21;ag.add(uArm);
+  const eG=new THREE.Group();eG.position.y=-0.42;ag.add(eG);
+  const eBump=new THREE.Mesh(new THREE.SphereGeometry(0.058,8,6),aDark);eG.add(eBump);
+  const fArm=new THREE.Mesh(new THREE.CylinderGeometry(0.054,0.042,0.36),aSkin);
+  fArm.position.y=-0.18;eG.add(fArm);
+  const handG=new THREE.Group();handG.position.y=-0.38;eG.add(handG);
+  const palm=new THREE.Mesh(new THREE.SphereGeometry(0.072,8,6),aSkin);handG.add(palm);
   for(let f=0;f<3;f++){
-    const fa=(f-1)*0.44;
-    const fng=new THREE.Mesh(new THREE.CylinderGeometry(0.026,0.018,0.15),aSkin);
-    fng.position.set(Math.sin(fa)*0.09,-0.11,Math.cos(fa)*0.045);fng.rotation.z=fa*0.46;handG.add(fng);
-    const ftip=new THREE.Mesh(new THREE.SphereGeometry(0.024,6,5),aLight);
-    ftip.position.set(Math.sin(fa)*0.11,-0.188,Math.cos(fa)*0.056);handG.add(ftip);
+    const fa=(f-1)*0.42;
+    const fng=new THREE.Mesh(new THREE.CylinderGeometry(0.020,0.014,0.12),aSkin);
+    fng.position.set(Math.sin(fa)*0.075,-0.095,Math.cos(fa)*0.038);
+    fng.rotation.z=fa*0.38;handG.add(fng);
+    const ftip=new THREE.Mesh(new THREE.SphereGeometry(0.020,6,5),aLight);
+    ftip.position.set(Math.sin(fa)*0.092,-0.160,Math.cos(fa)*0.048);handG.add(ftip);
   }
-  ag.userData={elbG,handG};
+  ag.userData={eG,handG};
 });
 
-// Alien eye glow light (very dim, just for atmosphere)
-const alienEyeLight=new THREE.PointLight(0x44ff66,0.0,2.2);
-alienEyeLight.position.set(0,1.76,0.4);
-alienGroup.add(alienEyeLight);
+const alienEyeLight=new THREE.PointLight(0x44ff66,0.0,2.5);
+alienEyeLight.position.set(0,1.70,0.4);alienGroup.add(alienEyeLight);
 
 // ── AUDIO ─────────────────────────────────────
 let audioCtx,analyser,srcNode,freqData;
@@ -634,10 +584,12 @@ function audioTick(){
   bass=bass*.78+b*.22;energy=energy*.9+(tot/n)*.1;
 }
 
+let musicTime=0; // accumulates while playing, resets on stop
+
 function toggleMusic(){
   if(!audioCtx)return;
   if(audioCtx.state==='suspended')audioCtx.resume();
-  if(musicPlaying&&srcNode){try{srcNode.stop();}catch(e){}srcNode=null;musicPlaying=false;}
+  if(musicPlaying&&srcNode){try{srcNode.stop();}catch(e){}srcNode=null;musicPlaying=false;musicTime=0;}
   else if(audioBuffer){
     srcNode=audioCtx.createBufferSource();srcNode.buffer=audioBuffer;srcNode.loop=true;
     srcNode.connect(analyser);srcNode.start(0);musicPlaying=true;
@@ -656,14 +608,11 @@ function onPointer(e){
   const cy=e.touches?e.touches[0].clientY:e.clientY;
   mouse.x=(cx/innerWidth)*2-1;mouse.y=-(cy/innerHeight)*2+1;
   raycaster.setFromCamera(mouse,camera);
-  const hits=raycaster.intersectObjects(rpMeshes,false);
-  if(hits.length>0){toggleMusic();return;}
+  if(raycaster.intersectObjects(rpMeshes,false).length>0){toggleMusic();return;}
   const pt=new THREE.Vector3();
   if(raycaster.ray.intersectPlane(floorPlane,pt)){
-    pt.x=Math.max(-4.5,Math.min(4.5,pt.x));
-    pt.z=Math.max(-4.5,Math.min(5.2,pt.z));
-    walkTarget.copy(pt);
-    targetRing.position.set(pt.x,0.005,pt.z);
+    pt.x=Math.max(-4.5,Math.min(4.5,pt.x));pt.z=Math.max(-4.5,Math.min(5.2,pt.z));
+    walkTarget.copy(pt);targetRing.position.set(pt.x,0.005,pt.z);
     targetVisible=1;isMoving=true;
   }
 }
@@ -673,13 +622,34 @@ window.addEventListener('touchstart',e=>{e.preventDefault();onPointer(e);},{pass
 // ── ANIMATE ───────────────────────────────────
 const clock=new THREE.Clock();
 let t=0,spinAngle=0,spinVel=0;
+let lightHue=0;          // slowly rotating colour wheel
+let discoGroupY=2.2;     // starts above ceiling
+
+// lerp helper
+const L=(a,b,t)=>a+(b-a)*t;
+// smooth clamp 0-1
+const S01=(v,mn,mx)=>Math.max(0,Math.min(1,(v-mn)/(mx-mn)));
 
 function animate(){
   requestAnimationFrame(animate);
   const dt=Math.min(clock.getDelta(),0.05);t+=dt;
   audioTick();
+  if(musicPlaying)musicTime+=dt;
 
-  // Target ring
+  // ── SEQUENCE GATES ────────────────────────
+  // 0→2.5s: ball descends (alien idle)
+  // 2.5→6s: lights turn on one by one
+  // 6s+   : alien dances
+  const ballPhase = musicPlaying ? S01(musicTime,0,2.5) : 0;
+  const lightPhase= musicPlaying ? S01(musicTime,2.5,7.0) : 0;
+  const dancePhase= musicPlaying ? S01(musicTime,5.5,8.0) : 0;
+
+  // ── DISCO BALL DESCENT ────────────────────
+  const targetBallY = musicPlaying ? 0 : 2.2;
+  discoGroupY = L(discoGroupY, targetBallY, musicPlaying ? 0.022 : 0.035);
+  discoGroup.position.y = discoGroupY;
+
+  // Target ring fade
   targetVisible=Math.max(0,targetVisible-dt*0.9);
   targetRing.material.opacity=targetVisible*0.65;
 
@@ -687,109 +657,165 @@ function animate(){
   const diff=new THREE.Vector3(walkTarget.x-alienGroup.position.x,0,walkTarget.z-alienGroup.position.z);
   const dist=diff.length();
   if(isMoving&&dist>0.1){
-    const spd=2.6+energy*0.9,step=Math.min(spd*dt,dist),dir=diff.clone().normalize();
+    const spd=2.5+energy*0.8,step=Math.min(spd*dt,dist),dir=diff.clone().normalize();
     alienGroup.position.x+=dir.x*step;alienGroup.position.z+=dir.z*step;
     const ang=Math.atan2(dir.x,dir.z);
-    const da=((ang-alienGroup.rotation.y+Math.PI)%(Math.PI*2))-Math.PI;
-    alienGroup.rotation.y+=da*0.14;
-    // Walk cycle
-    const wt=t*8;
-    armLG.rotation.x=Math.sin(wt)*0.75;armRG.rotation.x=-Math.sin(wt)*0.75;
-    armLG.rotation.z=0.1;armRG.rotation.z=-0.1;
-    legLG.rotation.x=-Math.sin(wt)*0.6;legLG.userData.kG.rotation.x=Math.max(0,Math.sin(wt))*0.45;
-    legRG.rotation.x= Math.sin(wt)*0.6;legRG.userData.kG.rotation.x=Math.max(0,-Math.sin(wt))*0.45;
-    bodyRoot.position.y=Math.abs(Math.sin(wt))*0.06;
-    bodyRoot.rotation.z=Math.sin(wt*.5)*0.048;
-    headGroup.rotation.z=Math.sin(wt*.5)*0.07;headGroup.rotation.y=0;
-    armLG.userData.elbG.rotation.x=-Math.max(0,Math.sin(wt))*0.35;
-    armRG.userData.elbG.rotation.x=-Math.max(0,-Math.sin(wt))*0.35;
+    alienGroup.rotation.y+=((ang-alienGroup.rotation.y+Math.PI)%(Math.PI*2)-Math.PI)*0.14;
+    const wt=t*7.5;
+    // arms swing front/back from shoulder pivot
+    armLG.rotation.x= Math.sin(wt)*0.52;armRG.rotation.x=-Math.sin(wt)*0.52;
+    armLG.rotation.z=0.14;armRG.rotation.z=-0.14;
+    armLG.userData.eG.rotation.x=-Math.max(0, Math.sin(wt))*0.28;
+    armRG.userData.eG.rotation.x=-Math.max(0,-Math.sin(wt))*0.28;
+    // legs swing from hip pivot (negative x = forward in local space)
+    legLG.rotation.x=-Math.sin(wt)*0.48;legRG.rotation.x= Math.sin(wt)*0.48;
+    legLG.userData.kG.rotation.x=Math.max(0, Math.sin(wt+0.5))*0.42;
+    legRG.userData.kG.rotation.x=Math.max(0,-Math.sin(wt+0.5))*0.42;
+    bodyRoot.position.y=Math.abs(Math.sin(wt))*0.05;
+    bodyRoot.rotation.z=Math.sin(wt*.5)*0.04;
+    headGroup.rotation.z=Math.sin(wt*.5)*0.06;headGroup.rotation.y=0;
   } else {
     isMoving=false;
-    if(musicPlaying){
-      // ── DANCE ──────────────────────────────
-      const sp=1+bass*2.0,b1=t*5.8*sp,b2=t*2.9*sp;
-      bodyRoot.position.y=Math.abs(Math.sin(b1))*(0.09+beatImpact*0.14);
-      bodyRoot.rotation.y=Math.sin(b2)*0.38;bodyRoot.rotation.z=Math.sin(b2+1.2)*0.075;
-      headGroup.rotation.z=Math.sin(b2+0.6)*0.28;headGroup.rotation.y=Math.sin(b2*.65)*0.24;
-      armLG.rotation.x=Math.sin(b1+1.1)*1.05;armLG.rotation.z=Math.sin(b2)*.65-0.12;
-      armLG.userData.elbG.rotation.x=-Math.abs(Math.sin(b1+0.55))*.75;
-      armRG.rotation.x=-Math.sin(b1+1.1)*1.05;armRG.rotation.z=-Math.sin(b2)*.65+0.12;
-      armRG.userData.elbG.rotation.x=-Math.abs(Math.sin(b1+1.65))*.75;
-      legLG.rotation.x=Math.sin(b1)*0.34;legLG.rotation.z=Math.sin(b2)*0.14;
-      legLG.userData.kG.rotation.x=Math.max(0,Math.sin(b1+0.5))*0.38;
-      legRG.rotation.x=-Math.sin(b1)*0.34;legRG.rotation.z=-Math.sin(b2)*0.14;
-      legRG.userData.kG.rotation.x=Math.max(0,-Math.sin(b1+0.5))*0.38;
-      if(beatImpact>.55)spinVel=Math.min(spinVel+0.055,0.08);
-      alienGroup.rotation.y+=spinVel;spinVel*=0.93;
+    if(dancePhase>0){
+      // ── SWAY DANCE ────────────────────────
+      const dp=dancePhase;
+      const sp=1+bass*0.7;
+      const sw=t*1.7*sp;
+      // gentle body sway side-to-side
+      bodyRoot.position.y=L(bodyRoot.position.y, 0.04+Math.abs(Math.sin(sw*2))*0.03*(1+beatImpact*0.5), 0.10);
+      bodyRoot.rotation.z=L(bodyRoot.rotation.z, Math.sin(sw)*(0.06+beatImpact*0.06)*dp, 0.08);
+      bodyRoot.rotation.y=L(bodyRoot.rotation.y, Math.sin(sw*0.65)*0.10*dp, 0.06);
+      // head counter-sways & looks around
+      headGroup.rotation.z=L(headGroup.rotation.z,-Math.sin(sw)*0.11*dp,0.08);
+      headGroup.rotation.y=L(headGroup.rotation.y, Math.sin(sw*0.5)*0.18*dp,0.06);
+      // arms sway naturally with hips
+      armLG.rotation.z=L(armLG.rotation.z,(0.18+Math.sin(sw+0.5)*0.22)*dp+0.18*(1-dp),0.08);
+      armRG.rotation.z=L(armRG.rotation.z,(-0.18-Math.sin(sw+0.5)*0.22)*dp-0.18*(1-dp),0.08);
+      armLG.rotation.x=L(armLG.rotation.x, Math.sin(sw*1.1)*0.14*dp,0.08);
+      armRG.rotation.x=L(armRG.rotation.x,-Math.sin(sw*1.1)*0.14*dp,0.08);
+      armLG.userData.eG.rotation.x=L(armLG.userData.eG.rotation.x,-0.12-Math.abs(Math.sin(sw))*0.14*dp,0.08);
+      armRG.userData.eG.rotation.x=L(armRG.userData.eG.rotation.x,-0.12-Math.abs(Math.sin(sw))*0.14*dp,0.08);
+      // legs barely shift weight
+      legLG.rotation.z=L(legLG.rotation.z, Math.sin(sw)*0.06*dp,0.08);
+      legRG.rotation.z=L(legRG.rotation.z,-Math.sin(sw)*0.06*dp,0.08);
+      legLG.rotation.x=L(legLG.rotation.x, Math.sin(sw+0.4)*0.08*dp,0.08);
+      legRG.rotation.x=L(legRG.rotation.x,-Math.sin(sw+0.4)*0.08*dp,0.08);
+      legLG.userData.kG.rotation.x=L(legLG.userData.kG.rotation.x,Math.max(0,Math.sin(sw+0.3))*0.12*dp,0.08);
+      legRG.userData.kG.rotation.x=L(legRG.userData.kG.rotation.x,Math.max(0,-Math.sin(sw+0.3))*0.12*dp,0.08);
+      // beat spin
+      if(beatImpact>.55)spinVel=Math.min(spinVel+0.04,0.07);
+      alienGroup.rotation.y+=spinVel;spinVel*=0.94;
     } else {
-      // ── IDLE ───────────────────────────────
-      const id=t*1.08;
-      bodyRoot.position.y=THREE.MathUtils.lerp(bodyRoot.position.y,Math.sin(id)*0.012,0.08);
-      bodyRoot.rotation.y=THREE.MathUtils.lerp(bodyRoot.rotation.y,0,0.04);
-      bodyRoot.rotation.z=THREE.MathUtils.lerp(bodyRoot.rotation.z,0,0.04);
-      headGroup.rotation.z=Math.sin(id*.72)*0.034;
-      headGroup.rotation.y=THREE.MathUtils.lerp(headGroup.rotation.y,0,0.04);
+      // ── IDLE ──────────────────────────────
+      const id=t*1.05;
+      bodyRoot.position.y=L(bodyRoot.position.y,Math.sin(id)*0.012,0.07);
+      bodyRoot.rotation.y=L(bodyRoot.rotation.y,0,0.04);
+      bodyRoot.rotation.z=L(bodyRoot.rotation.z,0,0.05);
+      headGroup.rotation.z=Math.sin(id*.72)*0.032;
+      headGroup.rotation.y=L(headGroup.rotation.y,0,0.04);
       [armLG,armRG].forEach((ag,i)=>{
-        ag.rotation.x=THREE.MathUtils.lerp(ag.rotation.x,0,0.06);
-        ag.rotation.z=THREE.MathUtils.lerp(ag.rotation.z,i===0?0.1:-0.1,0.06);
-        ag.userData.elbG.rotation.x=THREE.MathUtils.lerp(ag.userData.elbG.rotation.x,-0.1,0.06);
+        ag.rotation.x=L(ag.rotation.x,0,0.06);
+        ag.rotation.z=L(ag.rotation.z,i===0?0.18:-0.18,0.06);
+        ag.userData.eG.rotation.x=L(ag.userData.eG.rotation.x,-0.08,0.06);
       });
       [legLG,legRG].forEach(lg=>{
-        lg.rotation.x=THREE.MathUtils.lerp(lg.rotation.x,0,0.07);
-        lg.rotation.z=THREE.MathUtils.lerp(lg.rotation.z,0,0.07);
-        lg.userData.kG.rotation.x=THREE.MathUtils.lerp(lg.userData.kG.rotation.x,0,0.07);
+        lg.rotation.x=L(lg.rotation.x,0,0.07);
+        lg.rotation.z=L(lg.rotation.z,0,0.07);
+        lg.userData.kG.rotation.x=L(lg.userData.kG.rotation.x,0,0.07);
       });
-      alienGroup.rotation.y=THREE.MathUtils.lerp(alienGroup.rotation.y,0,0.018);
+      alienGroup.rotation.y=L(alienGroup.rotation.y,0,0.016);
     }
   }
 
   // ── RECORD PLAYER ─────────────────────────
   if(musicPlaying){
-    spinAngle+=dt*(4.0+bass*3.8);
+    spinAngle+=dt*(4.0+bass*3.5);
     spinParts.forEach(m=>{if(m.rotation)m.rotation.y=spinAngle;});
-    taSwing.rotation.y=THREE.MathUtils.lerp(taSwing.rotation.y,TA_PLAY,.05);
-    rpLight.intensity=THREE.MathUtils.lerp(rpLight.intensity,1.4+beatImpact*1.8,.08);
+    taSwing.rotation.y=L(taSwing.rotation.y,TA_PLAY,.05);
+    rpLight.intensity=L(rpLight.intensity,1.2+beatImpact*1.6,.08);
     rpLight.color.setHSL(.95+bass*.05,1,.48);
-    knobM.material.emissive=new THREE.Color().setHSL(0,1,.18+beatImpact*.22);
-    knobM.material.emissiveIntensity=0.6+beatImpact*.5;
-    dL1.intensity=THREE.MathUtils.lerp(dL1.intensity,2.2+beatImpact*1.4,.05);
-    dL2.intensity=THREE.MathUtils.lerp(dL2.intensity,2.2+beatImpact*1.4,.05);
-    dL3.intensity=THREE.MathUtils.lerp(dL3.intensity,1.6+beatImpact*1.0,.05);
-    discoArm.rotation.y+=dt*(0.7+bass*0.9);
-    discoBall.rotation.y+=dt*0.45;
-    dbRing.rotation.y+=dt*0.45;dbRing.rotation.x=Math.sin(t*.45)*.14;
-    hintOpacity=THREE.MathUtils.lerp(hintOpacity,0,0.04);
+    knobM.material.emissive=new THREE.Color().setHSL(0,1,.16+beatImpact*.2);
+    knobM.material.emissiveIntensity=0.5+beatImpact*.5;
+    dL1.intensity=L(dL1.intensity,2.0+beatImpact*1.4,.05);
+    dL2.intensity=L(dL2.intensity,2.0+beatImpact*1.4,.05);
+    dL3.intensity=L(dL3.intensity,1.4+beatImpact*1.0,.05);
+    discoArm.rotation.y+=dt*(0.7+bass*0.8);
+    discoBall.rotation.y+=dt*0.42;
+    dbRing.rotation.y+=dt*0.42;dbRing.rotation.x=Math.sin(t*.44)*.13;
+    hintOpacity=L(hintOpacity,0,0.04);
   } else {
-    taSwing.rotation.y=THREE.MathUtils.lerp(taSwing.rotation.y,TA_REST,.04);
-    rpLight.intensity=THREE.MathUtils.lerp(rpLight.intensity,0.22,.04); // dim glow when off
+    taSwing.rotation.y=L(taSwing.rotation.y,TA_REST,.04);
+    rpLight.intensity=L(rpLight.intensity,0.18,.04);
     rpLight.color.setHex(0xff2255);
-    dL1.intensity=THREE.MathUtils.lerp(dL1.intensity,0,.04);
-    dL2.intensity=THREE.MathUtils.lerp(dL2.intensity,0,.04);
-    dL3.intensity=THREE.MathUtils.lerp(dL3.intensity,0,.04);
-    knobM.material.emissiveIntensity=THREE.MathUtils.lerp(knobM.material.emissiveIntensity,0,.04);
+    dL1.intensity=L(dL1.intensity,0,.04);
+    dL2.intensity=L(dL2.intensity,0,.04);
+    dL3.intensity=L(dL3.intensity,0,.04);
+    knobM.material.emissiveIntensity=L(knobM.material.emissiveIntensity,0,.04);
     hintOpacity=0.75+Math.sin(t*2.2)*.12;
   }
+
+  // ── LIGHT SHOW STORY ──────────────────────
+  // lightHue slowly sweeps the colour wheel when music plays
+  if(musicPlaying) lightHue=(lightHue+dt*0.038+bass*0.018)%1;
+
+  // Story chapters – each light enters at a different time
+  // Chapter stagger: lights 0-5 enter at t=2.5, 3.2, 4.0, 4.8, 5.5, 6.2
+  const lightEnterTimes=[2.5,3.2,4.0,4.8,5.5,6.2];
+  // 40-second cycle for colour narrative
+  const cycle=(musicTime%40)/40;
+
+  SL.forEach((sl,i)=>{
+    const enter=S01(musicTime, lightEnterTimes[i], lightEnterTimes[i]+1.5);
+    if(enter===0){sl.intensity=0;return;}
+
+    // Each light gets a hue offset around the wheel
+    const hOff=i/SL.length;
+    // narrative arc: warm → cool → full spectrum → rich jewel
+    const narrativeHue=(lightHue+hOff+cycle*0.4)%1;
+    sl.color.setHSL(narrativeHue,0.9,0.48);
+
+    // Beat flash + energy
+    const baseInt = 0.8+energy*0.6;
+    const beatFlash = i%2===0 ? beatImpact*2.2 : beatImpact*1.5;
+    sl.intensity=L(sl.intensity, enter*(baseInt+beatFlash), 0.06);
+  });
+
+  // Drift the ambient hue slightly with the story
+  if(musicPlaying){
+    const r=new THREE.Color();r.setHSL(lightHue,0.35,0.03+energy*0.02);
+    scene.background.set(r);
+    scene.fog.color.set(r);
+  } else {
+    scene.background.lerp(new THREE.Color(0x020206),0.03);
+    scene.fog.color.lerp(new THREE.Color(0x020206),0.03);
+  }
+
+  // LED strips shift colour with music
+  ledL.color.setHSL((lightHue+0.55)%1,0.9,0.5);
+  ledR.color.setHSL((lightHue+0.05)%1,0.9,0.5);
+  ledL.intensity=L(ledL.intensity, musicPlaying?(0.6+energy*0.5):0.55, 0.05);
+  ledR.intensity=L(ledR.intensity, musicPlaying?(0.6+energy*0.5):0.55, 0.05);
+
+  // Screen glow
+  screenFX.material.color.setHSL(.62+Math.sin(t*.32)*.04,.6,.1+energy*.09);
+  monFX.material.color.setHSL(.65+Math.sin(t*.28)*.06,.55,.08+energy*.1);
+  lapLight.intensity=0.6+energy*.4+Math.sin(t*1.8)*.06;
+
+  // Main light dims slightly when show is up
+  mainL.intensity=L(mainL.intensity, musicPlaying?(1.2+beatImpact*.5+energy*.3):1.8, 0.04);
+
+  // Alien eye glow
+  alienEyeLight.intensity=L(alienEyeLight.intensity,
+    musicPlaying?(0.25+beatImpact*.45):(0.08+Math.sin(t*1.4)*.05),0.07);
+
+  // Antenna pulse
+  const ag=0.4+Math.sin(t*2.4)*.3+(musicPlaying?beatImpact*.8:0);
+  antennaBalls.forEach(b=>b.material.emissiveIntensity=Math.max(0.12,ag));
+
+  // Hint sign
   hintSign.material.opacity=Math.max(0,hintOpacity);
   hintSign.position.y=2.95+Math.sin(t*1.6)*.07;
   hintSign.lookAt(camera.position);
-
-  // Screen + monitor animate
-  screenFX.material.color.setHSL(.62+Math.sin(t*.32)*.04,.6,.1+energy*.09);
-  monFX.material.color.setHSL(.65+Math.sin(t*.28)*.06,.55,.08+energy*.1);
-  lapLight.intensity=0.8+energy*.5+Math.sin(t*1.8)*.08;
-
-  // Main light + LED breathe
-  mainL.intensity=2.8+beatImpact*.7+energy*.4;
-  ledL.intensity=0.8+Math.sin(t*.7)*.25+energy*.35;
-  ledR.intensity=0.8+Math.cos(t*.7)*.25+energy*.35;
-
-  // Alien eye glow
-  alienEyeLight.intensity=THREE.MathUtils.lerp(alienEyeLight.intensity,
-    musicPlaying?(0.3+beatImpact*.5):(0.1+Math.sin(t*1.4)*.06),0.08);
-
-  // Antenna pulse
-  const ag=0.45+Math.sin(t*2.4)*.35+(musicPlaying?beatImpact*.8:0);
-  antennaBalls.forEach(b=>b.material.emissiveIntensity=Math.max(0.15,ag));
 
   renderer.render(scene,camera);
 }
