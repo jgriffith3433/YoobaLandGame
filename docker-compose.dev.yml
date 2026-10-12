@@ -1,0 +1,16 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: yoobalandgame-dev
+    ports:
+      - "8088:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ./privacypolicy.html:/usr/share/nginx/html/privacypolicy.html
+      - ./background.jpg:/usr/share/nginx/html/background.jpg
+      - ./Game:/usr/share/nginx/html/Game
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    restart: unless-stopped
