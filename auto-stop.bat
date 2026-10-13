@@ -1,3 +1,11 @@
 @echo off
 cd /d "%~dp0"
-docker compose -f docker-compose.dev.yml down
+
+echo ==================================================
+echo Stop local development server
+echo ==================================================
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$p = Get-NetTCPConnection -LocalPort 8088 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique; if ($p) { foreach ($id in $p) { Write-Host \"Stopping dev server on port 8088 (PID $id)\"; Stop-Process -Id $id -Force -ErrorAction SilentlyContinue } } else { Write-Host \"No dev server found on port 8088\" }"
+
+echo Done.
+pause
