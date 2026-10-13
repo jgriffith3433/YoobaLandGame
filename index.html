@@ -4,99 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yooba Land</title>
-  <style>
-    html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    font-family: Arial, sans-serif;
-    color: white;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: none; /* Remove background color */
-    position: fixed; /* Ensures full-page coverage */
-    overflow: hidden;
-  }
-  
-  /* Background image */
-  .background-img {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
-  }
-
-    /* Main content container */
-    .content {
-      max-width: 60%;
-      background: rgba(0, 0, 0, 0.6); /* Semi-transparent background for readability */
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Title styling */
-    .title {
-      font-size: 3em;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
-    /* Subtitle and description */
-    .description {
-      font-size: 1.2em;
-      margin-bottom: 20px;
-    }
-
-    /* Privacy policy link */
-    .privacy-policy {
-      font-size: 1em;
-      text-decoration: none;
-      color: #f5f5f5;
-      font-weight: bold;
-    }
-
-    .privacy-policy:hover {
-      text-decoration: underline;
-    }
-
-    .play {
-      display: inline-block;
-      margin: 10px 0 24px;
-      padding: 16px 48px;
-      background: #2f9e6b;
-      color: white;
-      font-size: 1.3em;
-      font-weight: bold;
-      text-decoration: none;
-      border-radius: 40px;
-    }
-
-    .play:hover {
-      background: #38b87c;
-    }
-  </style>
+  <meta name="description" content="Play Yooba Land in the browser. Eat, grow, and find the way home.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/site/site.css">
 </head>
 <body>
+  <header class="topbar">
+    <a class="brand" href="/">Yooba Land</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">Menu</button>
+    <nav id="site-menu" class="menu" aria-label="Primary">
+      <a href="/" aria-current="page">Home</a>
+      <a href="/blog.html">Blog</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+    <a class="play" href="/Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
+  </header>
 
-  <img class="background-img" src="background.jpg" alt="Background">
-
-  <div class="content">
-    <div class="title">Yooba Land</div>
-    <div class="description">
-      Play as Yooba and explore a toon-shaded world. Eat, grow, and find the way home.
+  <section class="hero">
+    <img class="hero-photo" src="/background.jpg" alt="Yooba, a green one-eyed character, beside a passenger plane in a bright cartoon sky.">
+    <div class="hero-panel">
+      <div class="hero-copy">
+        <p class="kicker">A cartoon game</p>
+        <h1>Walk home as Yooba.</h1>
+        <p>Eat what you find, grow when you can, and keep moving through a toon world.</p>
+      </div>
+      <a class="play play-large" href="/Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
     </div>
-    <a class="play" href="Game/">Play</a>
-    <a class="privacy-policy" href="privacypolicy.html">Privacy Policy</a>
-  </div>
+  </section>
 
+  <section class="section">
+    <h2>How a walk goes</h2>
+    <p class="lede">Yooba is small at the start. Food changes that. The path is how you get home.</p>
+    <div class="cards">
+      <article class="card">
+        <span class="card-index">01</span>
+        <h3>Eat</h3>
+        <p>Apples come first. Watermelons and pumpkins wait until Yooba is big enough.</p>
+      </article>
+      <article class="card">
+        <span class="card-index">02</span>
+        <h3>Grow</h3>
+        <p>Each bite makes Yooba larger. The world stays the same size, so the next step feels different.</p>
+      </article>
+      <article class="card">
+        <span class="card-index">03</span>
+        <h3>Head home</h3>
+        <p>Trees, houses, and open grass sit under a big sky. The walk has a direction.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section">
+      <h2>From the blog</h2>
+      <p class="lede">Short notes on how the game plays, and how to open it.</p>
+      <div class="posts">
+        <a class="post-link" href="/blog/eat-and-grow.html">
+          <time datetime="2026-10-13">Oct 13, 2026</time>
+          <div>
+            <h3>Eat, then grow</h3>
+            <p>What the food is for, and why the bigger pieces wait.</p>
+          </div>
+        </a>
+        <a class="post-link" href="/blog/the-way-home.html">
+          <time datetime="2026-10-06">Oct 6, 2026</time>
+          <div>
+            <h3>The way home</h3>
+            <p>Movement, jumping, and the things you can interact with.</p>
+          </div>
+        </a>
+        <a class="post-link" href="/blog/play-in-the-browser.html">
+          <time datetime="2026-09-22">Sep 22, 2026</time>
+          <div>
+            <h3>Play it in the browser</h3>
+            <p>Nothing to install. The first visit just needs a moment to load.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-brand">Yooba Land</p>
+      <p>A cartoon game about eating, growing, and finding the way home.</p>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="/">Home</a>
+        <a href="/blog.html">Blog</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/privacypolicy.html">Privacy</a>
+        <a href="/Game/">Play</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/site/site.js"></script>
 </body>
 </html>
