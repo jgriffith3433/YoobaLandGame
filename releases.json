@@ -1,0 +1,18 @@
+{
+  "product": "yoobaland",
+  "name": "Yooba Land",
+  "current": "1.0.0",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "date": "2026-10-16",
+      "build": "7",
+      "title": "Yooba sets out for home",
+      "notes": [
+        "Eat, grow, and find the way home across the first levels.",
+        "Pick a level and play right in your browser.",
+        "Collect the apples along the way: every bite helps Yooba grow."
+      ]
+    }
+  ]
+}
