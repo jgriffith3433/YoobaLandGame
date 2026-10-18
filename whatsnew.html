@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What's new — Yooba Land</title>
+  <meta name="description" content="What changed in Yooba Land, newest first.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/site/site.css">
+  <link rel="stylesheet" href="/site/hawkes-credits.css">
+  <link rel="stylesheet" href="/site/hawkes-release.css">
+</head>
+<body>
+  <!-- This page is installed by the deploy (YoobaWebBuild.InstallReleaseNotes) from YoobaLand/Tools/Web; edit it there -->
+  <header class="topbar">
+    <a class="brand" href="/">Yooba Land</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">Menu</button>
+    <nav id="site-menu" class="menu" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/blog.html">Blog</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/whatsnew.html" aria-current="page" data-hawkes-whatsnew>What's new</a>
+    </nav>
+    <a class="play" href="/Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
+  </header>
+
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <p class="kicker">What's new</p>
+      <h1>What changed on the walk.</h1>
+      <p>Newest first. <span data-hawkes-version data-prefix="Now: v" hidden></span></p>
+    </div>
+  </header>
+
+  <main class="article">
+    <div data-hawkes-releases><p class="hawkes-release-empty">Chewing&hellip;</p></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-brand">Yooba Land</p>
+      <p>A cartoon game about eating, growing, and finding the way home.</p>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="/">Home</a>
+        <a href="/blog.html">Blog</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/privacypolicy.html">Privacy</a>
+        <a href="/Game/">Play</a>
+        <a href="/whatsnew.html" data-hawkes-whatsnew>What's new</a>
+      </nav>
+      <!-- Hawkes credits: written by the deploy (YoobaWebBuild.InstallSiteCredits); edit it there -->
+      <p class="hawkes-credits">
+        <a class="hawkes-gen" href="https://hawkesgen.com">Powered by <span class="hawkes-gen-name">HAWKES GEN</span></a>
+      </p>
+      <!-- /Hawkes credits -->
+    </div>
+  </footer>
+  <script src="/js/hawkes-release.js" data-releases="/releases.json" defer></script>
+  <script src="/site/site.js"></script>
+</body>
+</html>
