@@ -74,6 +74,13 @@
     }
   </style>
   <script>window.YOOBA_BUILD = "v32";</script>
+  <!-- Hawkes Analytics: the page loads the SDK once; the game's bridge finds it (data-hawkes-analytics) and adds no second copy -->
+  <script>
+    // The build this page loads, the way the game names it: releases.json's version plus the Game/v<n> folder
+    // ("1.0.0+v32"). The folder alone until releases.json is read (below); the SDK reads it for every batch.
+    window.HAWKES_BUILD = { version: String(window.YOOBA_BUILD || "") };
+  </script>
+  <script src="https://gen.hawkesgen.com/sdk/analytics@1.js" data-product="yoobaland" data-hawkes-analytics="page" defer></script>
 </head>
 <body>
   <div id="unity-container">
@@ -185,5 +192,15 @@
     })();
   </script>
   <!-- /Hawkes release -->
+  <script>
+    // Hawkes Analytics: the release's version in front of the build folder, "1.0.0+v32".
+    (function () {
+      if (!window.hawkesRelease || !window.HAWKES_BUILD) return;
+      window.hawkesRelease.then(function (r) {
+        var version = r && (r.current || (r.releases && r.releases[0] && r.releases[0].version));
+        if (version) window.HAWKES_BUILD.version = version + "+" + window.YOOBA_BUILD;
+      });
+    })();
+  </script>
 </body>
 </html>
