@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site/site.css">
+  <link rel="stylesheet" href="/site/hawkes-credits.css">
+  <link rel="stylesheet" href="/site/hawkes-release.css">
 </head>
 <body>
   <header class="topbar">
@@ -18,6 +20,7 @@
       <a href="/" aria-current="page">Home</a>
       <a href="/blog.html">Blog</a>
       <a href="/contact.html">Contact</a>
+      <a href="/whatsnew.html" data-hawkes-whatsnew>What's new</a>
     </nav>
     <a class="play" href="/Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
   </header>
@@ -29,6 +32,9 @@
         <p class="kicker">A cartoon game</p>
         <h1>Walk home as Yooba.</h1>
         <p>Eat what you find, grow when you can, and keep moving through a toon world.</p>
+        <!-- Hawkes release: written by the deploy (YoobaWebBuild.InstallReleaseNotes); edit it there -->
+        <p class="hero-version"><a href="/whatsnew.html" data-hawkes-version data-prefix="What's new in v" hidden></a></p>
+        <!-- /Hawkes release -->
       </div>
       <a class="play play-large" href="/Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
     </div>
@@ -96,9 +102,19 @@
         <a href="/contact.html">Contact</a>
         <a href="/privacypolicy.html">Privacy</a>
         <a href="/Game/">Play</a>
+        <a href="/whatsnew.html" data-hawkes-whatsnew>What's new</a>
       </nav>
+      <!-- Hawkes credits: written by the deploy (YoobaWebBuild.InstallSiteCredits); edit it there -->
+      <p class="hawkes-credits">
+        <a class="hawkes-gen" href="https://hawkesgen.com">Powered by <span class="hawkes-gen-name">HAWKES GEN</span></a>
+        <a class="hawkes-biomedical" href="https://hawkesbiomedical.com">From Hawkes Biomedical</a>
+      </p>
+      <!-- /Hawkes credits -->
     </div>
   </footer>
   <script src="/site/site.js"></script>
+  <!-- Hawkes release: written by the deploy (YoobaWebBuild.InstallReleaseNotes); edit it there -->
+  <script src="/js/hawkes-release.js" data-releases="/releases.json" defer></script>
+  <!-- /Hawkes release -->
 </body>
 </html>

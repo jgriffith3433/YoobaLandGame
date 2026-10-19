@@ -1,0 +1,30 @@
+/* The Hawkes credits in the site's footer: "Powered by HAWKES GEN" on every page, and Hawkes Biomedical on the
+   landing page. The deploy (YoobaWebBuild.InstallSiteCredits) copies this file to the website's site/ folder and
+   writes the markup into each page's footer; edit both here, in the Unity project, never in the website. */
+.site-footer .hawkes-credits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1.4rem;
+  margin: 1.3rem 0 0;
+  padding-top: 0.95rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.86rem;
+}
+
+.hawkes-credits a {
+  color: #b9d8c4;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.hawkes-credits a:hover { color: white; }
+
+.hawkes-gen-name {
+  color: var(--sun, #ffe56a);
+  font-family: Fredoka, "Trebuchet MS", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.hawkes-credits a:hover .hawkes-gen-name { color: white; }
