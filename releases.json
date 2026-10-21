@@ -1,12 +1,24 @@
 {
   "product": "yoobaland",
   "name": "Yooba Land",
-  "current": "1.0.0",
+  "current": "1.1.0",
   "releases": [
+    {
+      "version": "1.1.0",
+      "date": "2026-10-21",
+      "build": "92",
+      "title": "Yooba Land: world loading, sound and travel",
+      "notes": [
+        "The world now loads in as you move through it, so going from place to place means less waiting.",
+        "The footsteps are gone, so walking around Yooba Land is much quieter.",
+        "Cars drive the roads, boats float on the coast and lake, and the plane can take off from Skyport, fly over the world, and land again.",
+        "If the game went dark after the credits, it now brings the world back so you can keep playing."
+      ]
+    },
     {
       "version": "1.0.0",
       "date": "2026-10-18",
-      "build": "32",
+      "build": "92",
       "title": "The walk home starts here",
       "notes": [
         "I am small. I am hungry. Home is that way.",
@@ -15,7 +27,13 @@
         "Every bite makes me bigger.",
         "Cross the bridge and something that looks a lot like me drops out of the sky.",
         "Tap to play turns my sound on. The gear, top left, turns it down.",
-        "I travel light. The world comes down a piece at a time while I get ready, so I start sooner."
+        "I travel light. The world comes down a piece at a time while I get ready, so I start sooner.",
+        "Past the broken glass there is a whole town. The market pays seeds for food I carry in.",
+        "I am not the only Yooba. The others wait at Level Select, and past the glass we walk together. No codes.",
+        "Once I have broken out, I start outside the glass. The others are out there already.",
+        "Fish! I stand in a ring by the water, cast, wait for the bob and reel. Then I eat it. Or sell it. Old Reed says sit still.",
+        "Chapters! The mayor, a farmer and a goatherd who whistles each show me a bit more of the way. Bramley gave me a golden seed. I am not eating it.",
+        "Hide my tab and I fall asleep. To walk with a friend on one computer, put two windows side by side, or use two devices."
       ]
     }
   ]
