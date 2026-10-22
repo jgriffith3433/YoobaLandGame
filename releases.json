@@ -1,8 +1,17 @@
 {
   "product": "yoobaland",
   "name": "Yooba Land",
-  "current": "1.1.1",
+  "current": "1.2.0",
   "releases": [
+    {
+      "version": "1.2.0",
+      "date": "2026-10-22",
+      "build": "97",
+      "title": "Improvements and fixes",
+      "notes": [
+        "Improvements and fixes."
+      ]
+    },
     {
       "version": "1.1.1",
       "date": "2026-10-21",
