@@ -1,0 +1,2 @@
+- lesson: whatsnew.html fails `npm run check` — it has no analytics tag because the deploy (YoobaWebBuild.InstallReleaseNotes) writes that page; the failure was there before and isn't from page edits.
+- convention: website images — resize store/ PNGs (2560 wide, 2-3 MB) with ffmpeg to 1280 wide JPGs in images/; there is no PIL or ImageMagick on the server.
