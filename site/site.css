@@ -387,3 +387,36 @@ button.play, .contact-form button {
 
   .cards, .post-link { grid-template-columns: 1fr; }
 }
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.gallery figure {
+  margin: 0;
+  background: var(--card);
+  border: 3px solid var(--green-deep);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.gallery img { display: block; width: 100%; height: auto; }
+
+.gallery figcaption { padding: 0.7rem 1rem 0.9rem; color: var(--ink-soft); font-weight: 700; }
+
+.live {
+  background: var(--green-deep);
+  color: white;
+  border-radius: 18px;
+  padding: 1.6rem 1.6rem 1.8rem;
+}
+
+.live h2 { margin: 0.2rem 0 0.4rem; }
+
+.live p { max-width: 40rem; }
+
+@media (max-width: 800px) {
+  .gallery { grid-template-columns: 1fr; }
+}
