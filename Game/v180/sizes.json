@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "totalBytes": 489086556,
+    "totalBytes": 489125684,
     "regions": [
         {
             "name": "lazy",
@@ -29,7 +29,7 @@
         {
             "name": "player",
             "set": "player",
-            "bytes": 34557083,
+            "bytes": 34596211,
             "files": 17
         },
         {
@@ -236,7 +236,7 @@
             "path": "Build/YoobaLand.data.unityweb",
             "region": "player",
             "set": "player",
-            "bytes": 22521847
+            "bytes": 22561672
         },
         {
             "path": "StreamingAssets/aa/WebGL/kit_textures_assets_all_74f819d10a9048561fdf003691f7af0b.bundle",
@@ -248,7 +248,7 @@
             "path": "Build/YoobaLand.wasm.unityweb",
             "region": "player",
             "set": "player",
-            "bytes": 11805066
+            "bytes": 11804369
         },
         {
             "path": "StreamingAssets/aa_astc/WebGL/level1_foliage_assets_all_40db3c1a90fd1b7dae442ff2918b7b5c.bundle",
