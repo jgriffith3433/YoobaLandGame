@@ -10,38 +10,115 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <title>Yooba Land</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="../images/hero-yooba.jpg">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #111;
+      background: #143226;
       touch-action: none;
     }
-    #unity-container { width: 100%; height: 100%; }
-    #unity-canvas { width: 100%; height: 100%; display: block; background: #111; }
+    /* Until the game is running, the page shows the landing page's in-game art (../images/hero-yooba.jpg) behind the
+       canvas; once it runs (.loaded, set below) the canvas is plain dark again. */
+    #unity-container {
+      width: 100%;
+      height: 100%;
+      background: #5cdbee url("../images/hero-yooba.jpg") 20% 50% / cover no-repeat;
+    }
+    #unity-container::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(16, 40, 28, 0.55);
+      pointer-events: none;
+    }
+    #unity-container.loaded { background: #111; }
+    #unity-container.loaded::before { display: none; }
+    #unity-canvas { position: relative; width: 100%; height: 100%; display: block; background: transparent; }
+    #unity-container.loaded #unity-canvas { background: #111; }
     #unity-loading-bar {
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
+      width: min(360px, 84vw);
+      padding: 18px 22px 22px;
       text-align: center;
       color: white;
-      font-family: Arial, sans-serif;
+      font: 600 20px Fredoka, "Trebuchet MS", Arial, sans-serif;
+      background: rgba(16, 40, 28, 0.82);
+      border: 3px solid #10281c;
+      border-radius: 22px;
+      box-shadow: 0 6px 0 #10281c, 0 12px 30px rgba(0, 0, 0, 0.35);
     }
     #unity-progress-bar-empty {
-      width: 280px;
-      height: 16px;
-      margin: 16px auto 0;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
+      width: 100%;
+      height: 18px;
+      margin: 14px auto 0;
+      background: rgba(255, 255, 255, 0.16);
+      border: 2px solid #10281c;
+      border-radius: 999px;
+      overflow: hidden;
     }
     #unity-progress-bar-full {
       width: 0%;
       height: 100%;
-      background: #2f9e6b;
-      border-radius: 8px;
+      background: linear-gradient(90deg, #23c34a, #89ce00);
+      border-radius: 999px;
+      box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.18), inset 0 3px 0 rgba(255, 255, 255, 0.3);
+      transition: width 0.2s ease-out;
+    }
+    /* The Tap to play screen is hawkes-sound.js's (written by the Unity deploy); its look is set here, after the
+       script's own style: the same in-game art as the landing page instead of the drawn hills and Yooba. */
+    html body #hawkes-tap {
+      justify-content: flex-end;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(9vh + env(safe-area-inset-bottom)) env(safe-area-inset-left);
+      background:
+        linear-gradient(180deg, rgba(16, 40, 28, 0) 30%, rgba(16, 40, 28, 0.55) 62%, rgba(16, 40, 28, 0.9) 100%),
+        #5cdbee url("../images/hero-yooba.jpg") 20% 50% / cover no-repeat;
+      font-family: Fredoka, "Trebuchet MS", Arial, sans-serif;
+    }
+    html body #hawkes-tap svg { display: none; }
+    html body #hawkes-tap h1 {
+      font-family: Fredoka, "Trebuchet MS", Arial, sans-serif;
+      font-weight: 600;
+      color: #ffe56a;
+      text-shadow: .04em .04em 0 #10281c, -.04em .04em 0 #10281c, .04em -.04em 0 #10281c, -.04em -.04em 0 #10281c,
+        0 .1em 0 #10281c, 0 .16em .4em rgba(0, 0, 0, .45);
+    }
+    html body #hawkes-tap button {
+      display: inline-flex;
+      align-items: center;
+      gap: .45em;
+      font-family: Fredoka, "Trebuchet MS", Arial, sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+      color: #143226;
+      background: #ffe56a;
+      border: 3px solid #10281c;
+      box-shadow: 0 .14em 0 #10281c, 0 .3em .8em rgba(0, 0, 0, .35);
+    }
+    html body #hawkes-tap button::before {
+      content: "";
+      border-style: solid;
+      border-width: .38em 0 .38em .62em;
+      border-color: transparent transparent transparent currentColor;
+    }
+    html body #hawkes-tap p {
+      font-family: Nunito, Arial, sans-serif;
+      font-weight: 800;
+      max-width: 34em;
+    }
+    /* Portrait (phones): keep all of Yooba in the frame. */
+    @media (max-aspect-ratio: 1/1) {
+      html body #hawkes-tap { background-position: 0 0, 5% 50%; }
+      #unity-container { background-position: 5% 50%; }
     }
     #unity-warning {
       position: absolute;
@@ -158,6 +235,7 @@
           progressBarFull.style.width = (100 * progress) + "%";
         }).then(function () {
           loadingBar.style.display = "none";
+          container.className += " loaded";
         }).catch(function (message) {
           loadingBar.style.display = "none";
           unityShowBanner(String(message), "error");

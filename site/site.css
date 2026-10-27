@@ -1,11 +1,17 @@
+/* Colours from the game itself (Level 1 in-game frames): its cyan sky, lime grass, Yooba's green and the dark
+   outline every model is drawn with. The hero art is images/hero-yooba.jpg, also the game page's Tap to play screen. */
 :root {
   --ink: #173024;
   --ink-soft: #3d5a49;
   --green: #1f8a45;
   --green-deep: #143226;
-  --leaf: #e7f6ea;
-  --sky: #d9f1fb;
-  --paper: #f7fbf8;
+  --outline: #10281c;
+  --yooba: #23c34a;
+  --lime: #89ce00;
+  --leaf: #effadb;
+  --sky: #d3f6fc;
+  --sky-game: #5cdbee;
+  --paper: #f7fbf6;
   --sun: #ffe56a;
   --sun-shadow: #c9a227;
   --line: #cfe3d4;
@@ -129,38 +135,71 @@ h1, h2, h3, .brand, .play, .kicker {
   cursor: pointer;
 }
 
+/* The hero: an in-game frame, full bleed. Yooba stands on the left, so the words sit on the right over a shade of
+   the topbar's green; on a phone the frame keeps Yooba in view and the words sit at the bottom. */
 .hero {
   position: relative;
-  background: #87c7ea;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: clamp(460px, 74vh, 780px);
+  overflow: hidden;
+  background: var(--sky-game);
+  border-bottom: 4px solid var(--sun);
 }
 
 .hero-photo {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  height: auto;
-  background: #87c7ea;
+  height: 100%;
+  object-fit: cover;
+  object-position: 20% 50%;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(16, 40, 28, 0) 32%, rgba(16, 40, 28, 0.62) 56%, rgba(16, 40, 28, 0.86) 100%);
+  pointer-events: none;
 }
 
 .hero-panel {
+  position: relative;
+  z-index: 1;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem 2rem;
-  padding: 1.6rem 6vw 1.7rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.2rem;
+  width: min(34rem, 46%);
+  margin-right: 6vw;
+  padding: 2rem 0;
   color: white;
-  background: var(--green-deep);
 }
-
-.hero-copy { max-width: 40rem; }
 
 .hero-panel h1 {
-  margin: 0.15rem 0 0.45rem;
-  font-size: clamp(2rem, 4vw, 3.1rem);
-  line-height: 1.05;
+  margin: 0.25rem 0 0.6rem;
+  font-size: clamp(2.2rem, 4.2vw, 3.6rem);
+  line-height: 1.02;
+  text-shadow: 0 3px 0 var(--outline), 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
-.hero-panel p { margin: 0; }
+.hero-panel p {
+  margin: 0;
+  font-size: 1.12rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.hero-panel .hero-tagline {
+  margin-bottom: 0.3rem;
+  color: var(--sun);
+  font-family: Fredoka, "Trebuchet MS", sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+  text-shadow: 0 2px 0 var(--outline);
+}
 
 .kicker {
   margin: 0;
@@ -196,10 +235,10 @@ h1, h2, h3, .brand, .play, .kicker {
 
 .card {
   background: var(--card);
-  border: 3px solid var(--green-deep);
-  border-radius: 18px;
+  border: 3px solid var(--outline);
+  border-radius: 22px;
   padding: 1.15rem 1.15rem 1.2rem;
-  box-shadow: 6px 6px 0 #d7efdc;
+  box-shadow: 0 6px 0 var(--outline);
 }
 
 .card h3 { margin: 0.2rem 0 0.35rem; font-size: 1.45rem; }
@@ -207,9 +246,17 @@ h1, h2, h3, .brand, .play, .kicker {
 .card p { margin: 0; color: var(--ink-soft); }
 
 .card-index {
-  display: inline-block;
-  color: var(--green);
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  border: 3px solid var(--outline);
+  border-radius: 999px;
+  background: var(--yooba);
+  color: white;
   font-family: Fredoka, "Trebuchet MS", sans-serif;
+  font-weight: 600;
+  text-shadow: 0 1px 0 var(--outline);
 }
 
 .posts {
@@ -225,14 +272,17 @@ h1, h2, h3, .brand, .play, .kicker {
   text-decoration: none;
   color: inherit;
   background: white;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 1rem 1.1rem;
-  border: 2px solid var(--line);
+  border: 3px solid var(--outline);
+  box-shadow: 0 4px 0 var(--outline);
 }
 
 .post-link:hover {
-  border-color: var(--green);
   color: inherit;
+  background: #fbfff2;
+  transform: translateY(1px);
+  box-shadow: 0 3px 0 var(--outline);
 }
 
 .post-link time {
@@ -246,15 +296,21 @@ h1, h2, h3, .brand, .play, .kicker {
 
 .band {
   background: linear-gradient(180deg, var(--sky), var(--leaf));
+  border-top: 3px solid var(--outline);
+  border-bottom: 3px solid var(--outline);
 }
 
 .page-hero {
   background:
-    linear-gradient(180deg, rgba(20, 50, 38, 0.55), rgba(20, 50, 38, 0.2)),
-    #87c7ea url("/background.jpg") center 30% / cover no-repeat;
+    linear-gradient(90deg, rgba(16, 40, 28, 0.82), rgba(16, 40, 28, 0.45) 70%, rgba(16, 40, 28, 0.2)),
+    var(--sky-game) url("/images/hero-yooba-960.jpg") center 40% / cover no-repeat;
   color: white;
   padding: 3.2rem 1.25rem 2.6rem;
+  border-bottom: 4px solid var(--sun);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
+
+.page-hero h1 { text-shadow: 0 3px 0 var(--outline), 0 6px 18px rgba(0, 0, 0, 0.3); }
 
 .page-hero-inner,
 .article,
@@ -383,7 +439,23 @@ button.play, .contact-form button {
 
   .menu.is-open { display: flex; }
 
-  .hero-panel { padding: 1.3rem 1.25rem 1.45rem; }
+  .hero {
+    align-items: flex-end;
+    justify-content: flex-start;
+    min-height: clamp(520px, 86vh, 720px);
+  }
+
+  .hero-photo { object-position: 4% 50%; }
+
+  .hero::after {
+    background: linear-gradient(180deg, rgba(16, 40, 28, 0) 34%, rgba(16, 40, 28, 0.7) 60%, rgba(16, 40, 28, 0.92) 100%);
+  }
+
+  .hero-panel {
+    width: 100%;
+    margin: 0;
+    padding: 1.3rem 1.25rem 1.6rem;
+  }
 
   .cards, .post-link { grid-template-columns: 1fr; }
 }
@@ -397,9 +469,10 @@ button.play, .contact-form button {
 .gallery figure {
   margin: 0;
   background: var(--card);
-  border: 3px solid var(--green-deep);
-  border-radius: 18px;
+  border: 3px solid var(--outline);
+  border-radius: 22px;
   overflow: hidden;
+  box-shadow: 0 6px 0 var(--outline);
 }
 
 .gallery img { display: block; width: 100%; height: auto; }
@@ -407,9 +480,13 @@ button.play, .contact-form button {
 .gallery figcaption { padding: 0.7rem 1rem 0.9rem; color: var(--ink-soft); font-weight: 700; }
 
 .live {
-  background: var(--green-deep);
+  background:
+    linear-gradient(90deg, rgba(16, 40, 28, 0.94) 35%, rgba(16, 40, 28, 0.55)),
+    var(--green-deep) url("/images/shot-orchard.jpg") center 35% / cover no-repeat;
   color: white;
-  border-radius: 18px;
+  border: 3px solid var(--outline);
+  border-radius: 22px;
+  box-shadow: 0 6px 0 var(--outline);
   padding: 1.6rem 1.6rem 1.8rem;
 }
 
