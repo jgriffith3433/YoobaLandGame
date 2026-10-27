@@ -29,7 +29,8 @@
 
   <section class="hero">
     <!-- In-game frame (store/screenshot5): the same picture is the game page's Tap to play screen -->
-    <img class="hero-photo" src="/images/hero-yooba.jpg" srcset="/images/hero-yooba-960.jpg 960w, /images/hero-yooba.jpg 1920w" sizes="100vw" width="1920" height="1080" fetchpriority="high" alt="Yooba, green and gooey with two eyes on stalks and a wide open mouth, on a wooden path beside the glass. A red orb hangs in the sky past the trees.">
+    <!-- Gameplay loop (muted, from a playtest recording); the poster is its first frame -->
+    <video class="hero-photo" data-hero-loop autoplay muted loop playsinline preload="auto" disablepictureinpicture poster="/images/hero-loop.jpg" aria-hidden="true"><source src="/images/hero-loop.mp4" type="video/mp4"></video><script>(function(){var v=document.querySelector('[data-hero-loop]');if(v&&window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause();}})();</script>
     <div class="hero-panel">
       <div class="hero-copy">
         <p class="kicker">A 3D game in your browser</p>
