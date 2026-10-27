@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <!-- Hawkes sound prompt: installed by the deploy from YoobaLand/Tools/Web; must load before Unity's loader -->
-  <script src="v99/hawkes-sound.js"></script>
+  <script src="v176/hawkes-sound.js"></script>
   <!-- Hawkes errors: installed by the deploy from YoobaLand/Tools/Web; reports errors on the beta site only -->
-  <script src="v99/hawkes-errors.js"></script>
+  <script src="v176/hawkes-errors.js"></script>
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -152,7 +152,7 @@
       color: #8fd9b4;
     }
   </style>
-  <script>window.YOOBA_BUILD = "v99";</script>
+  <script>window.YOOBA_BUILD = "v176";</script>
   <!-- Hawkes Analytics: the page loads the SDK once; the game's bridge finds it (data-hawkes-analytics) and adds no second copy -->
   <script>
     // The build this page loads, the way the game names it: releases.json's version plus the Game/v<n> folder
@@ -160,8 +160,6 @@
     window.HAWKES_BUILD = { version: String(window.YOOBA_BUILD || "") };
   </script>
   <script src="https://gen.hawkesgen.com/sdk/analytics@1.js" data-product="yoobaland" data-hawkes-analytics="page" defer></script>
-  <!-- Hawkes net: installed by the deploy from YoobaLand/Tools/Web (public relays and STUN only) -->
-  <script src="v99/hawkes-net.js"></script>
 </head>
 <body>
   <div id="unity-container">

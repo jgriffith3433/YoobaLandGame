@@ -1,8 +1,20 @@
 {
   "product": "yoobaland",
   "name": "Yooba Land",
-  "current": "1.4.0",
+  "current": "1.5.0",
   "releases": [
+    {
+      "version": "1.5.0",
+      "date": "2026-10-27",
+      "build": "176",
+      "title": "What's new in Yooba Land",
+      "notes": [
+        "Licorice Reach is a new area to explore, with its own scenery and music.",
+        "The first trip to the Yooba Town waystone is much quicker, with no long black screen.",
+        "Players who have stepped away online now appear faded, and hosting passes to another player when the host leaves.",
+        "The Dark Bell dais can be reached, and the Eighth Orb ring and closing card now play through to the end."
+      ]
+    },
     {
       "version": "1.4.0",
       "date": "2026-10-24",
