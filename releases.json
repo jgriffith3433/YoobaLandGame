@@ -1,8 +1,17 @@
 {
   "product": "yoobaland",
   "name": "Yooba Land",
-  "current": "1.5.0",
+  "current": "1.6.0",
   "releases": [
+    {
+      "version": "1.6.0",
+      "date": "2026-10-27",
+      "build": "179",
+      "title": "What's new in Yooba Land",
+      "notes": [
+        "Buildings have cleaner, brighter colours and their surfaces look neater from every angle."
+      ]
+    },
     {
       "version": "1.5.0",
       "date": "2026-10-27",
