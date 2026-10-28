@@ -159,7 +159,7 @@
     // ("1.0.0+v32"). The folder alone until releases.json is read (below); the SDK reads it for every batch.
     window.HAWKES_BUILD = { version: String(window.YOOBA_BUILD || "") };
   </script>
-  <script src="https://gen.hawkesgen.com/sdk/analytics@1.js" data-product="yoobaland" data-hawkes-analytics="page" defer></script>
+  <script src="https://gen.hawkesgen.ai/sdk/analytics@1.js" data-product="yoobaland" data-hawkes-analytics="page" defer></script>
 </head>
 <body>
   <div id="unity-container">
@@ -267,7 +267,7 @@
         var top = r && r.releases && r.releases[0];
         if (!top) return;
         var host = location.hostname;
-        var beta = /\.hawkesgen\.com$/.test(host) || host === "localhost" || host === "127.0.0.1";
+        var beta = /\.hawkesgen\.ai$/.test(host) || host === "localhost" || host === "127.0.0.1";
         var link = document.createElement("a");
         link.href = "../whatsnew.html";
         link.target = "_blank";

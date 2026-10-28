@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-const SDK = 'https://gen.hawkesgen.com/sdk/analytics@1.js';
+const SDK = 'https://gen.hawkesgen.ai/sdk/analytics@1.js';
 const TRACKERS = /goatcounter|umami|gtag\(|googletagmanager|google-analytics|plausible|clarity\.ms|hotjar|fbq\(|connect\.facebook|segment\.com|mixpanel|amplitude|posthog|matomo|piwik|cloudflareinsights|statcounter|yandex|tiktok|linkedin\.com\/insight|doubleclick/i;
 const problems = [];
 
