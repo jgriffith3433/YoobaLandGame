@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <!-- Hawkes sound prompt: installed by the deploy from YoobaLand/Tools/Web; must load before Unity's loader -->
-  <script src="v180/hawkes-sound.js"></script>
+  <script src="v182/hawkes-sound.js"></script>
   <!-- Hawkes errors: installed by the deploy from YoobaLand/Tools/Web; reports errors on the beta site only -->
-  <script src="v180/hawkes-errors.js"></script>
+  <script src="v182/hawkes-errors.js"></script>
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -152,7 +152,7 @@
       color: #8fd9b4;
     }
   </style>
-  <script>window.YOOBA_BUILD = "v180";</script>
+  <script>window.YOOBA_BUILD = "v182";</script>
   <script>window.HAWKES_NET_ENDPOINT = window.HAWKES_NET_ENDPOINT || 'https://net.hawkesgen.ai'; // builds before 2026-10-28 have net.hawkesgen.com baked in; beta pages set their own first</script>
   <!-- Hawkes Analytics: the page loads the SDK once; the game's bridge finds it (data-hawkes-analytics) and adds no second copy -->
   <script>
@@ -270,7 +270,7 @@
         var top = r && r.releases && r.releases[0];
         if (!top) return;
         var host = location.hostname;
-        var beta = /\.hawkesgen\.ai$/.test(host) || host === "localhost" || host === "127.0.0.1";
+        var beta = /\.hawkesgen\.com$/.test(host) || host === "localhost" || host === "127.0.0.1";
         var link = document.createElement("a");
         link.href = "../whatsnew.html";
         link.target = "_blank";
