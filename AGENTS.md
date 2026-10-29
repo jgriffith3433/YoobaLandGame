@@ -1,5 +1,7 @@
 # Yooba Land website — agent notes
 
+**Lanes, local dev and deploys:** `LANES.md` (branches dev -> beta -> main; `dev.bat`, `deploy-beta.bat`, `deploy-prod.bat`, `status.bat`, `links.bat`, `sync.bat`; beta and live links).
+
 The site for **Yooba Land** (yoobalandgame.com), static on GitHub Pages. In the Hawkes Biomedical line it is
 sold as *hyporexia support*. `Game/` is the WebGL build from the Unity project `C:\Projects\YoobaLand\YoobaLand`
 (its `YoobaWebBuild` editor script writes it); don't hand-edit build output. Local dev: `auto-start.bat`
