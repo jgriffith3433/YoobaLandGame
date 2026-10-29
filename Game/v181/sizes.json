@@ -1,0 +1,1628 @@
+{
+    "version": 1,
+    "totalBytes": 498998646,
+    "regions": [
+        {
+            "name": "lazy",
+            "set": "dxt",
+            "bytes": 81819602,
+            "files": 34
+        },
+        {
+            "name": "lazy",
+            "set": "astc",
+            "bytes": 81819602,
+            "files": 34
+        },
+        {
+            "name": "kit",
+            "set": "astc",
+            "bytes": 59396123,
+            "files": 8
+        },
+        {
+            "name": "kit",
+            "set": "dxt",
+            "bytes": 47284057,
+            "files": 8
+        },
+        {
+            "name": "player",
+            "set": "player",
+            "bytes": 35417497,
+            "files": 17
+        },
+        {
+            "name": "level1",
+            "set": "dxt",
+            "bytes": 28539223,
+            "files": 9
+        },
+        {
+            "name": "level1",
+            "set": "astc",
+            "bytes": 27767075,
+            "files": 9
+        },
+        {
+            "name": "licoricereach",
+            "set": "astc",
+            "bytes": 19644552,
+            "files": 5
+        },
+        {
+            "name": "licoricereach",
+            "set": "dxt",
+            "bytes": 16031297,
+            "files": 5
+        },
+        {
+            "name": "mistwood",
+            "set": "astc",
+            "bytes": 7861817,
+            "files": 5
+        },
+        {
+            "name": "crumblecrown",
+            "set": "astc",
+            "bytes": 7689821,
+            "files": 4
+        },
+        {
+            "name": "sugarsand",
+            "set": "astc",
+            "bytes": 7334020,
+            "files": 4
+        },
+        {
+            "name": "seedvale",
+            "set": "astc",
+            "bytes": 7219161,
+            "files": 4
+        },
+        {
+            "name": "end",
+            "set": "dxt",
+            "bytes": 6441673,
+            "files": 3
+        },
+        {
+            "name": "end",
+            "set": "astc",
+            "bytes": 6441673,
+            "files": 3
+        },
+        {
+            "name": "frostcap",
+            "set": "astc",
+            "bytes": 6074898,
+            "files": 4
+        },
+        {
+            "name": "seedvale",
+            "set": "dxt",
+            "bytes": 5419192,
+            "files": 4
+        },
+        {
+            "name": "mistwood",
+            "set": "dxt",
+            "bytes": 5168224,
+            "files": 5
+        },
+        {
+            "name": "crumblecrown",
+            "set": "dxt",
+            "bytes": 5038644,
+            "files": 4
+        },
+        {
+            "name": "sugarsand",
+            "set": "dxt",
+            "bytes": 4969313,
+            "files": 4
+        },
+        {
+            "name": "frostcap",
+            "set": "dxt",
+            "bytes": 4587491,
+            "files": 4
+        },
+        {
+            "name": "levelselect",
+            "set": "dxt",
+            "bytes": 4586647,
+            "files": 7
+        },
+        {
+            "name": "levelselect",
+            "set": "astc",
+            "bytes": 3938950,
+            "files": 7
+        },
+        {
+            "name": "whistlinghills",
+            "set": "astc",
+            "bytes": 3862271,
+            "files": 4
+        },
+        {
+            "name": "common",
+            "set": "astc",
+            "bytes": 3566080,
+            "files": 3
+        },
+        {
+            "name": "whistlinghills",
+            "set": "dxt",
+            "bytes": 3129615,
+            "files": 4
+        },
+        {
+            "name": "common",
+            "set": "dxt",
+            "bytes": 2238081,
+            "files": 3
+        },
+        {
+            "name": "skyport",
+            "set": "astc",
+            "bytes": 1741986,
+            "files": 3
+        },
+        {
+            "name": "skyport",
+            "set": "dxt",
+            "bytes": 1077022,
+            "files": 3
+        },
+        {
+            "name": "launcher",
+            "set": "astc",
+            "bytes": 574782,
+            "files": 4
+        },
+        {
+            "name": "launcher",
+            "set": "dxt",
+            "bytes": 568617,
+            "files": 4
+        },
+        {
+            "name": "catalog",
+            "set": "dxt",
+            "bytes": 430899,
+            "files": 4
+        },
+        {
+            "name": "catalog",
+            "set": "astc",
+            "bytes": 430899,
+            "files": 4
+        },
+        {
+            "name": "loading",
+            "set": "dxt",
+            "bytes": 398176,
+            "files": 1
+        },
+        {
+            "name": "loading",
+            "set": "astc",
+            "bytes": 398176,
+            "files": 1
+        },
+        {
+            "name": "bd0a15a9fe521abcd1f04816039d755f",
+            "set": "dxt",
+            "bytes": 45745,
+            "files": 2
+        },
+        {
+            "name": "bd0a15a9fe521abcd1f04816039d755f",
+            "set": "astc",
+            "bytes": 45745,
+            "files": 2
+        }
+    ],
+    "files": [
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/kit_textures_assets_all_a31b2981205d081381213c87326cd945.bundle",
+            "region": "kit",
+            "set": "astc",
+            "bytes": 29812056
+        },
+        {
+            "path": "Build/YoobaLand.data.unityweb",
+            "region": "player",
+            "set": "player",
+            "bytes": 23368499
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/kit_textures_assets_all_6f58a0bbe24990d7d075f2e12e4dd54d.bundle",
+            "region": "kit",
+            "set": "dxt",
+            "bytes": 17851019
+        },
+        {
+            "path": "Build/YoobaLand.wasm.unityweb",
+            "region": "player",
+            "set": "player",
+            "bytes": 11818718
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/level1_foliage_assets_all_023b065186ac6c302b1c0a2894ebd9f8.bundle",
+            "region": "level1",
+            "set": "astc",
+            "bytes": 11584331
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/level1_foliage_assets_all_8ba7f76a6fee023e51566a76f1de54dc.bundle",
+            "region": "level1",
+            "set": "dxt",
+            "bytes": 11491315
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/level1_buildings_assets_all_894c4f76ecb46f5896b1543bee29c93f.bundle",
+            "region": "level1",
+            "set": "dxt",
+            "bytes": 9268144
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/level1_buildings_assets_all_52b1d2ae8ebb63c04fe7e5465821f8f8.bundle",
+            "region": "level1",
+            "set": "astc",
+            "bytes": 9100412
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/licoricereach_props_assets_all_09130e5c9fa543d5d68ff54ecfdfcae4.bundle",
+            "region": "licoricereach",
+            "set": "dxt",
+            "bytes": 8862744
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/licoricereach_props_assets_all_09130e5c9fa543d5d68ff54ecfdfcae4.bundle",
+            "region": "licoricereach",
+            "set": "astc",
+            "bytes": 8862744
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/kit_textures_2_assets_all_08914ad40e41fa4fbbb84f3070812307.bundle",
+            "region": "kit",
+            "set": "astc",
+            "bytes": 8123144
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/kit_props_assets_all_cbdb178df6e65374307eb82ca884dc2f.bundle",
+            "region": "kit",
+            "set": "dxt",
+            "bytes": 7657557
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/kit_props_assets_all_cbdb178df6e65374307eb82ca884dc2f.bundle",
+            "region": "kit",
+            "set": "astc",
+            "bytes": 7657557
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/kit_textures_2_assets_all_0a5a529f28d50fae890fc9467887287e.bundle",
+            "region": "kit",
+            "set": "dxt",
+            "bytes": 7485290
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/licoricereach_textures_assets_all_88b1cdd451f86be1222fecf96091faae.bundle",
+            "region": "licoricereach",
+            "set": "astc",
+            "bytes": 6202592
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/end_audio_assets_all_3a2934d1c0c13ccd4d4e2298de497c57.bundle",
+            "region": "end",
+            "set": "dxt",
+            "bytes": 6033780
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/end_audio_assets_all_3a2934d1c0c13ccd4d4e2298de497c57.bundle",
+            "region": "end",
+            "set": "astc",
+            "bytes": 6033780
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/kit_buildings_assets_all_54c6b80d8f333e383b338f0532e54f41.bundle",
+            "region": "kit",
+            "set": "dxt",
+            "bytes": 5081757
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/kit_audio_assets_all_18a10e41732cdbb1fa610422b8925492.bundle",
+            "region": "kit",
+            "set": "dxt",
+            "bytes": 4869326
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/kit_audio_assets_all_18a10e41732cdbb1fa610422b8925492.bundle",
+            "region": "kit",
+            "set": "astc",
+            "bytes": 4869326
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/licoricereach_foliage_assets_all_e1aa7b8a553524b87ba34ca1ccdffa00.bundle",
+            "region": "licoricereach",
+            "set": "astc",
+            "bytes": 4557594
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/crumblecrown_textures_assets_all_eef847e7534f9dc1065ed6815e433b89.bundle",
+            "region": "crumblecrown",
+            "set": "astc",
+            "bytes": 4370234
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/kit_buildings_assets_all_370b3473880ac73bddc4e9fed9cd4599.bundle",
+            "region": "kit",
+            "set": "astc",
+            "bytes": 4186675
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/licoricereach_foliage_assets_all_90ce98c7c799bb97490cf14947e66b43.bundle",
+            "region": "licoricereach",
+            "set": "dxt",
+            "bytes": 3841441
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/kit_foliage_assets_all_9c7db653d166735d52e10ef23afb27a9.bundle",
+            "region": "kit",
+            "set": "astc",
+            "bytes": 3749489
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/sugarsand_textures_assets_all_4723f934c312af17cba31c9be83ec7f7.bundle",
+            "region": "sugarsand",
+            "set": "astc",
+            "bytes": 3684661
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/level1_textures_assets_all_91743103f99b294b132d9a005dea807a.bundle",
+            "region": "level1",
+            "set": "dxt",
+            "bytes": 3618449
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/mistwood_textures_assets_all_28d0884d6b563a7efd08258e4e31beb7.bundle",
+            "region": "mistwood",
+            "set": "astc",
+            "bytes": 3500768
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_25_assets_all_6817e78ee6ef76a259c2189e02d7ad53.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 3450665
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_25_assets_all_6817e78ee6ef76a259c2189e02d7ad53.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 3450665
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/kit_foliage_assets_all_e670a95519f9c97ee477dbdf7449d9a3.bundle",
+            "region": "kit",
+            "set": "dxt",
+            "bytes": 3341232
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_32_assets_all_65a00deedf0a54ff73fe46a365d02531.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 3307030
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_32_assets_all_65a00deedf0a54ff73fe46a365d02531.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 3307030
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/licoricereach_textures_assets_all_668fd614b3e69873bf1eec5561fb19f2.bundle",
+            "region": "licoricereach",
+            "set": "dxt",
+            "bytes": 3305490
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_26_assets_all_edb4bfdbc40c658f45a5c94c45b4aed3.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 3294443
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_26_assets_all_edb4bfdbc40c658f45a5c94c45b4aed3.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 3294443
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_28_assets_all_3e289be1ecb6b4a5753f737e2a15d3c7.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 3287632
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_28_assets_all_3e289be1ecb6b4a5753f737e2a15d3c7.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 3287632
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_27_assets_all_52ccaa621d3f3e7a88401c907c384a41.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 3265167
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_27_assets_all_52ccaa621d3f3e7a88401c907c384a41.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 3265167
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_30_assets_all_7a1f9abe5577893bb05fd90b5879496c.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 3247836
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_30_assets_all_7a1f9abe5577893bb05fd90b5879496c.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 3247836
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_31_assets_all_20e5acc43d91809b6916cf4dbeb679fa.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 3193481
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_31_assets_all_20e5acc43d91809b6916cf4dbeb679fa.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 3193481
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/level1_textures_assets_all_e0699048943c355d413b4b0b8da092e4.bundle",
+            "region": "level1",
+            "set": "astc",
+            "bytes": 3178412
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_24_assets_all_a9107a47a9e0db5e4a33d6139d23a988.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 3048160
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_24_assets_all_a9107a47a9e0db5e4a33d6139d23a988.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 3048160
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/seedvale_textures_assets_all_5f9c274c002836821cc64356a3051d01.bundle",
+            "region": "seedvale",
+            "set": "astc",
+            "bytes": 2958835
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/common_textures_assets_all_4bfbd304fcd44321b4bf0a166aebb2fe.bundle",
+            "region": "common",
+            "set": "astc",
+            "bytes": 2934056
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_21_assets_all_05779af0b5538e4d28e232bff8c04672.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2927599
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_21_assets_all_05779af0b5538e4d28e232bff8c04672.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2927599
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_33_assets_all_5c98a3741a8054a9188ce016a6485675.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2913771
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_33_assets_all_5c98a3741a8054a9188ce016a6485675.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2913771
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_29_assets_all_18c858465da7feedba0d9d5e38b411a3.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2899985
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_29_assets_all_18c858465da7feedba0d9d5e38b411a3.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2899985
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_22_assets_all_2e51624d77917e363817a3258a62fd45.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2878241
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_22_assets_all_2e51624d77917e363817a3258a62fd45.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2878241
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_14_assets_all_3c0504063d8661a5ca6351ce10e0c8e1.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2835266
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_14_assets_all_3c0504063d8661a5ca6351ce10e0c8e1.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2835266
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_15_assets_all_35abaa39fd1ac12047793236d14c95b1.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2827944
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_15_assets_all_35abaa39fd1ac12047793236d14c95b1.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2827944
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_20_assets_all_fe5929541a6665191ef2825f9c4c464c.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2808251
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_20_assets_all_fe5929541a6665191ef2825f9c4c464c.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2808251
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_23_assets_all_3fe965ccbc911276b62941127b41dc9b.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2763803
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_23_assets_all_3fe965ccbc911276b62941127b41dc9b.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2763803
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_19_assets_all_eaae655ee1f676eb48b953c0509f32d4.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2514401
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_19_assets_all_eaae655ee1f676eb48b953c0509f32d4.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2514401
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_18_assets_all_517c5084ce9d0c697b0acbab141359a8.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2480607
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_18_assets_all_517c5084ce9d0c697b0acbab141359a8.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2480607
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_16_assets_all_dd121f3dea6bd0446fb4629dedc5b314.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2432132
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_16_assets_all_dd121f3dea6bd0446fb4629dedc5b314.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2432132
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_13_assets_all_b661a599f4c0982a3c28decbf15d5e68.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2422632
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_13_assets_all_b661a599f4c0982a3c28decbf15d5e68.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2422632
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/frostcap_audio_assets_all_5fd0f62eb2c3ea2bc203b295bb4dff40.bundle",
+            "region": "frostcap",
+            "set": "dxt",
+            "bytes": 2418536
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/frostcap_audio_assets_all_5fd0f62eb2c3ea2bc203b295bb4dff40.bundle",
+            "region": "frostcap",
+            "set": "astc",
+            "bytes": 2418536
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/frostcap_textures_assets_all_bc2765563748460eda80bc789f5eb751.bundle",
+            "region": "frostcap",
+            "set": "astc",
+            "bytes": 2414196
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_17_assets_all_4d72e8475af4418154b4adf005dd4213.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2401587
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_17_assets_all_4d72e8475af4418154b4adf005dd4213.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2401587
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/seedvale_audio_assets_all_b2182eb0ebb49149ce3ebae323165e13.bundle",
+            "region": "seedvale",
+            "set": "dxt",
+            "bytes": 2366779
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/seedvale_audio_assets_all_b2182eb0ebb49149ce3ebae323165e13.bundle",
+            "region": "seedvale",
+            "set": "astc",
+            "bytes": 2366779
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/crumblecrown_audio_assets_all_ea5252d09dd128366c57ae0a4a29f887.bundle",
+            "region": "crumblecrown",
+            "set": "dxt",
+            "bytes": 2285792
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/crumblecrown_audio_assets_all_ea5252d09dd128366c57ae0a4a29f887.bundle",
+            "region": "crumblecrown",
+            "set": "astc",
+            "bytes": 2285792
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/whistlinghills_audio_assets_all_bc586c8f2d5db860d62eb0ab6699b7bf.bundle",
+            "region": "whistlinghills",
+            "set": "dxt",
+            "bytes": 2251174
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/whistlinghills_audio_assets_all_bc586c8f2d5db860d62eb0ab6699b7bf.bundle",
+            "region": "whistlinghills",
+            "set": "astc",
+            "bytes": 2251174
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_9_assets_all_c56c4a9470473121421b6295164b155e.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 2193157
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_9_assets_all_c56c4a9470473121421b6295164b155e.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 2193157
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/sugarsand_audio_assets_all_d93f6d05027666e0389567b9291ab9cd.bundle",
+            "region": "sugarsand",
+            "set": "dxt",
+            "bytes": 1993370
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/sugarsand_audio_assets_all_d93f6d05027666e0389567b9291ab9cd.bundle",
+            "region": "sugarsand",
+            "set": "astc",
+            "bytes": 1993370
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/mistwood_props_assets_all_3ed56de8a28a3776be595fc990edc0f7.bundle",
+            "region": "mistwood",
+            "set": "dxt",
+            "bytes": 1939306
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/mistwood_props_assets_all_3ed56de8a28a3776be595fc990edc0f7.bundle",
+            "region": "mistwood",
+            "set": "astc",
+            "bytes": 1939306
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/seedvale_props_assets_all_29a7305923fc6df90778c93877b255bc.bundle",
+            "region": "seedvale",
+            "set": "dxt",
+            "bytes": 1887814
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/seedvale_props_assets_all_29a7305923fc6df90778c93877b255bc.bundle",
+            "region": "seedvale",
+            "set": "astc",
+            "bytes": 1887814
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_12_assets_all_8fbfaae97f1efa3d5e21885acf03767f.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1806892
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_12_assets_all_8fbfaae97f1efa3d5e21885acf03767f.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1806892
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_8_assets_all_b959ff7db7b6b52b2baf11f4979a58ce.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1793340
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_8_assets_all_b959ff7db7b6b52b2baf11f4979a58ce.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1793340
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_4_assets_all_73957cb61eaec8217616b244bd54ee38.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1789227
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_4_assets_all_73957cb61eaec8217616b244bd54ee38.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1789227
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_7_assets_all_23bbd27713defbfe84c6e6009ea53d0e.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1787313
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_7_assets_all_23bbd27713defbfe84c6e6009ea53d0e.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1787313
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/level1_audio_assets_all_1c41397c33d7fb729b96cb167fba99b4.bundle",
+            "region": "level1",
+            "set": "dxt",
+            "bytes": 1772795
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/level1_audio_assets_all_1c41397c33d7fb729b96cb167fba99b4.bundle",
+            "region": "level1",
+            "set": "astc",
+            "bytes": 1772795
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_6_assets_all_cf1ec96eed98162f66f70d85a7ba4b18.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1762013
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_6_assets_all_cf1ec96eed98162f66f70d85a7ba4b18.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1762013
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/crumblecrown_textures_assets_all_3225292e8323cd35e7774ad51f248f12.bundle",
+            "region": "crumblecrown",
+            "set": "dxt",
+            "bytes": 1719057
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/sugarsand_props_assets_all_bcab50efc6eb839500cf4a72adee50ce.bundle",
+            "region": "sugarsand",
+            "set": "dxt",
+            "bytes": 1649728
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/sugarsand_props_assets_all_bcab50efc6eb839500cf4a72adee50ce.bundle",
+            "region": "sugarsand",
+            "set": "astc",
+            "bytes": 1649728
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/common_textures_assets_all_910a8d81fceb6d590244705a82e3203c.bundle",
+            "region": "common",
+            "set": "dxt",
+            "bytes": 1606057
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/levelselect_foliage_assets_all_6565ea1a4efe6e656faaa7eaefe38dca.bundle",
+            "region": "levelselect",
+            "set": "dxt",
+            "bytes": 1515278
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_34_assets_all_5cba136f463e4b5f1ddd0e1eff309341.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1511375
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_34_assets_all_5cba136f463e4b5f1ddd0e1eff309341.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1511375
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_assets_all_19457a8368fc696fba39ba23d99ab6e6.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1462910
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_assets_all_19457a8368fc696fba39ba23d99ab6e6.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1462910
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_5_assets_all_4e15553df02285f50f321a749a83c331.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1345968
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_5_assets_all_4e15553df02285f50f321a749a83c331.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1345968
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/levelselect_props_assets_all_97354ccb22ed4fd31d92b7011693a7b8.bundle",
+            "region": "levelselect",
+            "set": "dxt",
+            "bytes": 1333811
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/levelselect_props_assets_all_97354ccb22ed4fd31d92b7011693a7b8.bundle",
+            "region": "levelselect",
+            "set": "astc",
+            "bytes": 1333811
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/sugarsand_textures_assets_all_885cd5d8b6d1f9bc91e267f9e9225106.bundle",
+            "region": "sugarsand",
+            "set": "dxt",
+            "bytes": 1319954
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_10_assets_all_d6ff944c99241706e3659526f6b43704.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1305951
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_10_assets_all_d6ff944c99241706e3659526f6b43704.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1305951
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_2_assets_all_75686bc98e1248b86fa49b8189eab412.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1303283
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_2_assets_all_75686bc98e1248b86fa49b8189eab412.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1303283
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_11_assets_all_59f2b33cecde2154ce557e22d3145dc2.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1283284
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_11_assets_all_59f2b33cecde2154ce557e22d3145dc2.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1283284
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/mistwood_foliage_assets_all_bf2bcec94efb2272738938e463639d23.bundle",
+            "region": "mistwood",
+            "set": "astc",
+            "bytes": 1279177
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/lazy_audio_3_assets_all_75db587c8359fe0510981927e6b2a2f3.bundle",
+            "region": "lazy",
+            "set": "dxt",
+            "bytes": 1274256
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/lazy_audio_3_assets_all_75db587c8359fe0510981927e6b2a2f3.bundle",
+            "region": "lazy",
+            "set": "astc",
+            "bytes": 1274256
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/mistwood_textures_assets_all_feb958973a4796591f7e7b0ad31d1206.bundle",
+            "region": "mistwood",
+            "set": "dxt",
+            "bytes": 1271243
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/frostcap_props_assets_all_521503e621aad833220fa688b1662509.bundle",
+            "region": "frostcap",
+            "set": "dxt",
+            "bytes": 1235508
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/frostcap_props_assets_all_521503e621aad833220fa688b1662509.bundle",
+            "region": "frostcap",
+            "set": "astc",
+            "bytes": 1235508
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/whistlinghills_textures_assets_all_4c19394820f9f97a48adc71b8537fc73.bundle",
+            "region": "whistlinghills",
+            "set": "astc",
+            "bytes": 1197000
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/seedvale_textures_assets_all_8cdde2558d3bebc4cfc5bc3c1c05fbf7.bundle",
+            "region": "seedvale",
+            "set": "dxt",
+            "bytes": 1158866
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/mistwood_audio_assets_all_e9d54c2fb07242fc794f9f7638559378.bundle",
+            "region": "mistwood",
+            "set": "dxt",
+            "bytes": 1135971
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/mistwood_audio_assets_all_e9d54c2fb07242fc794f9f7638559378.bundle",
+            "region": "mistwood",
+            "set": "astc",
+            "bytes": 1135971
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/skyport_textures_assets_all_21481ffe11e4f0a03c8c1adfba694f3e.bundle",
+            "region": "skyport",
+            "set": "astc",
+            "bytes": 1088155
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/crumblecrown_props_assets_all_324a412473a02b053d62655665c41954.bundle",
+            "region": "crumblecrown",
+            "set": "dxt",
+            "bytes": 1027765
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/crumblecrown_props_assets_all_324a412473a02b053d62655665c41954.bundle",
+            "region": "crumblecrown",
+            "set": "astc",
+            "bytes": 1027765
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/levelselect_audio_assets_all_eacd6d6142ebd9b771a25451c55a148c.bundle",
+            "region": "levelselect",
+            "set": "dxt",
+            "bytes": 998707
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/levelselect_audio_assets_all_eacd6d6142ebd9b771a25451c55a148c.bundle",
+            "region": "levelselect",
+            "set": "astc",
+            "bytes": 998707
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/level1_buildings_2_assets_all_a5b40fdc43d0b930ca0d0405819ae25d.bundle",
+            "region": "level1",
+            "set": "dxt",
+            "bytes": 936132
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/frostcap_textures_assets_all_7ac39c20ab1bc4cc06a94702c031ba3b.bundle",
+            "region": "frostcap",
+            "set": "dxt",
+            "bytes": 926789
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/levelselect_foliage_assets_all_ffa649b6f2e52890734b478d9aaebf87.bundle",
+            "region": "levelselect",
+            "set": "astc",
+            "bytes": 869221
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/mistwood_foliage_assets_all_6a00bca24739f69bbfee1f95ca400da9.bundle",
+            "region": "mistwood",
+            "set": "dxt",
+            "bytes": 815109
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/level1_buildings_2_assets_all_780b11ae19c7718a172ecab6d9d43919.bundle",
+            "region": "level1",
+            "set": "astc",
+            "bytes": 678737
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/kit_materials_assets_all_708a0166f7f5d8babcf48274830c5e39.bundle",
+            "region": "kit",
+            "set": "dxt",
+            "bytes": 655095
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/kit_materials_assets_all_708a0166f7f5d8babcf48274830c5e39.bundle",
+            "region": "kit",
+            "set": "astc",
+            "bytes": 655095
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/skyport_props_assets_all_1dc2bd3b8b652c71fd8b4d5653ad90cf.bundle",
+            "region": "skyport",
+            "set": "dxt",
+            "bytes": 648288
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/skyport_props_assets_all_1dc2bd3b8b652c71fd8b4d5653ad90cf.bundle",
+            "region": "skyport",
+            "set": "astc",
+            "bytes": 648288
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/level1_scene_scenes_all_72ae3c7095849f5a972fd3450d911928.bundle",
+            "region": "level1",
+            "set": "dxt",
+            "bytes": 613234
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/level1_scene_scenes_all_72ae3c7095849f5a972fd3450d911928.bundle",
+            "region": "level1",
+            "set": "astc",
+            "bytes": 613234
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/common_props_assets_all_0c76acb5a8d52ef532ec5cd78fe11eec.bundle",
+            "region": "common",
+            "set": "dxt",
+            "bytes": 611149
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/common_props_assets_all_0c76acb5a8d52ef532ec5cd78fe11eec.bundle",
+            "region": "common",
+            "set": "astc",
+            "bytes": 611149
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/whistlinghills_textures_assets_all_d64b3531daa90bd960d1999d8777e7bb.bundle",
+            "region": "whistlinghills",
+            "set": "dxt",
+            "bytes": 464344
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/level1_terrain_assets_all_66bc2ec7b928ad0d5f6efa9f9f41e1fa.bundle",
+            "region": "level1",
+            "set": "dxt",
+            "bytes": 454630
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/level1_terrain_assets_all_66bc2ec7b928ad0d5f6efa9f9f41e1fa.bundle",
+            "region": "level1",
+            "set": "astc",
+            "bytes": 454630
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/levelselect_scene_scenes_all_79a541191af44939a5b84c352c84189b.bundle",
+            "region": "levelselect",
+            "set": "dxt",
+            "bytes": 445886
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/levelselect_scene_scenes_all_79a541191af44939a5b84c352c84189b.bundle",
+            "region": "levelselect",
+            "set": "astc",
+            "bytes": 445886
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/skyport_textures_assets_all_3692db14176b311890d7d801db11d2c2.bundle",
+            "region": "skyport",
+            "set": "dxt",
+            "bytes": 423191
+        },
+        {
+            "path": "StreamingAssets/aa/catalog.bin",
+            "region": "catalog",
+            "set": "dxt",
+            "bytes": 415099
+        },
+        {
+            "path": "StreamingAssets/aa_astc/catalog.bin",
+            "region": "catalog",
+            "set": "astc",
+            "bytes": 415099
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/whistlinghills_props_assets_all_4cd02c701e4b00949d15067e731b4068.bundle",
+            "region": "whistlinghills",
+            "set": "dxt",
+            "bytes": 408592
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/whistlinghills_props_assets_all_4cd02c701e4b00949d15067e731b4068.bundle",
+            "region": "whistlinghills",
+            "set": "astc",
+            "bytes": 408592
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/end_scene_scenes_all_a622c7e79cc515a2924bfefc572df7c0.bundle",
+            "region": "end",
+            "set": "dxt",
+            "bytes": 398456
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/end_scene_scenes_all_a622c7e79cc515a2924bfefc572df7c0.bundle",
+            "region": "end",
+            "set": "astc",
+            "bytes": 398456
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/loading_scene_scenes_all_1cfc1cd3c75ae8ff28ee2a49ff6bdda4.bundle",
+            "region": "loading",
+            "set": "dxt",
+            "bytes": 398176
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/loading_scene_scenes_all_1cfc1cd3c75ae8ff28ee2a49ff6bdda4.bundle",
+            "region": "loading",
+            "set": "astc",
+            "bytes": 398176
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/launcher_scene_scenes_all_734cdf4d2565d5864e1f309f2bb833ab.bundle",
+            "region": "launcher",
+            "set": "dxt",
+            "bytes": 396661
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/launcher_scene_scenes_all_734cdf4d2565d5864e1f309f2bb833ab.bundle",
+            "region": "launcher",
+            "set": "astc",
+            "bytes": 396661
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/kit_terrain_assets_all_c5165294c4e369f4c5dafc4bd6b783bd.bundle",
+            "region": "kit",
+            "set": "dxt",
+            "bytes": 342781
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/kit_terrain_assets_all_c5165294c4e369f4c5dafc4bd6b783bd.bundle",
+            "region": "kit",
+            "set": "astc",
+            "bytes": 342781
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/level1_props_assets_all_a7eb5dbe4f81633a32d829df72830f8c.bundle",
+            "region": "level1",
+            "set": "dxt",
+            "bytes": 293577
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/level1_props_assets_all_a7eb5dbe4f81633a32d829df72830f8c.bundle",
+            "region": "level1",
+            "set": "astc",
+            "bytes": 293577
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/levelselect_terrain_assets_all_a8b45f869fe586714f9a43740cf8842b.bundle",
+            "region": "levelselect",
+            "set": "dxt",
+            "bytes": 278344
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/levelselect_terrain_assets_all_a8b45f869fe586714f9a43740cf8842b.bundle",
+            "region": "levelselect",
+            "set": "astc",
+            "bytes": 278344
+        },
+        {
+            "path": "Build/YoobaLand.loader.js",
+            "region": "player",
+            "set": "player",
+            "bytes": 117893
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/launcher_props_assets_all_8c96f6cb7371bb7667df59eff76e9fd6.bundle",
+            "region": "launcher",
+            "set": "dxt",
+            "bytes": 112352
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/launcher_props_assets_all_8c96f6cb7371bb7667df59eff76e9fd6.bundle",
+            "region": "launcher",
+            "set": "astc",
+            "bytes": 112352
+        },
+        {
+            "path": "Build/YoobaLand.framework.js.unityweb",
+            "region": "player",
+            "set": "player",
+            "bytes": 92876
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/level1_materials_assets_all_2a7f830597c7be2b1e3a5869041d73b8.bundle",
+            "region": "level1",
+            "set": "dxt",
+            "bytes": 90947
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/level1_materials_assets_all_2a7f830597c7be2b1e3a5869041d73b8.bundle",
+            "region": "level1",
+            "set": "astc",
+            "bytes": 90947
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/launcher_textures_assets_all_7a051c28e96602713a1ef19390228911.bundle",
+            "region": "launcher",
+            "set": "astc",
+            "bytes": 41819
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/bd0a15a9fe521abcd1f04816039d755f_unitybuiltinassets_f59ea553cc80dc2914442ba564502c4c.bundle",
+            "region": "bd0a15a9fe521abcd1f04816039d755f",
+            "set": "dxt",
+            "bytes": 40604
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/bd0a15a9fe521abcd1f04816039d755f_unitybuiltinassets_f59ea553cc80dc2914442ba564502c4c.bundle",
+            "region": "bd0a15a9fe521abcd1f04816039d755f",
+            "set": "astc",
+            "bytes": 40604
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/launcher_textures_assets_all_5640daa78ac15a46738b007c00bb8f99.bundle",
+            "region": "launcher",
+            "set": "dxt",
+            "bytes": 35654
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/launcher_materials_assets_all_4fc82c7733519dbe72f7aac6b313ce48.bundle",
+            "region": "launcher",
+            "set": "dxt",
+            "bytes": 23950
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/launcher_materials_assets_all_4fc82c7733519dbe72f7aac6b313ce48.bundle",
+            "region": "launcher",
+            "set": "astc",
+            "bytes": 23950
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/common_materials_assets_all_2965fc2fa65f25c4a157f40f1877db6e.bundle",
+            "region": "common",
+            "set": "dxt",
+            "bytes": 20875
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/common_materials_assets_all_2965fc2fa65f25c4a157f40f1877db6e.bundle",
+            "region": "common",
+            "set": "astc",
+            "bytes": 20875
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/licoricereach_materials_assets_all_4ce77843e66643a88e5c4b5ee086c688.bundle",
+            "region": "licoricereach",
+            "set": "dxt",
+            "bytes": 19491
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/licoricereach_materials_assets_all_4ce77843e66643a88e5c4b5ee086c688.bundle",
+            "region": "licoricereach",
+            "set": "astc",
+            "bytes": 19491
+        },
+        {
+            "path": "StreamingAssets/aa/AddressablesLink/link.xml",
+            "region": "catalog",
+            "set": "dxt",
+            "bytes": 14919
+        },
+        {
+            "path": "StreamingAssets/aa_astc/AddressablesLink/link.xml",
+            "region": "catalog",
+            "set": "astc",
+            "bytes": 14919
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/levelselect_textures_assets_all_48b316562edce004b60ce2428619a5e5.bundle",
+            "region": "levelselect",
+            "set": "dxt",
+            "bytes": 10626
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/end_props_assets_all_a7bdf012b3c4a54b224822fc241e6694.bundle",
+            "region": "end",
+            "set": "dxt",
+            "bytes": 9437
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/end_props_assets_all_a7bdf012b3c4a54b224822fc241e6694.bundle",
+            "region": "end",
+            "set": "astc",
+            "bytes": 9437
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/levelselect_textures_assets_all_68940cc7d1ee2147e96039bfd073121e.bundle",
+            "region": "levelselect",
+            "set": "astc",
+            "bytes": 8986
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/frostcap_materials_assets_all_0ba2e9b9b6337b063cd6835e7556982d.bundle",
+            "region": "frostcap",
+            "set": "dxt",
+            "bytes": 6658
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/frostcap_materials_assets_all_0ba2e9b9b6337b063cd6835e7556982d.bundle",
+            "region": "frostcap",
+            "set": "astc",
+            "bytes": 6658
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/mistwood_materials_assets_all_46e595031b5ffc10d5915bf50df997bc.bundle",
+            "region": "mistwood",
+            "set": "dxt",
+            "bytes": 6595
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/mistwood_materials_assets_all_46e595031b5ffc10d5915bf50df997bc.bundle",
+            "region": "mistwood",
+            "set": "astc",
+            "bytes": 6595
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/sugarsand_materials_assets_all_37b6f41de64a91192980fd57af937092.bundle",
+            "region": "sugarsand",
+            "set": "dxt",
+            "bytes": 6261
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/sugarsand_materials_assets_all_37b6f41de64a91192980fd57af937092.bundle",
+            "region": "sugarsand",
+            "set": "astc",
+            "bytes": 6261
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/crumblecrown_materials_assets_all_94aa3499f050204612a61677ca5bcf1c.bundle",
+            "region": "crumblecrown",
+            "set": "dxt",
+            "bytes": 6030
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/crumblecrown_materials_assets_all_94aa3499f050204612a61677ca5bcf1c.bundle",
+            "region": "crumblecrown",
+            "set": "astc",
+            "bytes": 6030
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/seedvale_materials_assets_all_a5de96e458f8f9c3b35a118b6b303e23.bundle",
+            "region": "seedvale",
+            "set": "dxt",
+            "bytes": 5733
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/seedvale_materials_assets_all_a5de96e458f8f9c3b35a118b6b303e23.bundle",
+            "region": "seedvale",
+            "set": "astc",
+            "bytes": 5733
+        },
+        {
+            "path": "index.html",
+            "region": "player",
+            "set": "player",
+            "bytes": 5615
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/skyport_materials_assets_all_665dfc326aff56934ab6780794f9c480.bundle",
+            "region": "skyport",
+            "set": "dxt",
+            "bytes": 5543
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/skyport_materials_assets_all_665dfc326aff56934ab6780794f9c480.bundle",
+            "region": "skyport",
+            "set": "astc",
+            "bytes": 5543
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/whistlinghills_materials_assets_all_702a343feb12554cddc6792be3776702.bundle",
+            "region": "whistlinghills",
+            "set": "dxt",
+            "bytes": 5505
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/whistlinghills_materials_assets_all_702a343feb12554cddc6792be3776702.bundle",
+            "region": "whistlinghills",
+            "set": "astc",
+            "bytes": 5505
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/bd0a15a9fe521abcd1f04816039d755f_monoscripts_0385193b1c5554ddcee8ad559cd5cf00.bundle",
+            "region": "bd0a15a9fe521abcd1f04816039d755f",
+            "set": "dxt",
+            "bytes": 5141
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/bd0a15a9fe521abcd1f04816039d755f_monoscripts_0385193b1c5554ddcee8ad559cd5cf00.bundle",
+            "region": "bd0a15a9fe521abcd1f04816039d755f",
+            "set": "astc",
+            "bytes": 5141
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/levelselect_materials_assets_all_91987ce785dcaa5a1663f3a1d053a6e0.bundle",
+            "region": "levelselect",
+            "set": "dxt",
+            "bytes": 3995
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/levelselect_materials_assets_all_91987ce785dcaa5a1663f3a1d053a6e0.bundle",
+            "region": "levelselect",
+            "set": "astc",
+            "bytes": 3995
+        },
+        {
+            "path": "TemplateData/unity-logo-light.png",
+            "region": "player",
+            "set": "player",
+            "bytes": 3077
+        },
+        {
+            "path": "TemplateData/unity-logo-dark.png",
+            "region": "player",
+            "set": "player",
+            "bytes": 3042
+        },
+        {
+            "path": "TemplateData/favicon.ico",
+            "region": "player",
+            "set": "player",
+            "bytes": 2305
+        },
+        {
+            "path": "StreamingAssets/aa/WebGL/licoricereach_terrain_assets_all_ec73e90acbb54dd253f5068d830a41a1.bundle",
+            "region": "licoricereach",
+            "set": "dxt",
+            "bytes": 2131
+        },
+        {
+            "path": "StreamingAssets/aa_astc/WebGL/licoricereach_terrain_assets_all_ec73e90acbb54dd253f5068d830a41a1.bundle",
+            "region": "licoricereach",
+            "set": "astc",
+            "bytes": 2131
+        },
+        {
+            "path": "TemplateData/webmemd-icon.png",
+            "region": "player",
+            "set": "player",
+            "bytes": 1670
+        },
+        {
+            "path": "TemplateData/style.css",
+            "region": "player",
+            "set": "player",
+            "bytes": 1448
+        },
+        {
+            "path": "TemplateData/unity-logo-title-footer.png",
+            "region": "player",
+            "set": "player",
+            "bytes": 1151
+        },
+        {
+            "path": "StreamingAssets/aa/settings.json",
+            "region": "catalog",
+            "set": "dxt",
+            "bytes": 849
+        },
+        {
+            "path": "StreamingAssets/aa_astc/settings.json",
+            "region": "catalog",
+            "set": "astc",
+            "bytes": 849
+        },
+        {
+            "path": "TemplateData/MemoryProfiler.png",
+            "region": "player",
+            "set": "player",
+            "bytes": 665
+        },
+        {
+            "path": "TemplateData/fullscreen-button.png",
+            "region": "player",
+            "set": "player",
+            "bytes": 175
+        },
+        {
+            "path": "TemplateData/progress-bar-empty-light.png",
+            "region": "player",
+            "set": "player",
+            "bytes": 109
+        },
+        {
+            "path": "TemplateData/progress-bar-empty-dark.png",
+            "region": "player",
+            "set": "player",
+            "bytes": 96
+        },
+        {
+            "path": "TemplateData/progress-bar-full-light.png",
+            "region": "player",
+            "set": "player",
+            "bytes": 84
+        },
+        {
+            "path": "TemplateData/progress-bar-full-dark.png",
+            "region": "player",
+            "set": "player",
+            "bytes": 74
+        },
+        {
+            "path": "StreamingAssets/aa/catalog.hash",
+            "region": "catalog",
+            "set": "dxt",
+            "bytes": 32
+        },
+        {
+            "path": "StreamingAssets/aa_astc/catalog.hash",
+            "region": "catalog",
+            "set": "astc",
+            "bytes": 32
+        }
+    ]
+}
