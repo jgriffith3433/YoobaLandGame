@@ -1,133 +1,291 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | YoobaLand</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-  </head>
-  <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
-        </div>
-      </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-logo-title-footer"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">YoobaLand</div>
-      </div>
+<html lang="en">
+<head>
+  <script>window.HAWKES_BUILD_BASE = "https://sites.hawkesgen.ai/builds/yoobaland/";</script>
+  <!-- Hawkes sound prompt: installed by the deploy from YoobaLand/Tools/Web; must load before Unity's loader -->
+  <script src="https://sites.hawkesgen.ai/builds/yoobaland/v185/hawkes-sound.js"></script>
+  <!-- Hawkes errors: installed by the deploy from YoobaLand/Tools/Web; reports errors on the beta site only -->
+  <script src="https://sites.hawkesgen.ai/builds/yoobaland/v185/hawkes-errors.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Yooba Land</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="../images/hero-yooba.jpg">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #143226;
+      touch-action: none;
+    }
+    /* Until the game is running, the page shows the landing page's in-game art (../images/hero-yooba.jpg) behind the
+       canvas; once it runs (.loaded, set below) the canvas is plain dark again. */
+    #unity-container {
+      width: 100%;
+      height: 100%;
+      background: #5cdbee url("../images/hero-yooba.jpg") 20% 50% / cover no-repeat;
+    }
+    #unity-container::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(16, 40, 28, 0.55);
+      pointer-events: none;
+    }
+    #unity-container.loaded { background: #111; }
+    #unity-container.loaded::before { display: none; }
+    #unity-canvas { position: relative; width: 100%; height: 100%; display: block; background: transparent; }
+    #unity-container.loaded #unity-canvas { background: #111; }
+    #unity-loading-bar {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(360px, 84vw);
+      padding: 18px 22px 22px;
+      text-align: center;
+      color: white;
+      font: 600 20px Fredoka, "Trebuchet MS", Arial, sans-serif;
+      background: rgba(16, 40, 28, 0.82);
+      border: 3px solid #10281c;
+      border-radius: 22px;
+      box-shadow: 0 6px 0 #10281c, 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    #unity-progress-bar-empty {
+      width: 100%;
+      height: 18px;
+      margin: 14px auto 0;
+      background: rgba(255, 255, 255, 0.16);
+      border: 2px solid #10281c;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    #unity-progress-bar-full {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #23c34a, #89ce00);
+      border-radius: 999px;
+      box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.18), inset 0 3px 0 rgba(255, 255, 255, 0.3);
+      transition: width 0.2s ease-out;
+    }
+    /* The Tap to play screen is hawkes-sound.js's (written by the Unity deploy); its look is set here, after the
+       script's own style: the same in-game art as the landing page instead of the drawn hills and Yooba. */
+    html body #hawkes-tap {
+      justify-content: flex-end;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(9vh + env(safe-area-inset-bottom)) env(safe-area-inset-left);
+      background:
+        linear-gradient(180deg, rgba(16, 40, 28, 0) 30%, rgba(16, 40, 28, 0.55) 62%, rgba(16, 40, 28, 0.9) 100%),
+        #5cdbee url("../images/hero-yooba.jpg") 20% 50% / cover no-repeat;
+      font-family: Fredoka, "Trebuchet MS", Arial, sans-serif;
+    }
+    html body #hawkes-tap svg { display: none; }
+    html body #hawkes-tap h1 {
+      font-family: Fredoka, "Trebuchet MS", Arial, sans-serif;
+      font-weight: 600;
+      color: #ffe56a;
+      text-shadow: .04em .04em 0 #10281c, -.04em .04em 0 #10281c, .04em -.04em 0 #10281c, -.04em -.04em 0 #10281c,
+        0 .1em 0 #10281c, 0 .16em .4em rgba(0, 0, 0, .45);
+    }
+    html body #hawkes-tap button {
+      display: inline-flex;
+      align-items: center;
+      gap: .45em;
+      font-family: Fredoka, "Trebuchet MS", Arial, sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+      color: #143226;
+      background: #ffe56a;
+      border: 3px solid #10281c;
+      box-shadow: 0 .14em 0 #10281c, 0 .3em .8em rgba(0, 0, 0, .35);
+    }
+    html body #hawkes-tap button::before {
+      content: "";
+      border-style: solid;
+      border-width: .38em 0 .38em .62em;
+      border-color: transparent transparent transparent currentColor;
+    }
+    html body #hawkes-tap p {
+      font-family: Nunito, Arial, sans-serif;
+      font-weight: 800;
+      max-width: 34em;
+    }
+    /* Portrait (phones): keep all of Yooba in the frame. */
+    @media (max-aspect-ratio: 1/1) {
+      html body #hawkes-tap { background-position: 0 0, 5% 50%; }
+      #unity-container { background-position: 5% 50%; }
+    }
+    #unity-warning {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      max-width: 90%;
+      z-index: 2;
+    }
+    #version-display {
+      position: absolute;
+      right: 12px;
+      bottom: 8px;
+      color: rgba(255, 255, 255, 0.55);
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+    }
+    #missing-build {
+      display: none;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      max-width: 520px;
+      line-height: 1.5;
+    }
+    a.home {
+      color: #8fd9b4;
+    }
+  </style>
+  <script>window.YOOBA_BUILD = "v185";</script>
+  <script>window.HAWKES_NET_ENDPOINT = window.HAWKES_NET_ENDPOINT || 'https://net.hawkesgen.ai'; // builds before 2026-10-28 have net.hawkesgen.com baked in; beta pages set their own first</script>
+  <!-- Hawkes Analytics: the page loads the SDK once; the game's bridge finds it (data-hawkes-analytics) and adds no second copy -->
+  <script>
+    // The build this page loads, the way the game names it: releases.json's version plus the Game/v<n> folder
+    // ("1.0.0+v32"). The folder alone until releases.json is read (below); the SDK reads it for every batch.
+    window.HAWKES_BUILD = { version: String(window.YOOBA_BUILD || "") };
+  </script>
+  <script src="https://hawkesgen.ai/sdk/analytics@1.js" data-product="yoobaland" data-hawkes-analytics="page" defer></script>
+</head>
+<body>
+  <div id="unity-container">
+    <canvas id="unity-canvas"></canvas>
+    <div id="unity-loading-bar">
+      <div>Loading Yooba Land</div>
+      <div id="unity-progress-bar-empty"><div id="unity-progress-bar-full"></div></div>
     </div>
-    <script>
-      var canvas = document.querySelector("#unity-canvas");
+    <div id="missing-build">
+      <p>No game build has been published yet.</p>
+      <p style="margin-top: 12px;"><a class="home" href="../">Back home</a></p>
+    </div>
+    <div id="unity-warning"></div>
+  </div>
+  <div id="version-display"></div>
+  <script>
+    var gameVersion = window.YOOBA_BUILD;
+    var gameName = "YoobaLand";
+    document.getElementById("version-display").textContent = gameVersion;
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
+    if (gameVersion === "v0") {
+      document.getElementById("unity-loading-bar").style.display = "none";
+      document.getElementById("missing-build").style.display = "block";
+    } else {
+      var canvas = document.querySelector("#unity-canvas");
+      var container = document.querySelector("#unity-container");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var warningBanner = document.querySelector("#unity-warning");
+
       function unityShowBanner(msg, type) {
-        var warningBanner = document.querySelector("#unity-warning");
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
+        var div = document.createElement("div");
         div.innerHTML = msg;
+        div.style.cssText = "background:" + (type === "warning" ? "rgba(255,193,7,0.95)" : "rgba(180,40,40,0.95)") + ";color:#111;padding:10px 14px;margin-top:8px;border-radius:6px;font-family:Arial,sans-serif;";
         warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
+        if (type !== "error") {
+          setTimeout(function () {
+            if (div.parentElement) div.parentElement.removeChild(div);
           }, 5000);
         }
-        updateBannerVisibility();
       }
 
-      var buildUrl = "https://sites.hawkesgen.ai/builds/o/j-studio-4f12/yoobaland/b/web/7/Build";
-      var loaderUrl = buildUrl + "/artifact.loader.js";
+      function fitCanvas() {
+        var width = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+        var height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+      }
+      window.addEventListener("resize", fitCanvas);
+      fitCanvas();
+
+      // Builds in R2 (hawkesstudio docs/unity-builds-storage.md): the cloud build sets HAWKES_BUILD_BASE; without it, from here.
+      // A Hawkes Studio build (publish.page "site") names its own address in HAWKES_BUILD_URL; else the versioned folder.
+      var buildBase = window.HAWKES_BUILD_URL || ((window.HAWKES_BUILD_BASE || "") + gameVersion + "/");
+      var buildUrl = buildBase + gameName + "/Build/" + gameName;
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/artifact.data",
-        frameworkUrl: buildUrl + "/artifact.framework.js",
-        codeUrl: buildUrl + "/artifact.wasm",
-        streamingAssetsUrl: "StreamingAssets",
+        dataUrl: buildUrl + ".data.unityweb?v=" + gameVersion,
+        frameworkUrl: buildUrl + ".framework.js.unityweb?v=" + gameVersion,
+        codeUrl: buildUrl + ".wasm.unityweb?v=" + gameVersion,
+        streamingAssetsUrl: buildBase + gameName + "/StreamingAssets",
         companyName: "Yooba",
         productName: "YoobaLand",
-        productVersion: "0.0.1",
+        productVersion: gameVersion,
         showBanner: unityShowBanner,
-        // errorHandler: function(err, url, line) {
-        //    alert("error " + err + " occurred at line " + line);
-        //    // Return 'true' if you handled this error and don't want Unity
-        //    // to process it further, 'false' otherwise.
-        //    return true;
-        // },
       };
 
-      // By default, Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      // If you would like all file writes inside Unity Application.persistentDataPath
-      // directory to automatically persist so that the contents are remembered when
-      // the user revisits the site the next time, uncomment the following line:
-      // config.autoSyncPersistentDataPath = true;
-      // This autosyncing is currently not the default behavior to avoid regressing
-      // existing user projects that might rely on the earlier manual
-      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
-      // expected to change.
-
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-        document.querySelector("#unity-container").className = "unity-mobile";
-        canvas.className = "unity-mobile";
-
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
-
-
-      } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
-      }
-
-      document.querySelector("#unity-loading-bar").style.display = "block";
-
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
-
-              }).catch((message) => {
-                alert(message);
-              });
-            };
-
-      document.body.appendChild(script);
-
-    </script>
-  </body>
+      var loader = document.createElement("script");
+      loader.src = buildUrl + ".loader.js?v=" + gameVersion;
+      loader.onload = function () {
+        createUnityInstance(canvas, config, function (progress) {
+          progressBarFull.style.width = (100 * progress) + "%";
+        }).then(function () {
+          loadingBar.style.display = "none";
+          container.className += " loaded";
+        }).catch(function (message) {
+          loadingBar.style.display = "none";
+          unityShowBanner(String(message), "error");
+        });
+      };
+      loader.onerror = function () {
+        loadingBar.style.display = "none";
+        unityShowBanner("Could not load " + loader.src, "error");
+      };
+      document.body.appendChild(loader);
+    }
+  </script>
+  <script>
+    // Hawkes Analytics: the release's version in front of the build folder, "1.0.0+v32".
+    (function () {
+      if (!window.hawkesRelease || !window.HAWKES_BUILD) return;
+      window.hawkesRelease.then(function (r) {
+        var version = r && (r.current || (r.releases && r.releases[0] && r.releases[0].version));
+        if (version) window.HAWKES_BUILD.version = version + "+" + window.YOOBA_BUILD;
+      });
+    })();
+  </script>
+  <!-- Hawkes release: written by the deploy (YoobaWebBuild.InstallReleaseNotes); edit it there -->
+  <script src="../js/hawkes-release.js" data-releases="../releases.json"></script>
+  <script>
+    // The release (releases.json) and the build running, "v1.0.0 \u00b7 build 14", linking to What's new.
+    (function () {
+      var display = document.getElementById("version-display");
+      if (!display || !window.hawkesRelease) return;
+      window.hawkesRelease.then(function (r) {
+        var top = r && r.releases && r.releases[0];
+        if (!top) return;
+        var host = location.hostname;
+        var beta = /\.hawkesgen\.com$/.test(host) || host === "localhost" || host === "127.0.0.1";
+        var link = document.createElement("a");
+        link.href = "../whatsnew.html";
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.title = "What's new in Yooba Land";
+        link.style.color = "inherit";
+        link.style.textDecoration = "none";
+        link.textContent = "v" + top.version + (beta ? " beta" : "") + " \u00b7 build " + String(window.YOOBA_BUILD || "").replace(/^v/, "");
+        display.textContent = "";
+        display.appendChild(link);
+      });
+    })();
+  </script>
+  <!-- /Hawkes release -->
+</body>
 </html>
