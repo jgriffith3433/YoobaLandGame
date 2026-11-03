@@ -1,7 +1,7 @@
 {
-  "version": 17,
-  "base": "https://sites.hawkesgen.ai/builds/o/j-studio-4f12/yoobaland/b/web/17/",
+  "version": 19,
+  "base": "https://sites.hawkesgen.ai/builds/o/j-studio-4f12/yoobaland/b/web/19/",
   "build": "web",
-  "sha": "ad75c1f",
-  "at": "2026-11-02T00:52:33.842Z"
+  "sha": "41c27c4",
+  "at": "2026-11-03T19:52:26.876Z"
 }
