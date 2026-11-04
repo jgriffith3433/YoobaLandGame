@@ -303,7 +303,7 @@ h1, h2, h3, .brand, .play, .kicker {
 .page-hero {
   background:
     linear-gradient(90deg, rgba(16, 40, 28, 0.82), rgba(16, 40, 28, 0.45) 70%, rgba(16, 40, 28, 0.2)),
-    var(--sky-game) url("/images/hero-yooba-960.jpg") center 40% / cover no-repeat;
+    var(--sky-game) url("../images/hero-yooba-960.jpg") center 40% / cover no-repeat;
   color: white;
   padding: 3.2rem 1.25rem 2.6rem;
   border-bottom: 4px solid var(--sun);
@@ -482,7 +482,7 @@ button.play, .contact-form button {
 .live {
   background:
     linear-gradient(90deg, rgba(16, 40, 28, 0.94) 35%, rgba(16, 40, 28, 0.55)),
-    var(--green-deep) url("/images/shot-orchard.jpg") center 35% / cover no-repeat;
+    var(--green-deep) url("../images/shot-orchard.jpg") center 35% / cover no-repeat;
   color: white;
   border: 3px solid var(--outline);
   border-radius: 22px;

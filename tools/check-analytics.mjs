@@ -40,7 +40,7 @@ for (const rel of list) {
   for (const t of ['html', 'head', 'body']) {
     if ((html.match(new RegExp(`<${t}[\\s>]`, 'g')) || []).length !== 1 || (html.match(new RegExp(`</${t}>`, 'g')) || []).length !== 1) problems.push(`${rel}: <${t}> not opened and closed once`);
   }
-  if (html.includes('href="/Game/"') && !html.includes('src="/site/site.js"')) problems.push(`${rel}: has Play links but no site.js (no play_click)`);
+  if (/href="(?:\.\/|\.\.\/)?Game\/"/.test(html) && !/src="(?:\.\/|\.\.\/)site\/site\.js"/.test(html)) problems.push(`${rel}: has Play links but no site.js (no play_click)`);
 }
 
 for (const f of ['site/site.js', 'js/hawkes-release.js']) {

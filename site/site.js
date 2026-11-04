@@ -21,7 +21,7 @@ if (form) {
 // Hawkes Analytics (loaded in each page's <head>): a play_click for every Play button, with where it was pressed.
 // The SDK counts page views and outbound links by itself; the page leaving sends the click with them.
 document.addEventListener("click", function (event) {
-  var link = event.target && event.target.closest && event.target.closest('a[href="/Game/"]');
+  var link = event.target && event.target.closest && event.target.closest('a[href$="Game/"]');
   if (!link) return;
   var where = link.closest(".site-footer") ? "footer" : link.classList.contains("play-large") ? "hero" : "header";
   var props = { where: where };

@@ -8,29 +8,29 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/site/site.css">
-  <link rel="stylesheet" href="/site/hawkes-credits.css">
-  <link rel="stylesheet" href="/site/hawkes-release.css">
+  <link rel="stylesheet" href="./site/site.css">
+  <link rel="stylesheet" href="./site/hawkes-credits.css">
+  <link rel="stylesheet" href="./site/hawkes-release.css">
   <!-- Hawkes Analytics, the only analytics on this site: anonymous statistics, no cookies (hawkesgen docs/analytics.md) -->
   <script src="https://hawkesgen.ai/sdk/analytics@1.js" data-product="yoobaland" data-hawkes-analytics="page" defer></script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="/">Yooba Land</a>
+    <a class="brand" href="./">Yooba Land</a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">Menu</button>
     <nav id="site-menu" class="menu" aria-label="Primary">
-      <a href="/" aria-current="page">Home</a>
-      <a href="/blog.html">Blog</a>
-      <a href="/contact.html">Contact</a>
-      <a href="/whatsnew.html" data-hawkes-whatsnew>What's new</a>
+      <a href="./" aria-current="page">Home</a>
+      <a href="./blog.html">Blog</a>
+      <a href="./contact.html">Contact</a>
+      <a href="./whatsnew.html" data-hawkes-whatsnew>What's new</a>
     </nav>
-    <a class="play" href="/Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
+    <a class="play" href="./Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
   </header>
 
   <section class="hero">
     <!-- In-game frame (store/screenshot5): the same picture is the game page's Tap to play screen -->
     <!-- Gameplay loop (muted, from a playtest recording); the poster is its first frame -->
-    <video class="hero-photo" data-hero-loop autoplay muted loop playsinline preload="auto" disablepictureinpicture poster="/images/hero-loop.jpg" aria-hidden="true"><source src="/images/hero-loop.mp4" type="video/mp4"></video><script>(function(){var v=document.querySelector('[data-hero-loop]');if(v&&window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause();}})();</script>
+    <video class="hero-photo" data-hero-loop autoplay muted loop playsinline preload="auto" disablepictureinpicture poster="./images/hero-loop.jpg" aria-hidden="true"><source src="./images/hero-loop.mp4" type="video/mp4"></video><script>(function(){var v=document.querySelector('[data-hero-loop]');if(v&&window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause();}})();</script>
     <div class="hero-panel">
       <div class="hero-copy">
         <p class="kicker">A 3D game in your browser</p>
@@ -38,10 +38,10 @@
         <p class="hero-tagline">Eat, grow, and find the way home.</p>
         <p>Play it together in your browser, one episode at a time.</p>
         <!-- Hawkes release: written by the deploy (YoobaWebBuild.InstallReleaseNotes); edit it there -->
-        <p class="hero-version"><a href="/whatsnew.html" data-hawkes-version data-prefix="What's new in v" hidden></a></p>
+        <p class="hero-version"><a href="./whatsnew.html" data-hawkes-version data-prefix="What's new in v" hidden></a></p>
         <!-- /Hawkes release -->
       </div>
-      <a class="play play-large" href="/Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
+      <a class="play play-large" href="./Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
     </div>
   </section>
 
@@ -72,9 +72,9 @@
       <h2>A look around</h2>
       <p class="lede">Screenshots from the game.</p>
       <div class="gallery">
-        <figure><img src="/images/shot-bridge.jpg" width="1280" height="720" loading="lazy" alt="A wooden bridge over blue water leads to a grassy island with two bright trees, inside a long glass fence."><figcaption>A bridge over the water, inside the glass.</figcaption></figure>
-        <figure><img src="/images/shot-market.jpg" width="1280" height="720" loading="lazy" alt="A fruit and vegetable market with two wooden stalls and crates of apples, pumpkins and watermelons."><figcaption>The market, full of things to eat.</figcaption></figure>
-        <figure><img src="/images/shot-orchard.jpg" width="1280" height="720" loading="lazy" alt="Trees and bushes on bright grass inside a glass fence, with a red orb hanging in the air."><figcaption>Trees, grass and a big sky.</figcaption></figure>
+        <figure><img src="./images/shot-bridge.jpg" width="1280" height="720" loading="lazy" alt="A wooden bridge over blue water leads to a grassy island with two bright trees, inside a long glass fence."><figcaption>A bridge over the water, inside the glass.</figcaption></figure>
+        <figure><img src="./images/shot-market.jpg" width="1280" height="720" loading="lazy" alt="A fruit and vegetable market with two wooden stalls and crates of apples, pumpkins and watermelons."><figcaption>The market, full of things to eat.</figcaption></figure>
+        <figure><img src="./images/shot-orchard.jpg" width="1280" height="720" loading="lazy" alt="Trees and bushes on bright grass inside a glass fence, with a red orb hanging in the air."><figcaption>Trees, grass and a big sky.</figcaption></figure>
       </div>
     </div>
   </section>
@@ -84,7 +84,7 @@
       <p class="kicker">The next live moment</p>
       <h2>Be there when it happens.</h2>
       <p>Some moments in the story play out once, for everyone online at the same time. The next one's date and time will be posted here before it starts.</p>
-      <a class="play" href="/Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
+      <a class="play" href="./Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
     </div>
   </section>
 
@@ -115,21 +115,21 @@
       <h2>From the blog</h2>
       <p class="lede">Short notes on how the game plays, and how to open it.</p>
       <div class="posts">
-        <a class="post-link" href="/blog/eat-and-grow.html">
+        <a class="post-link" href="./blog/eat-and-grow.html">
           <time datetime="2026-10-13">Oct 13, 2026</time>
           <div>
             <h3>Eat, then grow</h3>
             <p>What the food is for, and why the bigger pieces wait.</p>
           </div>
         </a>
-        <a class="post-link" href="/blog/the-way-home.html">
+        <a class="post-link" href="./blog/the-way-home.html">
           <time datetime="2026-10-06">Oct 6, 2026</time>
           <div>
             <h3>The way home</h3>
             <p>Movement, jumping, and the things you can interact with.</p>
           </div>
         </a>
-        <a class="post-link" href="/blog/play-in-the-browser.html">
+        <a class="post-link" href="./blog/play-in-the-browser.html">
           <time datetime="2026-09-22">Sep 22, 2026</time>
           <div>
             <h3>Play it in the browser</h3>
@@ -145,12 +145,12 @@
       <p class="footer-brand">Yooba Land</p>
       <p>A cartoon game about eating, growing, and finding the way home.</p>
       <nav class="footer-links" aria-label="Footer">
-        <a href="/">Home</a>
-        <a href="/blog.html">Blog</a>
-        <a href="/contact.html">Contact</a>
-        <a href="/privacypolicy.html">Privacy</a>
-        <a href="/Game/">Play</a>
-        <a href="/whatsnew.html" data-hawkes-whatsnew>What's new</a>
+        <a href="./">Home</a>
+        <a href="./blog.html">Blog</a>
+        <a href="./contact.html">Contact</a>
+        <a href="./privacypolicy.html">Privacy</a>
+        <a href="./Game/">Play</a>
+        <a href="./whatsnew.html" data-hawkes-whatsnew>What's new</a>
       </nav>
       <!-- Hawkes credits: written by the deploy (YoobaWebBuild.InstallSiteCredits); edit it there -->
       <p class="hawkes-credits">
@@ -160,9 +160,9 @@
       <!-- /Hawkes credits -->
     </div>
   </footer>
-  <script src="/site/site.js"></script>
+  <script src="./site/site.js"></script>
   <!-- Hawkes release: written by the deploy (YoobaWebBuild.InstallReleaseNotes); edit it there -->
-  <script src="/js/hawkes-release.js" data-releases="/releases.json" defer></script>
+  <script src="./js/hawkes-release.js" data-releases="./releases.json" defer></script>
   <!-- /Hawkes release -->
 </body>
 </html>
