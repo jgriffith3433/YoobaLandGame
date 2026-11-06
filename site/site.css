@@ -500,9 +500,10 @@ button.play, .contact-form button {
 
 .hero-panel .hero-premise { font-size: 1.2rem; font-weight: 700; }
 
-/* The "What's new in v…" line is filled in after releases.json loads. Keep its one line reserved from the start
-   (body line-height is 1.55), so the centred hero copy and the Play button don't jump up when it appears. */
-.hero-panel .hero-version { min-height: 1.55em; }
+/* The "What's new in v…" line is filled in after releases.json loads. Its one line is a fixed box from the first
+   paint (one body line-height, 1.55, of the hero's 1.12rem copy), so the centred hero copy and the Play button don't
+   jump up when it appears, and don't move whatever the text turns out to be. */
+.hero-panel .hero-version { height: 1.55em; line-height: 1.55; overflow: hidden; white-space: nowrap; }
 
 .story { padding-bottom: 1.6rem; }
 .story h2 { max-width: 38rem; }
