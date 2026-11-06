@@ -28,6 +28,7 @@
     /* Until the game is running, the page shows the landing page's in-game art (../images/hero-yooba.jpg) behind the
        canvas; once it runs (.loaded, set below) the canvas is plain dark again. */
     #unity-container {
+      position: relative;
       width: 100%;
       height: 100%;
       background: #5cdbee url("../images/hero-yooba.jpg") 20% 50% / cover no-repeat;
@@ -41,7 +42,8 @@
     }
     #unity-container.loaded { background: #111; }
     #unity-container.loaded::before { display: none; }
-    #unity-canvas { position: relative; width: 100%; height: 100%; display: block; background: transparent; }
+    /* The canvas fills the container from the first paint (absolute, sized to the viewport), so nothing moves when the game appears. */
+    #unity-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: transparent; }
     #unity-container.loaded #unity-canvas { background: #111; }
     #unity-loading-bar {
       position: absolute;
@@ -58,6 +60,35 @@
       border-radius: 22px;
       box-shadow: 0 6px 0 #10281c, 0 12px 30px rgba(0, 0, 0, 0.35);
     }
+    #unity-loading-bar .ld-title { font-size: 22px; line-height: 1.2; color: #ffe56a; }
+    #unity-loading-bar .ld-pct { margin-top: 8px; font-size: 16px; opacity: .85; font-variant-numeric: tabular-nums; }
+    /* Fixed height for the tip: three lines of room, so rotating lines never resize the card. */
+    #unity-loading-bar .ld-tip {
+      margin-top: 12px;
+      height: 4.8em;
+      overflow: hidden;
+      font: 700 15px/1.6 Nunito, Arial, sans-serif;
+      color: #d9f2e4;
+    }
+    #unity-loading-bar .ld-fail { display: none; }
+    #unity-loading-bar.failed .ld-busy { display: none; }
+    #unity-loading-bar.failed .ld-fail { display: block; }
+    #unity-loading-bar .ld-fail p { font: 700 15px/1.5 Nunito, Arial, sans-serif; margin-top: 10px; color: #d9f2e4; }
+    #unity-loading-bar .ld-fail small { display: block; margin-top: 8px; font: 700 12px Nunito, Arial, sans-serif; opacity: .6; word-break: break-all; }
+    #unity-retry {
+      margin-top: 16px;
+      font: 600 18px Fredoka, "Trebuchet MS", Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+      color: #143226;
+      background: #ffe56a;
+      border: 3px solid #10281c;
+      border-radius: 999px;
+      padding: 8px 26px;
+      box-shadow: 0 4px 0 #10281c;
+      cursor: pointer;
+    }
+    #unity-retry:active { transform: translateY(2px); box-shadow: 0 2px 0 #10281c; }
     #unity-progress-bar-empty {
       width: 100%;
       height: 18px;
@@ -168,8 +199,18 @@
   <div id="unity-container">
     <canvas id="unity-canvas"></canvas>
     <div id="unity-loading-bar">
-      <div>Loading Yooba Land</div>
-      <div id="unity-progress-bar-empty"><div id="unity-progress-bar-full"></div></div>
+      <div class="ld-busy" role="status" aria-live="off">
+        <div class="ld-title">Loading Yooba Land</div>
+        <div id="unity-progress-bar-empty" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="unity-progress-bar-full"></div></div>
+        <div class="ld-pct" id="unity-progress-text">0%</div>
+        <div class="ld-tip" id="unity-tip"></div>
+      </div>
+      <div class="ld-fail" role="alert">
+        <div class="ld-title">Yooba got lost on the way</div>
+        <p>The game didn't finish loading. Check your connection, then try again.</p>
+        <small id="unity-fail-detail"></small>
+        <button type="button" id="unity-retry">Try again</button>
+      </div>
     </div>
     <div id="missing-build">
       <p>No game build has been published yet.</p>
@@ -205,6 +246,36 @@
         }
       }
 
+      // Lore while the biggest download of the site comes in: from the story the game tells (docs/story.md).
+      var tips = [
+        "Yooba is small and hungry, and all he wants is to get home.",
+        "Yooba blew in from The Gust and landed inside a glass fence.",
+        "Past the broken glass lies a town full of other Yoobas.",
+        "Old Reed fishes all day. His advice is always the same: sit still.",
+        "Bramley the farmer once gave away a golden seed. Ask what it grows.",
+        "Somewhere out on the hills, a goatherd is whistling a tune.",
+        "The mayor knows everyone in town. Everyone knows the mayor.",
+        "Share the world with other Yoobas right in the browser, or wander alone and offline."
+      ];
+      var tipEl = document.getElementById("unity-tip");
+      var pctEl = document.getElementById("unity-progress-text");
+      var barEmpty = document.getElementById("unity-progress-bar-empty");
+      var tipIndex = Math.floor(Math.random() * tips.length);
+      var tipTimer = null;
+      function showTip() { tipEl.textContent = tips[tipIndex]; tipIndex = (tipIndex + 1) % tips.length; }
+      // Local rotation only: no requests. Stopped when the game runs or the load fails.
+      showTip();
+      tipTimer = setInterval(showTip, 4500);
+
+      function loadFailed(message) {
+        clearInterval(tipTimer);
+        loadingBar.className = "failed";
+        loadingBar.style.display = "";
+        document.getElementById("unity-fail-detail").textContent = String(message || "").slice(0, 200);
+        console.error("Yooba Land failed to load:", message);
+      }
+      document.getElementById("unity-retry").addEventListener("click", function () { location.reload(); });
+
       function fitCanvas() {
         var width = window.visualViewport ? window.visualViewport.width : window.innerWidth;
         var height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
@@ -233,21 +304,24 @@
       };
 
       var loader = document.createElement("script");
-      loader.src = buildUrl + ".loader.js?v=" + gameVersion;
+      // ?loadfail=1 points the loader at a missing file, to see the failure screen (used by playtests and reviews).
+      loader.src = /[?&]loadfail=1\b/.test(location.search) ? buildBase + "does-not-exist.loader.js" : buildUrl + ".loader.js?v=" + gameVersion;
       loader.onload = function () {
         createUnityInstance(canvas, config, function (progress) {
-          progressBarFull.style.width = (100 * progress) + "%";
+          var pct = Math.round(100 * progress);
+          progressBarFull.style.width = pct + "%";
+          pctEl.textContent = pct + "%";
+          barEmpty.setAttribute("aria-valuenow", pct);
         }).then(function () {
+          clearInterval(tipTimer);
           loadingBar.style.display = "none";
           container.className += " loaded";
         }).catch(function (message) {
-          loadingBar.style.display = "none";
-          unityShowBanner(String(message), "error");
+          loadFailed(message);
         });
       };
       loader.onerror = function () {
-        loadingBar.style.display = "none";
-        unityShowBanner("Could not load " + loader.src, "error");
+        loadFailed("Could not load " + loader.src);
       };
       document.body.appendChild(loader);
     }
