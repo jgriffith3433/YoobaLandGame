@@ -235,6 +235,8 @@
   <script src="./site/gallery.js" defer></script>
   <script src="./site/site.js"></script>
   <script src="./site/motion.js" defer></script>
+  <!-- Playtest: the Hawkes playtest contract (docs: hawkesstudio playtest.md), loaded only when a bot drives the page -->
+  <script>if(navigator.webdriver||/[?&]playtest=/.test(location.search)){var s=document.createElement("script");s.type="module";s.src="./site/playtest.js";document.head.appendChild(s)}</script>
   <!-- Hawkes release: written by the deploy (YoobaWebBuild.InstallReleaseNotes); edit it there -->
   <script src="./js/hawkes-release.js" data-releases="./releases.json" defer></script>
   <!-- /Hawkes release -->
