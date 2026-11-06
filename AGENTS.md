@@ -19,3 +19,12 @@ the API and AWS keys and runs the shared GPU fleet. This project never holds tho
 - **Art direction:** `hawkesgen/presets/yoobaland.json` (style line and named presets). Edit it there.
 - **Code:** copy `hawkesgen/clients/js/hawkesgen.mjs` into `tools/` and use `new HawkesGen({ project: 'yoobaland' })`.
 - GPU tools cost money while a server runs. Ask J before starting servers or running big batches.
+
+## Playtest
+
+The home page implements the playtest contract (`site/playtest.js`, with the `hawkes-playtest.js` and `hawkes-perf.js`
+helpers copied from hawkesstudio `clients/web`). It loads only when a bot drives the page (`navigator.webdriver` or
+`?playtest=`), so players download nothing. Scenario `play-flow` (start point `at: "load-failed"`) plays the Play flow:
+hero holds still, press Play, the game page's loading screen (progress bar, rotating lore lines), the canvas
+appearing without moving, a failed load (`?loadfail=1`) with its Try again button. The game page itself has no
+contract of its own: the Unity game's bridge registers `smoke`, `explore` and `full` there.
