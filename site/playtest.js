@@ -31,14 +31,9 @@ try {
 // Where the hero Play button first stood, as soon as the page could be measured. The check below compares against this,
 // not against where it stands when the scenario starts, so a jump before the bot began (the "What's new" line filling
 // in, a font swap) still counts.
-// Measured as layout position (offsetTop/Left up the parents), which ignores transforms: the hero's entrance animation
-// and parallax move the button on screen without shifting the layout.
-const layoutOf = (el) => {
-  let x = 0;
-  let y = 0;
-  for (let n = el; n; n = n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; }
-  return [x, y, el.offsetWidth, el.offsetHeight];
-};
+// Measured on screen (getBoundingClientRect), so a slide-in animation counts as the movement a player sees: the hero
+// words fade in without moving, and the button must stand still from its first frame.
+const layoutOf = rectOf;
 let firstPlay = null;
 const noteFirstPlay = () => {
   const el = document.querySelector('.hero .play-large');
