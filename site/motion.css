@@ -1,0 +1,56 @@
+/* Motion: hero parallax, staged reveals, hover states. Everything here is gated on html.motion, which site/motion.js
+   (and the inline script in <head>) set only when the visitor has NOT asked for reduced motion. Without the class the
+   page is plain and fully visible. Only transform and opacity are animated, so nothing reflows. */
+
+/* Hover and press states: always on, they are not scroll motion, but they stand still under reduced motion */
+.play, .post-link, .card, .cast-card, .devlog li, .gallery figure, .brand, .menu a {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+.card:hover, .cast-card:hover, .devlog li:hover { transform: translateY(-3px); box-shadow: 0 9px 0 var(--outline); }
+.gallery figure:hover { transform: translateY(-3px); }
+.gallery .shot img { transition: transform 0.35s ease; }
+.gallery .shot:hover img { transform: scale(1.04); }
+.gallery figure { overflow: hidden; }
+.cast-art img, .cast-art svg { transition: transform 0.4s ease; }
+.cast-card:hover .cast-art img, .cast-card:hover .cast-art svg { transform: scale(1.06); }
+.play-large:hover .play-icon, .play:hover .play-icon { transform: translateX(2px); }
+.play-icon { transition: transform 0.18s ease; }
+.post-link:hover h3 { color: var(--green); }
+
+@media (prefers-reduced-motion: reduce) {
+  .play, .post-link, .card, .cast-card, .devlog li, .gallery figure, .brand, .menu a,
+  .gallery .shot img, .cast-art img, .cast-art svg, .play-icon { transition: none; }
+  .card:hover, .cast-card:hover, .devlog li:hover, .gallery figure:hover,
+  .gallery .shot:hover img, .cast-card:hover .cast-art img, .cast-card:hover .cast-art svg,
+  .play:hover .play-icon { transform: none; }
+}
+
+/* Hero parallax: motion.js sets --hero-y (px scrolled while the hero is on screen). Each layer moves a different
+   fraction of it, so the frame, the words and the button drift apart. The frame is oversized so it never shows a gap. */
+.motion .hero-photo {
+  top: -14%;
+  height: 128%;
+  transform: translate3d(0, calc(var(--hero-y, 0) * 0.32px), 0);
+  will-change: transform;
+}
+.motion .hero-copy { transform: translate3d(0, calc(var(--hero-y, 0) * 0.14px), 0); will-change: transform; }
+.motion .hero-panel > .play-large { transform: translate3d(0, calc(var(--hero-y, 0) * 0.06px), 0); }
+.motion .hero-panel > .play-large:hover { transform: translate3d(0, calc(var(--hero-y, 0) * 0.06px + 1px), 0); }
+
+/* Hero words arrive in order on load */
+.motion .hero-copy > *, .motion .hero-panel > .play-large { animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.motion .hero-copy > :nth-child(2) { animation-delay: 0.08s; }
+.motion .hero-copy > :nth-child(3) { animation-delay: 0.16s; }
+.motion .hero-copy > :nth-child(4) { animation-delay: 0.24s; }
+.motion .hero-panel > .play-large { animation-delay: 0.34s; }
+@keyframes rise { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
+
+/* Staged reveals: each block fades up once as it enters; items in a row follow one after another (--i) */
+.motion [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+.motion [data-reveal].is-in { opacity: 1; transform: none; }
+.motion [data-reveal].is-in:hover { transition-delay: 0s; }
