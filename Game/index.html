@@ -12,6 +12,22 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <title>Yooba Land</title>
+  <meta name="description" content="Become one of the people of Yooba Land. Eat, grow, and find the way home.">
+  <link rel="icon" href="../images/favicon.png" type="image/png" sizes="64x64">
+  <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+  <meta name="theme-color" content="#143226">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Yooba Land">
+  <meta property="og:title" content="Yooba Land: play in the browser">
+  <meta property="og:description" content="Eat, grow, and find the way home. Play Yooba Land in your browser, nothing to install.">
+  <meta property="og:url" content="https://yoobalandgame.com/Game/">
+  <meta property="og:image" content="https://yoobalandgame.com/images/og-card.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Yooba Land: play in the browser">
+  <meta name="twitter:description" content="Eat, grow, and find the way home. Play Yooba Land in your browser, nothing to install.">
+  <meta name="twitter:image" content="https://yoobalandgame.com/images/og-card.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
@@ -184,6 +200,71 @@
     a.home {
       color: #8fd9b4;
     }
+    /* Phones held upright: a full-screen prompt to turn the phone sideways. Touch devices only (a laptop never sees it). */
+    #rotate-prompt {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 24px;
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 40%, #2c5e46 0%, #143226 70%);
+      color: #d9f2e4;
+      font: 700 18px/1.5 Nunito, Arial, sans-serif;
+    }
+    #rotate-prompt .rp-phone {
+      width: 56px;
+      height: 92px;
+      border: 4px solid #ffe56a;
+      border-radius: 12px;
+      position: relative;
+      animation: rp-turn 2.4s ease-in-out infinite;
+    }
+    #rotate-prompt .rp-phone::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 7px;
+      width: 12px;
+      height: 4px;
+      margin-left: -6px;
+      border-radius: 2px;
+      background: #ffe56a;
+    }
+    #rotate-prompt h2 { font: 600 28px/1.2 Fredoka, "Trebuchet MS", Arial, sans-serif; color: #ffe56a; }
+    #rotate-prompt p { max-width: 20em; }
+    @keyframes rp-turn {
+      0%, 25% { transform: rotate(0deg); }
+      50%, 80% { transform: rotate(-90deg); }
+      100% { transform: rotate(-90deg); }
+    }
+    @media (orientation: portrait) and (pointer: coarse) {
+      #rotate-prompt { display: flex; }
+    }
+    /* Fullscreen toggle, bottom left (clear of the version label). Hidden where the browser has no element fullscreen. */
+    #fullscreen-button {
+      display: none;
+      position: absolute;
+      left: 12px;
+      bottom: 8px;
+      z-index: 3;
+      width: 44px;
+      height: 44px;
+      border: 3px solid #10281c;
+      border-radius: 14px;
+      background: rgba(255, 229, 106, 0.92);
+      color: #143226;
+      box-shadow: 0 3px 0 #10281c;
+      font: 700 22px/1 Nunito, Arial, sans-serif;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    #fullscreen-button:active { transform: translateY(2px); box-shadow: 0 1px 0 #10281c; }
+    #fullscreen-button.available { display: block; }
   </style>
   <script>window.YOOBA_BUILD = "v185";</script>
   <script>window.HAWKES_NET_ENDPOINT = window.HAWKES_NET_ENDPOINT || 'https://net.hawkesgen.ai'; // builds before 2026-10-28 have net.hawkesgen.com baked in; beta pages set their own first</script>
@@ -218,6 +299,12 @@
     </div>
     <div id="unity-warning"></div>
   </div>
+  <div id="rotate-prompt" role="dialog" aria-label="Turn your phone sideways">
+    <div class="rp-phone" aria-hidden="true"></div>
+    <h2>Turn your phone sideways</h2>
+    <p>Yooba Land plays best in landscape. Turn your phone to continue.</p>
+  </div>
+  <button type="button" id="fullscreen-button" aria-label="Enter fullscreen" title="Fullscreen" aria-pressed="false">&#x26F6;</button>
   <div id="version-display"></div>
   <script>
     var gameVersion = window.YOOBA_BUILD;
@@ -362,5 +449,45 @@
     })();
   </script>
   <!-- /Hawkes release -->
+  <script>
+    // Fullscreen toggle. A tap is a user gesture, so the request is allowed. Where the browser has no element
+    // fullscreen (iPhone Safari), the button stays hidden. Landscape lock is best effort: most phones refuse it.
+    (function () {
+      var button = document.getElementById("fullscreen-button");
+      var target = document.getElementById("unity-container");
+      if (!button || !target) return;
+      var el = document.documentElement;
+      var canRequest = !!(el.requestFullscreen || el.webkitRequestFullscreen);
+      var enabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+      if (!canRequest || !enabled) return;
+      button.classList.add("available");
+
+      function inFullscreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+      function render() {
+        var on = inFullscreen();
+        button.setAttribute("aria-pressed", on ? "true" : "false");
+        button.setAttribute("aria-label", on ? "Leave fullscreen" : "Enter fullscreen");
+        button.title = on ? "Leave fullscreen" : "Fullscreen";
+        button.innerHTML = on ? "&#x2715;" : "&#x26F6;";
+      }
+      button.addEventListener("click", function () {
+        if (inFullscreen()) {
+          var exit = document.exitFullscreen || document.webkitExitFullscreen;
+          if (exit) exit.call(document);
+          return;
+        }
+        var request = el.requestFullscreen || el.webkitRequestFullscreen;
+        var result = request.call(el);
+        if (result && result.then) {
+          result.then(function () {
+            if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(function () {});
+          }).catch(function () {});
+        }
+      });
+      document.addEventListener("fullscreenchange", render);
+      document.addEventListener("webkitfullscreenchange", render);
+      render();
+    })();
+  </script>
 </body>
 </html>
