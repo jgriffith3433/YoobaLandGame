@@ -112,11 +112,25 @@
       <h2>A look around</h2>
       <p class="lede">Screenshots from the game.</p>
       <div class="gallery">
-        <figure><img src="./images/shot-bridge.jpg" width="1280" height="720" loading="lazy" alt="A wooden bridge over blue water leads to a grassy island with two bright trees, inside a long glass fence."><figcaption>A bridge over the water, inside the glass.</figcaption></figure>
-        <figure><img src="./images/shot-market.jpg" width="1280" height="720" loading="lazy" alt="A fruit and vegetable market with two wooden stalls and crates of apples, pumpkins and watermelons."><figcaption>The market, full of things to eat.</figcaption></figure>
-        <figure><img src="./images/shot-orchard.jpg" width="1280" height="720" loading="lazy" alt="Trees and bushes on bright grass inside a glass fence, with a red orb hanging in the air."><figcaption>Trees, grass and a big sky.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/shot-market.jpg" data-caption="The market, full of things to eat."><img src="./images/shot-market.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="A fruit and vegetable market with two wooden stalls and crates of apples, pumpkins and watermelons."></button><figcaption>The market, full of things to eat.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/shot-bridge.jpg" data-caption="A bridge over the water, inside the glass."><img src="./images/shot-bridge.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="A wooden bridge over blue water leads to a grassy island with two bright trees, inside a long glass fence."></button><figcaption>A bridge over the water, inside the glass.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/shot-orchard.jpg" data-caption="Trees, grass and a big sky."><img src="./images/shot-orchard.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="Trees and bushes on bright grass inside a glass fence, with a red orb hanging in the air."></button><figcaption>Trees, grass and a big sky.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/gallery-4.jpg" data-caption="Yooba, out for a walk."><img src="./images/gallery-4.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="Yooba, a bright green blob with stalk eyes and a wide open mouth, beside a wooden path and a glass wall."></button><figcaption>Yooba, out for a walk.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/gallery-5.jpg" data-caption="Something hangs in the air."><img src="./images/gallery-5.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="Yooba on bright grass, with a red orb hanging in the air and market crates behind the glass."></button><figcaption>Something hangs in the air.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/hero-loop.jpg" data-caption="The way out is 39 metres off."><img src="./images/hero-loop.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="The game's screen: a small Yooba on a plank bridge over water, with a message that says Yooba knows the way now."></button><figcaption>The way out is 39 metres off.</figcaption></figure>
       </div>
     </div>
+  </section>
+
+  <section class="section" id="devlog">
+    <h2>Devlog</h2>
+    <p class="lede">The latest changes to the game.</p>
+    <ol class="devlog" data-devlog>
+      <li><time datetime="2026-10-27">Oct 27, 2026</time><h3>1.6.1</h3><p>The title screen and launch text no longer appear on top of the consent dialog. At the largest size, the camera sits closer so Yooba is easier to see on a phone. Yooba Town stutters less during play.</p></li>
+      <li><time datetime="2026-10-27">Oct 27, 2026</time><h3>1.6.0</h3><p>Buildings have cleaner, brighter colours and their surfaces look neater from every angle.</p></li>
+      <li><time datetime="2026-10-27">Oct 27, 2026</time><h3>1.5.0</h3><p>Licorice Reach is a new area to explore, with its own scenery and music. The first trip to the Yooba Town waystone is much quicker. Players who have stepped away now appear faded. The Dark Bell dais can be reached.</p></li>
+    </ol>
+    <p><a href="./whatsnew.html">All release notes</a></p>
   </section>
 
   <section class="section">
@@ -200,6 +214,7 @@
       <!-- /Hawkes credits -->
     </div>
   </footer>
+  <script src="./site/gallery.js" defer></script>
   <script src="./site/site.js"></script>
   <!-- Hawkes release: written by the deploy (YoobaWebBuild.InstallReleaseNotes); edit it there -->
   <script src="./js/hawkes-release.js" data-releases="./releases.json" defer></script>
