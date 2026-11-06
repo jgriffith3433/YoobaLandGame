@@ -442,7 +442,7 @@ button.play, .contact-form button {
   .hero {
     align-items: flex-end;
     justify-content: flex-start;
-    min-height: clamp(520px, 86vh, 720px);
+    min-height: clamp(480px, 78vh, 700px);
   }
 
   .hero-photo { object-position: 4% 50%; }
@@ -496,4 +496,40 @@ button.play, .contact-form button {
 
 @media (max-width: 800px) {
   .gallery { grid-template-columns: 1fr; }
+}
+
+.hero-panel .hero-premise { font-size: 1.2rem; font-weight: 700; }
+
+.story { padding-bottom: 1.6rem; }
+.story h2 { max-width: 38rem; }
+.kicker-dark { color: var(--green); }
+
+.cast-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.cast-card {
+  min-width: 0;
+  background: var(--card);
+  border: 3px solid var(--outline);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 6px 0 var(--outline);
+}
+
+.cast-art { aspect-ratio: 1; overflow: hidden; border-bottom: 3px solid var(--outline); background: var(--sky-game); }
+.cast-art img, .cast-art svg { display: block; width: 100%; height: 100%; object-fit: cover; max-width: none; }
+.cast-card h3 { margin: 0.7rem 1rem 0.2rem; font-size: 1.35rem; }
+.cast-card p { margin: 0 1rem 1rem; color: var(--ink-soft); }
+.cast-note { margin: 1.4rem 0 0; color: var(--ink-soft); font-weight: 700; }
+
+@media (max-width: 800px) {
+  .cast-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+  .cast-card h3 { margin: 0.55rem 0.7rem 0.15rem; font-size: 1.15rem; }
+  .cast-card p { margin: 0 0.7rem 0.8rem; font-size: 0.95rem; }
 }
