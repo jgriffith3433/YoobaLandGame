@@ -28,6 +28,25 @@ try {
   }).observe({ type: 'layout-shift', buffered: true });
 } catch { /* no layout-shift entries in this browser: the rectangle checks below still run */ }
 
+// Where the hero Play button first stood, as soon as the page could be measured. The check below compares against this,
+// not against where it stands when the scenario starts, so a jump before the bot began (the "What's new" line filling
+// in, a font swap) still counts.
+// Measured as layout position (offsetTop/Left up the parents), which ignores transforms: the hero's entrance animation
+// and parallax move the button on screen without shifting the layout.
+const layoutOf = (el) => {
+  let x = 0;
+  let y = 0;
+  for (let n = el; n; n = n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; }
+  return [x, y, el.offsetWidth, el.offsetHeight];
+};
+let firstPlay = null;
+const noteFirstPlay = () => {
+  const el = document.querySelector('.hero .play-large');
+  if (el && !firstPlay) firstPlay = layoutOf(el);
+};
+noteFirstPlay();
+if (!firstPlay) document.addEventListener('DOMContentLoaded', noteFirstPlay);
+
 installPlaytest({
   product: 'yoobaland',
   isReady: () => document.readyState !== 'loading',
@@ -83,11 +102,12 @@ installPlaytest({
         t.scene('Home');
         const play = document.querySelector('.hero .play-large');
         if (!play) throw new Error('no hero Play button on the page');
-        const top0 = rectOf(play);
+        noteFirstPlay();
+        const top0 = firstPlay || layoutOf(play);
         const versionLine = document.querySelector('.hero-version [data-hawkes-version]');
         await t.until(() => !versionLine || !versionLine.hidden, 8000, "the What's new line").catch(() => t.log("What's new line never appeared"));
         await t.wait(1200);
-        const moved = drift(top0, rectOf(play));
+        const moved = drift(top0, layoutOf(play));
         t.metric('heroPlayMovedPx', px(moved));
         t.metric('heroShift', Math.round(clsHero * 10000) / 10000);
         t.metric('pageShift', Math.round(clsAll * 10000) / 10000);
