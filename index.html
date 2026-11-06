@@ -25,9 +25,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./site/site.css">
+  <link rel="stylesheet" href="./site/motion.css">
   <link rel="stylesheet" href="./site/hawkes-credits.css">
   <link rel="stylesheet" href="./site/hawkes-release.css">
   <!-- Hawkes Analytics, the only analytics on this site: anonymous statistics, no cookies (hawkesgen docs/analytics.md) -->
+  <script>if(!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches))document.documentElement.classList.add("motion")</script>
   <script src="https://hawkesgen.ai/sdk/analytics@1.js" data-product="yoobaland" data-hawkes-analytics="page" defer></script>
 </head>
 <body>
@@ -232,6 +234,7 @@
   </footer>
   <script src="./site/gallery.js" defer></script>
   <script src="./site/site.js"></script>
+  <script src="./site/motion.js" defer></script>
   <!-- Hawkes release: written by the deploy (YoobaWebBuild.InstallReleaseNotes); edit it there -->
   <script src="./js/hawkes-release.js" data-releases="./releases.json" defer></script>
   <!-- /Hawkes release -->
