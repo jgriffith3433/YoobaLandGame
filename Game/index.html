@@ -242,8 +242,21 @@
       50%, 80% { transform: rotate(-90deg); }
       100% { transform: rotate(-90deg); }
     }
+    #rotate-prompt #rp-upright {
+      min-height: 48px;
+      margin-top: 8px;
+      padding: 12px 28px;
+      border: 0;
+      border-radius: 999px;
+      background: #ffe56a;
+      color: #143226;
+      font: 600 18px/1.2 Fredoka, "Trebuchet MS", Arial, sans-serif;
+      cursor: pointer;
+    }
+    /* Up while upright, until "Play upright anyway" is pressed (html.rp-upright) or the game has loaded
+       (html.rp-game): from then on the game's own rotate prompt, with the same choice, takes over. */
     @media (orientation: portrait) and (pointer: coarse) {
-      #rotate-prompt { display: flex; }
+      html:not(.rp-upright):not(.rp-game) #rotate-prompt { display: flex; }
     }
     /* Fullscreen toggle, bottom left (clear of the version label). Hidden where the browser has no element fullscreen. */
     #fullscreen-button {
@@ -303,7 +316,20 @@
     <div class="rp-phone" aria-hidden="true"></div>
     <h2>Turn your phone sideways</h2>
     <p>Yooba Land plays best in landscape. Turn your phone to continue.</p>
+    <button type="button" id="rp-upright">Play upright anyway</button>
   </div>
+  <script>
+    // "Play upright anyway": put the prompt away for this visit, and pass ?rotate=0 on so the game's own prompt
+    // doesn't ask again once it loads.
+    document.getElementById("rp-upright").addEventListener("click", function () {
+      document.documentElement.className += " rp-upright";
+      try {
+        var url = new URL(location.href);
+        url.searchParams.set("rotate", "0");
+        history.replaceState(history.state, "", url.toString());
+      } catch (e) {}
+    });
+  </script>
   <button type="button" id="fullscreen-button" aria-label="Enter fullscreen" title="Fullscreen" aria-pressed="false">&#x26F6;</button>
   <div id="version-display"></div>
   <script>
@@ -403,6 +429,7 @@
           clearInterval(tipTimer);
           loadingBar.style.display = "none";
           container.className += " loaded";
+          document.documentElement.className += " rp-game";
         }).catch(function (message) {
           loadFailed(message);
         });
