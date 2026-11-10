@@ -351,10 +351,17 @@
     <button type="button" id="rp-upright">Play upright anyway</button>
   </div>
   <script>
-    // "Play upright anyway": put the prompt away for this visit, and pass ?rotate=0 on so the game's own prompt
-    // doesn't ask again once it loads.
+    // "Play upright anyway": put the prompt away for this visit (sessionStorage, so a reload or coming back from
+    // home keeps it), and pass ?rotate=0 on so the game's own prompt doesn't ask again once it loads. The game's
+    // pill sets the same two things (YoobaRotate.jslib), so either one holds for the whole visit.
+    (function () {
+      var chosen = false;
+      try { chosen = /[?&]rotate=0(&|$)/.test(location.search) || sessionStorage.getItem("yoobaRotateUpright") === "1"; } catch (e) {}
+      if (chosen) document.documentElement.className += " rp-upright";
+    })();
     document.getElementById("rp-upright").addEventListener("click", function () {
       document.documentElement.className += " rp-upright";
+      try { sessionStorage.setItem("yoobaRotateUpright", "1"); } catch (e) {}
       try {
         var url = new URL(location.href);
         url.searchParams.set("rotate", "0");
