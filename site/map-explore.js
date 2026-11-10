@@ -42,6 +42,16 @@
     zoomBy: function (factor, cx, cy) { zoomAt(factor, cx, cy); },
     getTransform: function () { return { x: tx, y: ty, scale: scale }; },
     getOpenId: function () { return openId; },
+    soundOn: function () { return soundOn; },
+    audioState: function () {
+      return { on: soundOn, voices: voices.map(function (v) { return { src: v.src, to: v.to, vol: v.el.volume, paused: v.el.paused }; }) };
+    },
+    journey: function () { return { state: lastJourney, visited: journeyVisited, running: !!journey }; },
+    lifeRunning: function () {
+      var y = svgEl && svgEl.querySelector(".life-yooba");
+      return !!y && !svgEl.classList.contains("is-offscreen") && getComputedStyle(y).animationName !== "none" &&
+        getComputedStyle(y).animationPlayState === "running";
+    },
   };
 
   function prefersReduce() {
@@ -146,23 +156,198 @@
     return MAP_BASE + path.replace(/^\.\//, "");
   }
 
+  // Sound: off by default, remembered per visitor. Two audio elements crossfade by rAF (no timers polling).
+  var SOUND_KEY = "yooba-map-sound";
+  var soundOn = false;
+  try { soundOn = localStorage.getItem(SOUND_KEY) === "1"; } catch (e) { /* storage blocked */ }
+  var soundBtn = root.querySelector("[data-explore-sound]");
+  var voices = [];
+  var wantAmbient = null;
+  var fadeRaf = 0;
+  var AMBIENT_VOL = 0.45;
+
+  function renderSound() {
+    if (!soundBtn) return;
+    soundBtn.setAttribute("aria-pressed", soundOn ? "true" : "false");
+    soundBtn.textContent = soundOn ? "Sound on" : "Sound off";
+  }
+
+  function fadeStep() {
+    var now = performance.now();
+    var busy = false;
+    voices = voices.filter(function (v) {
+      var u = Math.min(1, (now - v.t0) / v.dur);
+      var vol = v.from + (v.to - v.from) * u;
+      try { v.el.volume = Math.max(0, Math.min(1, vol)); } catch (e) { /* ignore */ }
+      if (u < 1) { busy = true; return true; }
+      if (v.to === 0) { try { v.el.pause(); } catch (e) { /* ignore */ } return false; }
+      return true;
+    });
+    fadeRaf = busy ? requestAnimationFrame(fadeStep) : 0;
+  }
+
+  function fadeVoice(v, to, dur) {
+    v.from = v.el.volume;
+    v.to = to;
+    v.t0 = performance.now();
+    v.dur = prefersReduce() ? 1 : dur;
+    if (voices.indexOf(v) < 0) voices.push(v);
+    if (!fadeRaf) fadeRaf = requestAnimationFrame(fadeStep);
+  }
+
   function stopAmbient() {
-    if (!ambient) return;
-    try { ambient.pause(); } catch (e) { /* ignore */ }
-    ambient = null;
+    wantAmbient = null;
+    voices.slice().forEach(function (v) { fadeVoice(v, 0, 500); });
   }
 
   function playAmbient(path) {
-    stopAmbient();
-    if (!path) return;
+    wantAmbient = path || null;
+    if (!soundOn || !path) { if (!path) stopAmbient(); return; }
+    var src = MAP_BASE + String(path).replace(/^\.\//, "");
+    var cur = voices.filter(function (v) { return v.src === src && v.to !== 0; })[0];
+    if (cur) return;
+    voices.forEach(function (v) { if (v.to !== 0) fadeVoice(v, 0, 900); });
     try {
-      // Ambient paths in places.json are relative like audio/Foo-0.ogg
-      ambient = new Audio(MAP_BASE + String(path).replace(/^\.\//, ""));
-      ambient.loop = true;
-      ambient.volume = 0.45;
-      ambient.play().catch(function () { /* autoplay may need a prior gesture; pin tap counts */ });
-    } catch (e) {
-      ambient = null;
+      var el = new Audio(src);
+      el.loop = true;
+      el.volume = 0;
+      var v = { el: el, src: src, from: 0, to: AMBIENT_VOL, t0: 0, dur: 900 };
+      el.play().catch(function () { /* blocked until a gesture */ });
+      fadeVoice(v, AMBIENT_VOL, 900);
+    } catch (e) { /* no audio */ }
+  }
+
+  function setSound(on) {
+    soundOn = !!on;
+    try { localStorage.setItem(SOUND_KEY, soundOn ? "1" : "0"); } catch (e) { /* storage blocked */ }
+    renderSound();
+    if (soundOn) playAmbient(wantAmbient); else voices.slice().forEach(function (v) { fadeVoice(v, 0, 300); });
+  }
+  if (soundBtn) soundBtn.addEventListener("click", function () { setSound(!soundOn); });
+  renderSound();
+
+  // Follow the Road Home: a glowing trail from chapter 1 to 8, pausing on each pin.
+  var journeyBtn = root.querySelector("[data-explore-journey]");
+  var journeyCap = root.querySelector(".explore-journey-cap");
+  var journey = null;
+  var journeyVisited = 0;
+  var lastJourney = "idle";
+
+  function endJourney(how) {
+    if (!journey) return;
+    var j = journey;
+    journey = null;
+    cancelAnimationFrame(j.raf);
+    clearTimeout(j.timer);
+    lastJourney = how;
+    if (j.trail) j.trail.style.strokeDashoffset = how === "done" ? "0" : j.trail.style.strokeDashoffset;
+    root.classList.remove("is-journey");
+    if (journeyBtn) journeyBtn.textContent = "Follow the Road Home";
+    if (journeyCap) journeyCap.hidden = true;
+    if (j.trail && j.trail.parentNode) j.trail.parentNode.removeChild(j.trail);
+    if (how === "done") { closeCard(); resetView(); }
+  }
+
+  function startJourney() {
+    if (!loaded || journey) return;
+    var road = svgEl.querySelector("#road-home");
+    if (!road) return;
+    var len = road.getTotalLength();
+    var stops = placeList.filter(function (p) { return p.chapter; })
+      .sort(function (a, b) { return a.chapter - b.chapter; })
+      .map(function (p) {
+        var best = 0, bd = Infinity;
+        for (var l = 0; l <= len; l += 4) {
+          var q = road.getPointAtLength(l);
+          var d = Math.hypot(q.x - p.map[0], q.y - p.map[1]);
+          if (d < bd) { bd = d; best = l; }
+        }
+        return { place: p, at: best };
+      });
+    var trail = road.cloneNode(false);
+    trail.removeAttribute("id");
+    trail.setAttribute("class", "road-trail");
+    trail.style.cssText = "stroke:#ffd54a;stroke-width:8;stroke-dasharray:" + len + ";stroke-dashoffset:" + len +
+      ";filter:drop-shadow(0 0 6px #ffb300);pointer-events:none";
+    road.parentNode.insertBefore(trail, road.nextSibling);
+    var reduce = prefersReduce();
+    journey = { trail: trail, raf: 0, timer: 0, i: 0 };
+    journeyVisited = 0;
+    lastJourney = "running";
+    root.classList.add("is-journey");
+    if (journeyBtn) journeyBtn.textContent = "Skip the journey";
+    if (journeyCap) journeyCap.hidden = false;
+    var j = journey;
+    var drawn = 0;
+
+    function pause() {
+      var st = stops[j.i];
+      journeyVisited++;
+      openPlace(st.place.id, !reduce);
+      if (journeyCap) journeyCap.textContent = "Chapter " + st.place.chapter + " of " + stops.length + " · " + st.place.name;
+      j.timer = setTimeout(function () {
+        j.i++;
+        if (j.i >= stops.length) { endJourney("done"); return; }
+        walk();
+      }, reduce ? 1600 : 2200);
+    }
+
+    function walk() {
+      var from = drawn;
+      var to = stops[j.i].at;
+      if (j.i === 0 || reduce || to <= from) { drawn = to; trail.style.strokeDashoffset = String(len - to); pause(); return; }
+      var t0 = performance.now();
+      var dur = Math.max(700, (to - from) * 6);
+      function frame(now) {
+        if (journey !== j) return;
+        var u = Math.min(1, (now - t0) / dur);
+        var l = from + (to - from) * u;
+        trail.style.strokeDashoffset = String(len - l);
+        if (u < 1) j.raf = requestAnimationFrame(frame);
+        else { drawn = to; pause(); }
+      }
+      j.raf = requestAnimationFrame(frame);
+    }
+    if (reduce) trail.style.strokeDashoffset = "0"; // static: the whole trail shown at once
+    walk();
+  }
+
+  if (journeyBtn) journeyBtn.addEventListener("click", function () {
+    if (journey) endJourney("skipped"); else startJourney();
+  });
+
+  // Idle life on the SVG: drifting clouds, shimmering water, a tiny Yooba on the path. CSS only; paused off-screen.
+  function addLife() {
+    var NS = "http://www.w3.org/2000/svg";
+    var road = svgEl.querySelector("#road-home");
+    var g = document.createElementNS(NS, "g");
+    g.setAttribute("class", "life");
+    g.setAttribute("pointer-events", "none");
+    var html = "";
+    [[0, 90, 1], [-380, 330, 0.8], [-760, 560, 1.15]].forEach(function (c, i) {
+      html += '<g class="life-cloud" style="--dx:' + c[0] + 'px;animation-duration:' + (60 + i * 18) + 's;animation-delay:-' + (i * 21) +
+        's" transform="translate(0,' + c[1] + ') scale(' + c[2] + ')"><path d="M0,24 C-4,8 18,2 28,12 C34,-2 62,-2 66,16 C84,12 90,32 70,34 L8,34 C-4,34 -6,28 0,24Z" fill="#fff" opacity=".7"/></g>';
+    });
+    [["glimmer-lake", 40], ["willow-water", 26]].forEach(function (w) {
+      var p = placesById[w[0]];
+      if (!p) return;
+      var x = p.map[0], y = p.map[1], r = w[1];
+      html += '<path class="life-shimmer" d="M' + (x - r * 0.5) + ',' + (y - 4) + ' q' + (r * 0.25) + ',-5 ' + (r * 0.5) + ',0 t' + (r * 0.5) + ',0" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>' +
+        '<path class="life-shimmer life-shimmer-b" d="M' + (x - r * 0.3) + ',' + (y + 7) + ' q' + (r * 0.2) + ',-4 ' + (r * 0.4) + ',0 t' + (r * 0.4) + ',0" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>';
+    });
+    g.innerHTML = html;
+    if (road) {
+      var w = document.createElementNS(NS, "g");
+      w.setAttribute("class", "life-yooba");
+      w.style.offsetPath = 'path("' + road.getAttribute("d") + '")';
+      w.innerHTML = '<ellipse cy="9" rx="7" ry="2.5" fill="#000" opacity=".2"/><g class="life-bob"><circle r="7" cy="0" fill="#ffd54a" stroke="#7a2f22" stroke-width="2"/><circle cx="-2.5" cy="-1.5" r="1" fill="#3a2a14"/><circle cx="2.5" cy="-1.5" r="1" fill="#3a2a14"/></g>';
+      g.appendChild(w);
+    }
+    svgEl.appendChild(g);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { svgEl.classList.toggle("is-offscreen", !en.isIntersecting); });
+      }, { threshold: 0 }).observe(viewport);
     }
   }
 
@@ -259,6 +444,7 @@
         svgEl.style.height = VIEW_H + "px";
       }
       wirePins();
+      addLife();
       resetView();
       loaded = true;
       root.classList.add("is-ready");
@@ -363,6 +549,7 @@
   if (cardClose) cardClose.addEventListener("click", closeCard);
 
   document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && journey) { endJourney("skipped"); e.preventDefault(); return; }
     if (e.key === "Escape" && openId) {
       closeCard();
       e.preventDefault();
