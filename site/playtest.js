@@ -278,13 +278,14 @@ installPlaytest({
       t.progress(0.8);
       await t.wait(1200);
 
+      const attempt0 = d.getElementById('unity-container').getAttribute('data-attempt');
       overlay.contentWindow.__playtestMarker = 1;
       retry.click();
-      t.event('retry-pressed', 'Try again');
-      await t.until(() => { try { return overlay.contentWindow.__playtestMarker === undefined; } catch { return true; } }, 15000, 'the page to reload');
-      t.event('retry-reloaded', 'the game page loaded again');
-      pressTap.done = false;
-      await t.until(() => { pressTap(gameDoc()); return failed(); }, 30000, 'the failure screen again');
+      t.event('retry-pressed', 'Retry');
+      await t.until(() => { const c = gameDoc() && gameDoc().getElementById('unity-container'); return c && c.getAttribute('data-attempt') !== attempt0; }, 15000, 'the loader to start again');
+      if (overlay.contentWindow.__playtestMarker !== 1) flag('Retry reloaded the whole page instead of the game.');
+      t.event('retry-reloaded', 'the loader started again without a page reload');
+      await t.until(() => failed(), 30000, 'the failure screen again');
       t.event('failure-screen', 'Still failing (?loadfail=1 keeps failing on purpose): the screen came back with Try again');
       t.progress(1);
       t.scene('Done');
