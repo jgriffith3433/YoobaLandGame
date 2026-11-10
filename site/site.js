@@ -23,7 +23,13 @@ if (form) {
 document.addEventListener("click", function (event) {
   var link = event.target && event.target.closest && event.target.closest('a[href$="Game/"]');
   if (!link) return;
-  var where = link.closest(".site-footer") ? "footer" : link.classList.contains("play-large") ? "hero" : "header";
+  var where = link.closest(".site-footer")
+    ? "footer"
+    : link.closest("[data-explore-map]") || link.hasAttribute("data-explore-play")
+      ? "map"
+      : link.classList.contains("play-large")
+        ? "hero"
+        : "header";
   var props = { where: where };
   var analytics = window.hawkesAnalytics;
   if (analytics && analytics.track) analytics.track("play_click", props);

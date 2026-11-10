@@ -1,12 +1,13 @@
 // Hawkes playtest contract for the home page (spec: hawkesstudio/docs/playtest.md). Loaded only when a bot drives the
 // page (index.html: navigator.webdriver or ?playtest=), so players download nothing.
 //
-// Scenarios (all open Game/ in a full-window frame so the bot keeps its log):
+// Scenarios (all open Game/ in a full-window frame so the bot keeps its log, except map):
 //   play-flow   — hero holds still, Play, loading (bar + lore), canvas without moving, failed load + Try again
 //                 (at "load-failed": only the failure part)
 //   play-fail   — Game/?playtest=fail-load shows the failure screen (and Try again)
 //   play-rotate — phone portrait: rotate prompt, then landscape; Tap to play gets the first pointerdown
 //   play-chrome — fullscreen button toggles; the back-to-home link returns to the site home
+//   map         — Explore Yooba Land: pan, zoom, open three place cards; screenshots at desktop and 390 px
 import { installPlaytest } from './hawkes-playtest.js';
 
 const px = (n) => Math.round(n * 10) / 10;
@@ -78,6 +79,13 @@ installPlaytest({
     seconds: 45,
     tags: ['full', 'menus'],
     description: 'Game page chrome: the fullscreen button toggles, then the Home link returns to the site home.',
+  }, {
+    id: 'map',
+    title: 'Explore map: pan, zoom, three place cards',
+    seconds: 90,
+    tags: ['full', 'phone'],
+    description: 'Home Explore Yooba Land: scroll to the map, pan and zoom, open three place cards with pictures and Play; ' +
+      'screenshots at desktop and at 390 px (bottom sheet). Play href stays ./Game/.',
   }],
 
   async start(id, options, t) {
@@ -91,6 +99,15 @@ installPlaytest({
       event.stopImmediatePropagation();
     };
     window.addEventListener('click', holdPlay, true);
+
+    if (id === 'map') {
+      try {
+        await runMapExplore({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') });
+      } finally {
+        window.removeEventListener('click', holdPlay, true);
+      }
+      return;
+    }
 
     const openGame = (query, size) => {
       if (overlay) overlay.remove();
@@ -283,6 +300,152 @@ installPlaytest({
     document.querySelectorAll('iframe[title="Yooba Land (playtest)"]').forEach((f) => f.remove());
   },
 });
+
+async function runMapExplore({ t, flag, finish }) {
+  const section = document.getElementById('explore');
+  const stage = document.querySelector('[data-explore-map]');
+  if (!section || !stage) {
+    flag('Explore Yooba Land section is missing from the home page.');
+    t.scene('Missing');
+    finish(false);
+    return;
+  }
+
+  t.scene('Map desktop');
+  section.scrollIntoView({ behavior: 'auto', block: 'center' });
+  // Nudge into view so IntersectionObserver loads the SVG.
+  stage.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+  await t.until(() => window.yoobaExplore && window.yoobaExplore.ready(), 20000, 'the explore map');
+  t.event('map-ready', 'SVG and places.json loaded');
+  t.progress(0.15);
+  await t.wait(900); // map on screen for screenshots
+
+  const viewport = stage.querySelector('.explore-viewport');
+  const before = window.yoobaExplore.getTransform();
+  // Real pointer pan across the viewport (keeps the page from scrolling sideways via touch-action: none).
+  const vr = viewport.getBoundingClientRect();
+  const cx = vr.left + vr.width / 2;
+  const cy = vr.top + vr.height / 2;
+  const dispatchPtr = (type, x, y, id = 1) => {
+    try {
+      viewport.dispatchEvent(new PointerEvent(type, {
+        bubbles: true, cancelable: true, composed: true,
+        clientX: x, clientY: y, pointerId: id, pointerType: 'touch', isPrimary: id === 1,
+        buttons: type === 'pointerup' || type === 'pointercancel' ? 0 : 1,
+      }));
+    } catch {
+      viewport.dispatchEvent(new MouseEvent(type === 'pointerdown' ? 'mousedown' : type === 'pointerup' ? 'mouseup' : 'mousemove', {
+        bubbles: true, cancelable: true, clientX: x, clientY: y,
+      }));
+    }
+  };
+  dispatchPtr('pointerdown', cx, cy);
+  dispatchPtr('pointermove', cx - 70, cy + 40);
+  dispatchPtr('pointerup', cx - 70, cy + 40);
+  await t.wait(200);
+  const afterPan = window.yoobaExplore.getTransform();
+  const panDist = Math.hypot(afterPan.x - before.x, afterPan.y - before.y);
+  t.metric('mapPanPx', px(panDist));
+  t.event('map-pan', `dragged ~${px(panDist)}px`);
+  if (panDist < 8) flag('Panning the map did not move it.');
+  t.progress(0.28);
+
+  // Two-finger pinch zoom (acceptance: pinch feels smooth).
+  const scaleBeforePinch = window.yoobaExplore.getTransform().scale;
+  dispatchPtr('pointerdown', cx - 40, cy, 1);
+  dispatchPtr('pointerdown', cx + 40, cy, 2);
+  dispatchPtr('pointermove', cx - 70, cy, 1);
+  dispatchPtr('pointermove', cx + 70, cy, 2);
+  dispatchPtr('pointerup', cx - 70, cy, 1);
+  dispatchPtr('pointerup', cx + 70, cy, 2);
+  await t.wait(200);
+  const afterPinch = window.yoobaExplore.getTransform();
+  t.metric('mapPinchScale', px(afterPinch.scale));
+  t.event('map-pinch', `scale ${px(scaleBeforePinch)} → ${px(afterPinch.scale)}`);
+  if (afterPinch.scale <= scaleBeforePinch + 0.02) {
+    // Fall back to the +/- control so the zoom criterion is still visible if PointerEvent multi-touch is limited.
+    const zoomBtn = stage.querySelector('[data-explore-zoom="in"]');
+    if (zoomBtn) zoomBtn.click();
+    else window.yoobaExplore.zoomBy(1.25);
+    await t.wait(200);
+    const afterBtn = window.yoobaExplore.getTransform();
+    t.event('map-zoom', `+/- fallback scale ${px(afterPinch.scale)} → ${px(afterBtn.scale)}`);
+    if (afterBtn.scale <= scaleBeforePinch + 0.02) flag('Pinch and zoom-in did not raise the map scale.');
+  }
+  t.progress(0.4);
+  await t.wait(700);
+
+  const cards = ['yooba-town', 'mistwood', 'licorice-reach'];
+  for (let i = 0; i < cards.length; i++) {
+    const id = cards[i];
+    const pin = stage.querySelector(`[data-place="${id}"]`);
+    if (pin) {
+      pin.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    } else {
+      window.yoobaExplore.openPlace(id, false);
+    }
+    await t.until(() => window.yoobaExplore.getOpenId() === id, 8000, `card ${id}`);
+    const card = stage.querySelector('.explore-card');
+    const img = stage.querySelector('.explore-card-img');
+    const play = stage.querySelector('[data-explore-play]');
+    const name = ((stage.querySelector('.explore-card-name') || {}).textContent || '').trim();
+    const hook = ((stage.querySelector('.explore-card-hook') || {}).textContent || '').trim();
+    const imgOk = !!(img && img.getAttribute('src'));
+    const playHref = play && play.getAttribute('href');
+    t.scene(`Card ${id}`);
+    t.event('place-card', `${id}: "${name}", hook ${hook ? 'yes' : 'NO'}, picture ${imgOk ? 'yes' : 'NO'}, Play ${playHref || 'MISSING'}`);
+    if (!card || card.hidden) flag(`Place card for ${id} did not open.`);
+    if (!imgOk) flag(`Place card for ${id} has no picture.`);
+    if (!hook) flag(`Place card for ${id} has no hook line.`);
+    if (!play || playHref !== './Game/') flag(`Place card Play must link to ./Game/ (got ${playHref}).`);
+    t.metric('cardsOpened', i + 1);
+    t.progress(0.4 + 0.12 * (i + 1));
+    await t.wait(1100); // open card on screen for screenshots
+  }
+  t.event('map-shot-desktop', 'map + open card at desktop width');
+  t.progress(0.78);
+
+  // 390 px phone frame: bottom-sheet card layout for screenshots (also covers a native phone run).
+  t.scene('Map phone');
+  document.documentElement.classList.add('explore-force-phone');
+  window.yoobaExplore.closeCard();
+  await t.wait(200);
+  // Re-fit after the stage narrows.
+  window.dispatchEvent(new Event('resize'));
+  await t.wait(300);
+  const phonePin = stage.querySelector('[data-place="sugarsand"]') || stage.querySelector('[data-place="yooba-town"]');
+  const phoneId = phonePin && phonePin.getAttribute('data-place') || 'yooba-town';
+  if (phonePin) phonePin.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+  else window.yoobaExplore.openPlace(phoneId, false);
+  await t.until(() => window.yoobaExplore.getOpenId() === phoneId, 8000, 'phone card');
+  const phoneCard = stage.querySelector('.explore-card');
+  const phoneW = Math.round(stage.getBoundingClientRect().width);
+  const sheet = phoneCard && !phoneCard.hidden;
+  const playPhone = stage.querySelector('[data-explore-play]');
+  t.metric('mapPhoneWidth', phoneW);
+  t.event('map-shot-phone', `390-style frame width ${phoneW}px, bottom sheet ${sheet ? 'open' : 'MISSING'}, Play ${playPhone && playPhone.getAttribute('href')}`);
+  if (!sheet) flag('Phone layout did not show an open place card.');
+  // Desktop run forces 390 via .explore-force-phone; native phone runs are already ~390.
+  if (phoneW > 420) flag(`Phone map frame is ${phoneW}px wide (expected ~390).`);
+  // One-finger pan on the phone frame (page must not scroll sideways).
+  const scrollX0 = window.scrollX || window.pageXOffset || 0;
+  const pvr = viewport.getBoundingClientRect();
+  const pcx = pvr.left + pvr.width / 2;
+  const pcy = pvr.top + Math.min(120, pvr.height / 3);
+  dispatchPtr('pointerdown', pcx, pcy);
+  dispatchPtr('pointermove', pcx + 55, pcy);
+  dispatchPtr('pointerup', pcx + 55, pcy);
+  await t.wait(200);
+  const scrollX1 = window.scrollX || window.pageXOffset || 0;
+  t.metric('pageScrollX', px(Math.abs(scrollX1 - scrollX0)));
+  t.event('map-phone-pan', `page scrollX delta ${px(Math.abs(scrollX1 - scrollX0))}`);
+  if (Math.abs(scrollX1 - scrollX0) > 2) flag('Panning the map scrolled the page sideways.');
+  await t.wait(1200); // phone card on screen for screenshots
+  document.documentElement.classList.remove('explore-force-phone');
+  t.progress(1);
+  t.scene('Done');
+  finish(true);
+}
 
 async function runPlayFail({ t, flag, openGame, gameDoc, visible, pressTap, finish }) {
   t.scene('Load failed');

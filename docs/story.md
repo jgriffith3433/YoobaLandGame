@@ -5,6 +5,7 @@ the mayor (Mayor Plump in Yooba Town), Piper (a whistling goatherd in the Whistl
 Portraits of Reed and Bramley are vector stand-ins (`index.html`); real ones need GPU art.
 
 ## The Road Home and the World Map
+The home page **Explore Yooba Land** section (`#explore`) shows the island map from `site/map/` (SVG + `places.json`): pan, zoom, and tap a pin for a place card (picture, hook, Play → `./Game/`). The same place data drives the standalone map page.
 Yooba Land is a 2.75 km by 2 km island-and-reach world (`x` from `-900` to `1850`, `z` from `-900` to `1100`) linked by cobble roads, dirt trails, waterways, and the eight-chapter **Road Home**:
 1. **Yooba Town** (`[0, 140]`): Where Yooba wakes inside the Glass Garden (`[0, 50]`), breaks the cracked pane, and meets the other Yoobas and Mayor Plump around the clock tower square.
 2. **Seedvale Meadows** (`[0, -300]`): Low golden fields south of town with Bramley's farm, slow turning windmills (`[-500, -250]`), **Glimmer Lake** (`[-300, -420]`, where Old Reed fishes and Ottie races rafts), **Willow Water** (`[265, -322]`, seven linked ponds and runs where Barnaby counts seventeen lily pads), and the **Reed Marsh** (`[-510, -570]`, where a heron stands on one leg on the Heron Post).
