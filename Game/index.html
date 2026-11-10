@@ -200,6 +200,17 @@
     a.home {
       color: #8fd9b4;
     }
+    /* Back to the site home (bottom left, clear of the fullscreen button). Same tone as the version label. */
+    #home-link {
+      position: absolute;
+      left: 64px;
+      bottom: 14px;
+      z-index: 3;
+      color: rgba(255, 255, 255, 0.7);
+      font: 700 13px Nunito, Arial, sans-serif;
+      text-decoration: none;
+    }
+    #home-link:hover, #home-link:focus-visible { color: #ffe56a; }
     /* Phones held upright: a full-screen prompt to turn the phone sideways. Touch devices only (a laptop never sees it). */
     #rotate-prompt {
       display: none;
@@ -304,6 +315,7 @@
         <p>The game didn't finish loading. Check your connection, then try again.</p>
         <small id="unity-fail-detail"></small>
         <button type="button" id="unity-retry">Try again</button>
+        <p style="margin-top: 14px;"><a class="home" href="../">Back home</a></p>
       </div>
     </div>
     <div id="missing-build">
@@ -331,6 +343,7 @@
     });
   </script>
   <button type="button" id="fullscreen-button" aria-label="Enter fullscreen" title="Fullscreen" aria-pressed="false">&#x26F6;</button>
+  <a id="home-link" class="home" href="../" title="Back to Yooba Land home">Home</a>
   <div id="version-display"></div>
   <script>
     var gameVersion = window.YOOBA_BUILD;
@@ -417,8 +430,9 @@
       };
 
       var loader = document.createElement("script");
-      // ?loadfail=1 points the loader at a missing file, to see the failure screen (used by playtests and reviews).
-      loader.src = /[?&]loadfail=1\b/.test(location.search) ? buildBase + "does-not-exist.loader.js" : buildUrl + ".loader.js?v=" + gameVersion;
+      // ?loadfail=1 or ?playtest=fail-load points the loader at a missing file, to see the failure screen (playtests).
+      var failLoad = /[?&]loadfail=1\b/.test(location.search) || /[?&]playtest=fail-load\b/.test(location.search);
+      loader.src = failLoad ? buildBase + "does-not-exist.loader.js" : buildUrl + ".loader.js?v=" + gameVersion;
       loader.onload = function () {
         createUnityInstance(canvas, config, function (progress) {
           var pct = Math.round(100 * progress);
