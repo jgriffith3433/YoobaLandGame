@@ -659,6 +659,11 @@ async function runPlayChrome({ t, flag, openGame, gameDoc, gameWin, visible, pre
   }
   const href = home.getAttribute('href') || '';
   t.event('home-link', `visible, href=${href}`);
+  // Leaving asks first: answer the question the way a player would (Leave), and log that it was asked.
+  const gw0 = gameWin();
+  try {
+    gw0.confirm = (q) => { t.event('leave-asked', `"${q}" answered yes`); return true; };
+  } catch { /* cross-origin: native dialog */ }
   home.click();
   await t.until(() => {
     const w = gameWin();
