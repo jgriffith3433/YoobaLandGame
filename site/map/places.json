@@ -1,0 +1,305 @@
+{
+ "_about": "Map content. map = SVG px (viewBox 1100x800), world = metres (x -900..1850, z -900..1100). Built by tools/build-map.py.",
+ "viewBox": [
+  1100,
+  800
+ ],
+ "places": [
+  {
+   "id": "yooba-town",
+   "name": "Yooba Town",
+   "kind": "chapter",
+   "world": [
+    0,
+    140
+   ],
+   "map": [
+    360,
+    384
+   ],
+   "hook": "A town full of Yoobas, and a clock that ticks like a friendly tummy.",
+   "image": "img/home.webp",
+   "ambient": "audio/FlowerMeadow-0.ogg",
+   "chapter": 1
+  },
+  {
+   "id": "seedvale",
+   "name": "Seedvale",
+   "kind": "chapter",
+   "world": [
+    0,
+    -300
+   ],
+   "map": [
+    360,
+    560
+   ],
+   "hook": "Golden rows, a red barn and a very slow windmill.",
+   "image": "img/seeds.webp",
+   "ambient": "audio/FlowerMeadow-5.ogg",
+   "chapter": 2
+  },
+  {
+   "id": "whistling-hills",
+   "name": "Whistling Hills",
+   "kind": "chapter",
+   "world": [
+    -400,
+    100
+   ],
+   "map": [
+    200,
+    400
+   ],
+   "hook": "The wind plays the rocks like a flute.",
+   "image": "img/windy-night.webp",
+   "ambient": "audio/WindyHilltop-0.ogg",
+   "chapter": 3
+  },
+  {
+   "id": "crumblecrown",
+   "name": "Crumblecrown Castle",
+   "kind": "chapter",
+   "world": [
+    -500,
+    850
+   ],
+   "map": [
+    160,
+    100
+   ],
+   "hook": "A castle on a hill, mid-crumble, and very polite about it.",
+   "image": "img/first-clue.webp",
+   "ambient": "audio/BoulderCanyon-0.ogg",
+   "chapter": 4
+  },
+  {
+   "id": "mistwood",
+   "name": "Mistwood Forest",
+   "kind": "chapter",
+   "world": [
+    100,
+    700
+   ],
+   "map": [
+    400,
+    160
+   ],
+   "hook": "Giant trees, paper lanterns and a lot of mist.",
+   "image": "img/shot-orchard.webp",
+   "ambient": "audio/WhisperingForest-6.ogg",
+   "chapter": 5
+  },
+  {
+   "id": "sugarsand",
+   "name": "Sugarsand Coast",
+   "kind": "chapter",
+   "world": [
+    700,
+    -300
+   ],
+   "map": [
+    640,
+    560
+   ],
+   "hook": "A port, a lighthouse and a lot of sea.",
+   "image": "img/apples.webp",
+   "ambient": "audio/FlowerMeadow-9.ogg",
+   "chapter": 6
+  },
+  {
+   "id": "frostcap",
+   "name": "Frostcap Peak",
+   "kind": "chapter",
+   "world": [
+    850,
+    950
+   ],
+   "map": [
+    700,
+    60
+   ],
+   "hook": "The highest place. The bell waits at the top.",
+   "image": "img/glass-garden.webp",
+   "ambient": "audio/WindyHilltop-8.ogg",
+   "chapter": 7
+  },
+  {
+   "id": "licorice-reach",
+   "name": "Licorice Reach",
+   "kind": "chapter",
+   "world": [
+    1780,
+    -480
+   ],
+   "map": [
+    1072,
+    632
+   ],
+   "hook": "Always dusk. One orb left to eat.",
+   "image": "img/eight-orbs.webp",
+   "ambient": "audio/GlowcapGrove-6.ogg",
+   "chapter": 8
+  },
+  {
+   "id": "whispering-forest",
+   "name": "Whispering Forest",
+   "kind": "biome",
+   "world": [
+    -740,
+    530
+   ],
+   "map": [
+    64,
+    228
+   ],
+   "hook": "The big tree is humming. It is saying my name. Quietly.",
+   "image": "img/shot-orchard.webp",
+   "ambient": "audio/WhisperingForest-0.ogg"
+  },
+  {
+   "id": "bramble-thicket",
+   "name": "Bramble Thicket",
+   "kind": "biome",
+   "world": [
+    -640,
+    530
+   ],
+   "map": [
+    104,
+    228
+   ],
+   "hook": "A whole arch made of brambles! I'll go through slowly.",
+   "image": "img/shot-bridge.webp",
+   "ambient": "audio/BrambleThicket-0.ogg"
+  },
+  {
+   "id": "mossy-ruins",
+   "name": "Mossy Ruins",
+   "kind": "biome",
+   "world": [
+    340,
+    500
+   ],
+   "map": [
+    496,
+    240
+   ],
+   "hook": "One arch still stands up straight. It has been waiting a very long time.",
+   "image": "img/gallery-4.webp",
+   "ambient": "audio/MossyRuins-0.ogg"
+  },
+  {
+   "id": "flower-meadow",
+   "name": "Flower Meadow",
+   "kind": "biome",
+   "world": [
+    440,
+    500
+   ],
+   "map": [
+    536,
+    240
+   ],
+   "hook": "A sunflower taller than the windmill! It turns to look at me.",
+   "image": "img/apples.webp",
+   "ambient": "audio/FlowerMeadow-0.ogg"
+  },
+  {
+   "id": "glowcap-grove",
+   "name": "Glowcap Grove",
+   "kind": "biome",
+   "world": [
+    290,
+    660
+   ],
+   "map": [
+    476,
+    176
+   ],
+   "hook": "The biggest mushroom in the world, glowing softly, just for me.",
+   "image": "img/gallery-5.webp",
+   "ambient": "audio/GlowcapGrove-0.ogg"
+  },
+  {
+   "id": "boulder-canyon",
+   "name": "Boulder Canyon",
+   "kind": "biome",
+   "world": [
+    -640,
+    1025
+   ],
+   "map": [
+    104,
+    30
+   ],
+   "hook": "A tower of rock, stacked like pancakes. Somebody very patient made this.",
+   "image": "img/first-clue.webp",
+   "ambient": "audio/BoulderCanyon-4.ogg"
+  },
+  {
+   "id": "reed-marsh",
+   "name": "Reed Marsh",
+   "kind": "biome",
+   "world": [
+    -510,
+    -570
+   ],
+   "map": [
+    156,
+    668
+   ],
+   "hook": "A heron on one leg on a very tall post. We are both being very still.",
+   "image": "img/shot-market.webp",
+   "ambient": "audio/ReedMarsh-0.ogg"
+  },
+  {
+   "id": "windy-hilltop",
+   "name": "Windy Hilltop",
+   "kind": "biome",
+   "world": [
+    -375,
+    380
+   ],
+   "map": [
+    210,
+    288
+   ],
+   "hook": "Stones in a ring on top of the world. The wind almost says words.",
+   "image": "img/windy-night.webp",
+   "ambient": "audio/WindyHilltop-3.ogg"
+  },
+  {
+   "id": "glimmer-lake",
+   "name": "Glimmer Lake",
+   "kind": "water",
+   "world": [
+    -300,
+    -420
+   ],
+   "map": [
+    240,
+    608
+   ],
+   "hook": "Sit still. The fish don't hurry, and neither does the lake.",
+   "image": "img/seeds.webp",
+   "ambient": "audio/ReedMarsh-6.ogg"
+  },
+  {
+   "id": "willow-water",
+   "name": "Willow Water",
+   "kind": "water",
+   "world": [
+    265,
+    -322
+   ],
+   "map": [
+    466,
+    569
+   ],
+   "hook": "Seventeen lily pads. Count them in order.",
+   "image": "img/shot-bridge.webp",
+   "ambient": "audio/ReedMarsh-11.ogg"
+  }
+ ]
+}
