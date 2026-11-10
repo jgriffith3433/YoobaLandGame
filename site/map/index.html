@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Map of Yooba Land</title>
+<style>
+body{margin:0;font-family:'Patrick Hand','Comic Sans MS',cursive,sans-serif;background:#fff6d8;color:#3a2a14}
+main{max-width:1100px;margin:0 auto;padding:12px}
+#map svg{width:100%;height:auto;display:block;border-radius:12px}
+#card{display:flex;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:10px;margin-top:10px;min-height:120px}
+#card img{width:200px;max-width:40%;border-radius:8px}
+#card h2{margin:0 0 4px}
+a{color:#7a2f22}
+</style></head><body><main>
+<p><a href="../../">&larr; Home</a></p>
+<div id="map"></div>
+<div id="card" aria-live="polite"><p>Tap a place on the map.</p></div>
+</main>
+<script>
+(async function () {
+  var d = await (await fetch("places.json")).json();
+  document.getElementById("map").innerHTML = await (await fetch("map.svg")).text();
+  var card = document.getElementById("card"), audio = null;
+  function show(p) {
+    if (audio) audio.pause();
+    card.innerHTML = '<img alt="' + p.name + '" src="' + p.image + '"><div><h2></h2><p></p></div>';
+    card.querySelector("h2").textContent = p.name + (p.chapter ? " (Chapter " + p.chapter + ")" : "");
+    card.querySelector("p").textContent = p.hook;
+    audio = new Audio(p.ambient); audio.loop = true; audio.volume = 0.5; audio.play().catch(function () {});
+  }
+  d.places.forEach(function (p) {
+    var g = document.querySelector('[data-place="' + p.id + '"]');
+    if (!g) return;
+    g.addEventListener("click", function () { show(p); });
+    g.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") show(p); });
+  });
+})();
+</script></body></html>

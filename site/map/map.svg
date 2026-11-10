@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 800" role="img" aria-labelledby="mt md" font-family="'Patrick Hand','Comic Sans MS',cursive,sans-serif">
+<title id="mt">Map of Yooba Land</title><desc id="md">The island of Yooba Land with its towns, forests, lakes and the dotted Road Home.</desc>
+<defs><filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="9"/></filter></defs>
+<rect width="1100" height="800" fill="#7fd6e8"/>
+<g filter="url(#rough)"><path d="M70,160 C120,60 330,40 470,70 C640,30 880,60 1020,150 C1090,300 1080,520 1010,640 C930,760 760,780 640,740 C520,780 330,770 200,720 C100,640 40,400 70,160Z" fill="#f2d48a" stroke="#b58a3c" stroke-width="5"/>
+<path d="M110,170 C150,90 330,75 470,100 C630,65 860,95 985,170 C1040,300 1035,500 975,610 C900,715 760,730 640,700 C520,735 340,725 230,690 C140,620 90,400 110,170Z" fill="#a8d672"/></g>
+<ellipse cx="240" cy="608" rx="40" ry="26" fill="#7fd6e8" stroke="#3fa7c9" stroke-width="3"/>
+<ellipse cx="466" cy="569" rx="26" ry="16" fill="#7fd6e8" stroke="#3fa7c9" stroke-width="3"/>
+<path d="M370,540 C380,470 350,410 330,380 M290,420 C310,330 340,300 380,250" fill="none" stroke="#3fa7c9" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+<ellipse cx="632" cy="128" rx="22" ry="14" fill="#dff1ff" stroke="#6c8fc4" stroke-width="3"/>
+<text x="940" y="350" font-size="22" fill="#2f7f9b" font-style="italic" text-anchor="middle">Sugarsand Sea</text>
+<circle cx="64" cy="228" r="22" fill="#3f8f6a" opacity=".55" stroke="#3f8f6a" stroke-width="3" stroke-dasharray="2 5"/>
+<circle cx="104" cy="228" r="22" fill="#8a4f6a" opacity=".55" stroke="#8a4f6a" stroke-width="3" stroke-dasharray="2 5"/>
+<circle cx="496" cy="240" r="22" fill="#7a9a6a" opacity=".55" stroke="#7a9a6a" stroke-width="3" stroke-dasharray="2 5"/>
+<circle cx="536" cy="240" r="22" fill="#f2b84a" opacity=".55" stroke="#f2b84a" stroke-width="3" stroke-dasharray="2 5"/>
+<circle cx="476" cy="176" r="22" fill="#5ac7d8" opacity=".55" stroke="#5ac7d8" stroke-width="3" stroke-dasharray="2 5"/>
+<circle cx="104" cy="30" r="22" fill="#c4704a" opacity=".55" stroke="#c4704a" stroke-width="3" stroke-dasharray="2 5"/>
+<circle cx="156" cy="668" r="22" fill="#b9a24a" opacity=".55" stroke="#b9a24a" stroke-width="3" stroke-dasharray="2 5"/>
+<circle cx="210" cy="288" r="22" fill="#cfe6a8" opacity=".55" stroke="#cfe6a8" stroke-width="3" stroke-dasharray="2 5"/>
+<path id="road-home" d="M360,384 Q360,507 360,472 T360,560 Q328,448 280,480 T200,400 Q192,190 180,250 T160,100 Q208,142 280,130 T400,160 Q448,440 520,360 T640,560 Q652,210 670,310 T700,60 Q774,460 886,346 T1072,632" fill="none" stroke="#c4503f" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 12"/>
+<g class="place" data-place="yooba-town" tabindex="0" role="button" aria-label="Yooba Town" style="cursor:pointer">
+<circle cx="360" cy="384" r="15" fill="#fff6d8" stroke="#c4503f" stroke-width="4"/><text x="360" y="390" font-size="18" font-weight="bold" text-anchor="middle" fill="#7a2f22">1</text>
+<text x="360" y="414" font-size="21" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Yooba Town</text></g>
+<g class="place" data-place="seedvale" tabindex="0" role="button" aria-label="Seedvale" style="cursor:pointer">
+<circle cx="360" cy="560" r="15" fill="#fff6d8" stroke="#c4503f" stroke-width="4"/><text x="360" y="566" font-size="18" font-weight="bold" text-anchor="middle" fill="#7a2f22">2</text>
+<text x="360" y="594" font-size="21" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Seedvale</text></g>
+<g class="place" data-place="whistling-hills" tabindex="0" role="button" aria-label="Whistling Hills" style="cursor:pointer">
+<circle cx="200" cy="400" r="15" fill="#fff6d8" stroke="#c4503f" stroke-width="4"/><text x="200" y="406" font-size="18" font-weight="bold" text-anchor="middle" fill="#7a2f22">3</text>
+<text x="200" y="430" font-size="21" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Whistling Hills</text></g>
+<g class="place" data-place="crumblecrown" tabindex="0" role="button" aria-label="Crumblecrown Castle" style="cursor:pointer">
+<circle cx="160" cy="100" r="15" fill="#fff6d8" stroke="#c4503f" stroke-width="4"/><text x="160" y="106" font-size="18" font-weight="bold" text-anchor="middle" fill="#7a2f22">4</text>
+<text x="196" y="98" font-size="21" text-anchor="start" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Crumblecrown Castle</text></g>
+<g class="place" data-place="mistwood" tabindex="0" role="button" aria-label="Mistwood Forest" style="cursor:pointer">
+<circle cx="400" cy="160" r="15" fill="#fff6d8" stroke="#c4503f" stroke-width="4"/><text x="400" y="166" font-size="18" font-weight="bold" text-anchor="middle" fill="#7a2f22">5</text>
+<text x="394" y="126" font-size="21" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Mistwood Forest</text></g>
+<g class="place" data-place="sugarsand" tabindex="0" role="button" aria-label="Sugarsand Coast" style="cursor:pointer">
+<circle cx="640" cy="560" r="15" fill="#fff6d8" stroke="#c4503f" stroke-width="4"/><text x="640" y="566" font-size="18" font-weight="bold" text-anchor="middle" fill="#7a2f22">6</text>
+<text x="640" y="594" font-size="21" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Sugarsand Coast</text></g>
+<g class="place" data-place="frostcap" tabindex="0" role="button" aria-label="Frostcap Peak" style="cursor:pointer">
+<circle cx="700" cy="60" r="15" fill="#fff6d8" stroke="#c4503f" stroke-width="4"/><text x="700" y="66" font-size="18" font-weight="bold" text-anchor="middle" fill="#7a2f22">7</text>
+<text x="700" y="34" font-size="21" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Frostcap Peak</text></g>
+<g class="place" data-place="licorice-reach" tabindex="0" role="button" aria-label="Licorice Reach" style="cursor:pointer">
+<circle cx="1072" cy="632" r="15" fill="#fff6d8" stroke="#c4503f" stroke-width="4"/><text x="1072" y="638" font-size="18" font-weight="bold" text-anchor="middle" fill="#7a2f22">8</text>
+<text x="1066" y="662" font-size="21" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Licorice Reach</text></g>
+<g class="place" data-place="whispering-forest" tabindex="0" role="button" aria-label="Whispering Forest" style="cursor:pointer">
+<circle cx="64" cy="228" r="6" fill="#fff6d8" stroke="#3a3a2a" stroke-width="3"/>
+<text x="56" y="214" font-size="15" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Whispering Forest</text></g>
+<g class="place" data-place="bramble-thicket" tabindex="0" role="button" aria-label="Bramble Thicket" style="cursor:pointer">
+<circle cx="104" cy="228" r="6" fill="#fff6d8" stroke="#3a3a2a" stroke-width="3"/>
+<text x="118" y="250" font-size="15" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Bramble Thicket</text></g>
+<g class="place" data-place="mossy-ruins" tabindex="0" role="button" aria-label="Mossy Ruins" style="cursor:pointer">
+<circle cx="496" cy="240" r="6" fill="#fff6d8" stroke="#3a3a2a" stroke-width="3"/>
+<text x="486" y="262" font-size="15" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Mossy Ruins</text></g>
+<g class="place" data-place="flower-meadow" tabindex="0" role="button" aria-label="Flower Meadow" style="cursor:pointer">
+<circle cx="536" cy="240" r="6" fill="#fff6d8" stroke="#3a3a2a" stroke-width="3"/>
+<text x="562" y="262" font-size="15" text-anchor="start" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Flower Meadow</text></g>
+<g class="place" data-place="glowcap-grove" tabindex="0" role="button" aria-label="Glowcap Grove" style="cursor:pointer">
+<circle cx="476" cy="176" r="6" fill="#fff6d8" stroke="#3a3a2a" stroke-width="3"/>
+<text x="436" y="174" font-size="15" text-anchor="end" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Glowcap Grove</text></g>
+<g class="place" data-place="boulder-canyon" tabindex="0" role="button" aria-label="Boulder Canyon" style="cursor:pointer">
+<circle cx="104" cy="30" r="6" fill="#fff6d8" stroke="#3a3a2a" stroke-width="3"/>
+<text x="118" y="36" font-size="15" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Boulder Canyon</text></g>
+<g class="place" data-place="reed-marsh" tabindex="0" role="button" aria-label="Reed Marsh" style="cursor:pointer">
+<circle cx="156" cy="668" r="6" fill="#fff6d8" stroke="#3a3a2a" stroke-width="3"/>
+<text x="156" y="654" font-size="15" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Reed Marsh</text></g>
+<g class="place" data-place="windy-hilltop" tabindex="0" role="button" aria-label="Windy Hilltop" style="cursor:pointer">
+<circle cx="210" cy="288" r="6" fill="#fff6d8" stroke="#3a3a2a" stroke-width="3"/>
+<text x="224" y="284" font-size="15" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Windy Hilltop</text></g>
+<g class="place" data-place="glimmer-lake" tabindex="0" role="button" aria-label="Glimmer Lake" style="cursor:pointer">
+<circle cx="240" cy="608" r="6" fill="#fff6d8" stroke="#3a3a2a" stroke-width="3"/>
+<text x="240" y="632" font-size="15" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Glimmer Lake</text></g>
+<g class="place" data-place="willow-water" tabindex="0" role="button" aria-label="Willow Water" style="cursor:pointer">
+<circle cx="466" cy="569" r="6" fill="#fff6d8" stroke="#3a3a2a" stroke-width="3"/>
+<text x="466" y="555" font-size="15" text-anchor="middle" fill="#3a2a14" stroke="#fff6d8" stroke-width="4" paint-order="stroke">Willow Water</text></g>
+<text x="1076" y="776" font-size="34" text-anchor="end" fill="#7a2f22">Yooba Land</text>
+</svg>
