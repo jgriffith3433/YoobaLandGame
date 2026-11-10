@@ -8,8 +8,12 @@
 //   play-rotate — phone portrait: rotate prompt, then landscape; Tap to play gets the first pointerdown
 //   play-chrome — fullscreen button toggles; the back-to-home link returns to the site home
 //   map         — Explore Yooba Land: pan, zoom, open three place cards; screenshots at desktop and 390 px
+//   pages       — every page at 1280 and 390 px: scroll, measure (sideways scroll, tap targets, tiny text, images
+//                 without size, console errors), gallery lightbox by tap. Measures only.
+// The contract registers on every page (each page loads this file when a bot drives it); paths resolve from BASE.
 import { installPlaytest } from './hawkes-playtest.js';
 
+const BASE = new URL('../', import.meta.url).href;
 const px = (n) => Math.round(n * 10) / 10;
 const rectOf = (el) => { const r = el.getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; };
 const drift = (a, b) => Math.max(...a.map((v, i) => Math.abs(v - b[i])));
@@ -87,6 +91,15 @@ installPlaytest({
     description: 'Home Explore Yooba Land: scroll to the map, pan and zoom, open three place cards with pictures and Play; ' +
       'screenshots at desktop and at 390 px (bottom sheet). Play href stays ./Game/.',
   }, {
+    id: 'pages',
+    title: 'Every page at 1280 and 390 px: layout, tap targets, text, lightbox',
+    seconds: 150,
+    tags: ['full', 'phone'],
+    description: 'Visits home, blog index, a post, What\'s new, privacy, contact and the game shell; scrolls each top to bottom at ' +
+      '1280 and 390 px with screenshots; reports sideways scroll (with the widest element), tap targets under 44 px, ' +
+      'images without width/height, text under 14 px and console errors; opens and closes the gallery lightbox by tap. ' +
+      'Run once with prefers-reduced-motion emulated (the run says whether it was). Measure only: findings are warnings.',
+  }, {
     id: 'map-alive',
     title: 'Map alive: sound crossfade, Road Home journey, idle life',
     seconds: 90,
@@ -106,6 +119,11 @@ installPlaytest({
       event.stopImmediatePropagation();
     };
     window.addEventListener('click', holdPlay, true);
+
+    if (id === 'pages') {
+      try { await runPages({ t }); } finally { window.removeEventListener('click', holdPlay, true); }
+      return;
+    }
 
     if (id === 'map-alive') {
       try { await runMapAlive({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') }); } finally {
@@ -132,7 +150,7 @@ installPlaytest({
         ? `position:fixed;left:0;top:0;width:${size.w}px;height:${size.h}px;border:0;z-index:2147483000;background:#143226;`
         : 'position:fixed;inset:0;width:100vw;height:100vh;border:0;z-index:2147483000;background:#143226;';
       overlay.style.cssText = box;
-      overlay.src = './Game/' + (query || '');
+      overlay.src = BASE + 'Game/' + (query || '');
       document.body.appendChild(overlay);
       return overlay;
     };
@@ -312,7 +330,7 @@ installPlaytest({
   },
 
   stop() {
-    document.querySelectorAll('iframe[title="Yooba Land (playtest)"]').forEach((f) => f.remove());
+    document.querySelectorAll('iframe[title="Yooba Land (playtest)"], iframe[title="Yooba Land (pages)"]').forEach((f) => f.remove());
   },
 });
 
@@ -747,4 +765,178 @@ async function runPlayChrome({ t, flag, openGame, gameDoc, gameWin, visible, pre
   await t.wait(800);
   t.scene('Done');
   finish(true);
+}
+
+const PAGES = [
+  ['home', 'index.html'],
+  ['blog index', 'blog.html'],
+  ['blog post', 'blog/eat-and-grow.html'],
+  ['whatsnew', 'whatsnew.html'],
+  ['privacy', 'privacypolicy.html'],
+  ['contact', 'contact.html'],
+  ['game shell', 'Game/?playtest=fail-load'],
+];
+const SIZES = [['1280', 1280, 800], ['390', 390, 844]];
+
+function nameOf(el) {
+  if (!el || !el.tagName) return '?';
+  let s = el.tagName.toLowerCase();
+  if (el.id) s += '#' + el.id;
+  else if (typeof el.className === 'string' && el.className.trim()) s += '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.');
+  const label = (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 24);
+  return label ? `${s} "${label}"` : s;
+}
+
+function measureFrame(win, doc) {
+  const vw = win.innerWidth;
+  const out = { overflow: null, tiny: [], noDims: [], smallText: [] };
+  const root = doc.documentElement;
+  if (root.scrollWidth > vw) {
+    let widest = null;
+    let right = vw;
+    for (const el of doc.body ? doc.body.querySelectorAll('*') : []) {
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.right > right) { right = r.right; widest = el; }
+    }
+    out.overflow = { scrollWidth: root.scrollWidth, innerWidth: vw, widest: widest ? nameOf(widest) : 'none found', right: Math.round(right) };
+  }
+  const shown = (el) => {
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) return null;
+    const s = win.getComputedStyle(el);
+    return s.visibility === 'hidden' || s.display === 'none' ? null : { r, s };
+  };
+  for (const el of doc.querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, summary, [role=button]')) {
+    const m = shown(el);
+    if (!m) continue;
+    if (m.s.display === 'inline' && el.closest('p, li, figcaption')) continue; // links inside a sentence are not tap targets
+    if (m.r.width < 44 || m.r.height < 44) out.tiny.push(`${nameOf(el)} ${Math.round(m.r.width)}x${Math.round(m.r.height)}`);
+  }
+  for (const img of doc.querySelectorAll('img')) {
+    if (!img.hasAttribute('width') || !img.hasAttribute('height')) out.noDims.push(img.getAttribute('src') || nameOf(img));
+  }
+  const seen = new Set();
+  const walker = doc.createTreeWalker(doc.body || root, NodeFilter.SHOW_TEXT);
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    if (!n.nodeValue.trim()) continue;
+    const el = n.parentElement;
+    if (!el || seen.has(el) || /^(SCRIPT|STYLE|NOSCRIPT)$/.test(el.tagName)) continue;
+    const m = shown(el);
+    if (!m) continue;
+    const size = parseFloat(m.s.fontSize);
+    if (size < 14) { seen.add(el); out.smallText.push(`${nameOf(el)} ${px(size)}px`); }
+  }
+  out.animations = (doc.getAnimations ? doc.getAnimations() : []).filter((a) => a.effect && a.effect.getComputedTiming().iterations === Infinity && a.playState === 'running').length;
+  return out;
+}
+
+async function runPages({ t }) {
+  const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  t.metric('reducedMotion', reduced ? 1 : 0);
+  t.event('motion-mode', reduced ? 'prefers-reduced-motion: reduce is ON for this run' : 'prefers-reduced-motion is not emulated in this run; run again with reduced motion on');
+  const frame = document.createElement('iframe');
+  frame.setAttribute('title', 'Yooba Land (pages)');
+  document.body.appendChild(frame);
+  const setSize = (w, h) => { frame.style.cssText = `position:fixed;left:0;top:0;width:${w}px;height:${h}px;border:0;z-index:2147483000;background:#fff;`; };
+  const total = PAGES.length * SIZES.length;
+  let done = 0;
+  const totals = { overflow: 0, tiny: 0, small: 0, noDims: 0, errors: 0 };
+  try {
+    for (const [label, path] of PAGES) {
+      for (const [sizeName, w, h] of SIZES) {
+        const tag = `${label} @${sizeName}`;
+        t.scene(tag);
+        setSize(w, h);
+        const errors = [];
+        frame.src = 'about:blank';
+        await t.wait(50);
+        frame.src = BASE + path;
+        // Hook console errors as early as the document exists.
+        const hooked = new Set();
+        const hook = () => {
+          const win = frame.contentWindow;
+          if (!win || win.location.href === 'about:blank' || hooked.has(win)) return;
+          try {
+            hooked.add(win);
+            const old = win.console.error;
+            win.console.error = (...a) => { errors.push('console.error: ' + a.map(String).join(' ').slice(0, 160)); old.apply(win.console, a); };
+            win.addEventListener('error', (e) => errors.push('error: ' + (e.message || (e.target && e.target.src) || '?').toString().slice(0, 160)), true);
+            win.addEventListener('unhandledrejection', (e) => errors.push('rejection: ' + String(e.reason).slice(0, 160)));
+          } catch { /* cross-origin: not ours to hook */ }
+        };
+        const hooker = setInterval(hook, 5);
+        try {
+          await t.until(() => { const d = frame.contentDocument; return d && d.readyState === 'complete' && frame.contentWindow.location.href !== 'about:blank'; }, 20000, tag);
+        } finally { clearInterval(hooker); }
+        const win = frame.contentWindow;
+        const doc = frame.contentDocument;
+        await t.wait(600);
+        // Scroll top to bottom in steps so lazy images load and the page shows on screen for screenshots.
+        const step = Math.max(200, Math.floor(h * 0.8));
+        win.scrollTo(0, 0);
+        t.event('screenshot', `${tag} top`);
+        await t.wait(700);
+        let y = 0;
+        while (y + h < doc.documentElement.scrollHeight - 2 && y < 40000) {
+          y += step;
+          win.scrollTo(0, y);
+          await t.wait(250);
+        }
+        t.event('screenshot', `${tag} bottom (scrolled ${Math.round(win.scrollY)} of ${doc.documentElement.scrollHeight}px)`);
+        await t.wait(700);
+        win.scrollTo(0, 0);
+        await t.wait(200);
+
+        const m = measureFrame(win, doc);
+        for (const e of (win.performance.getEntriesByType('resource') || [])) {
+          if (e.responseStatus >= 400) errors.push(`resource ${e.responseStatus}: ${e.name.slice(-80)}`);
+        }
+        const note = (kind, list, what) => {
+          if (!list.length) return;
+          const shown = list.slice(0, 6).join('; ') + (list.length > 6 ? `; +${list.length - 6} more` : '');
+          t.problem('warning', `${tag}: ${list.length} ${what}: ${shown}`);
+        };
+        if (m.overflow) {
+          totals.overflow++;
+          t.problem('warning', `${tag}: sideways scroll, scrollWidth ${m.overflow.scrollWidth} > ${m.overflow.innerWidth}; widest ${m.overflow.widest} reaches ${m.overflow.right}px`);
+        }
+        note('tiny', m.tiny, 'tap targets under 44 px'); totals.tiny += m.tiny.length;
+        note('small', m.smallText, 'text runs under 14 px'); totals.small += m.smallText.length;
+        note('dims', m.noDims, 'images without width and height'); totals.noDims += m.noDims.length;
+        note('err', [...new Set(errors)], 'console errors'); totals.errors += new Set(errors).size;
+        t.event('page-measured', `${tag}: overflow ${m.overflow ? 'YES' : 'no'}, tap targets <44 ${m.tiny.length}, text <14px ${m.smallText.length}, images w/o size ${m.noDims.length}, errors ${new Set(errors).size}, looping animations ${m.animations}`);
+        if (reduced && m.animations) t.problem('warning', `${tag}: ${m.animations} looping animations still run with reduced motion on`);
+
+        if (label === 'home') await lightbox({ t, win, doc, tag, touch: sizeName === '390' });
+        done++;
+        t.progress(done / total);
+      }
+    }
+  } finally { frame.remove(); }
+  for (const [k, v] of Object.entries(totals)) t.metric('total_' + k, v);
+  t.scene('Done');
+  t.finish('done');
+}
+
+async function lightbox({ t, win, doc, tag, touch }) {
+  const shot = doc.querySelector('[data-lightbox]');
+  if (!shot) { t.problem('warning', `${tag}: no gallery screenshot to open`); return; }
+  shot.scrollIntoView({ block: 'center' });
+  await t.wait(500);
+  const r = shot.getBoundingClientRect();
+  const at = { bubbles: true, cancelable: true, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, pointerType: touch ? 'touch' : 'mouse', isPrimary: true };
+  shot.dispatchEvent(new win.PointerEvent('pointerdown', at));
+  shot.dispatchEvent(new win.PointerEvent('pointerup', at));
+  shot.click();
+  const box = () => doc.querySelector('.lightbox');
+  try { await t.until(() => box() && !box().hidden, 4000, 'the lightbox'); } catch { t.problem('warning', `${tag}: tapping a screenshot did not open the lightbox`); return; }
+  await t.wait(900);
+  t.event('lightbox-open', `${tag}: opened by tap on "${shot.getAttribute('data-caption') || ''}"`);
+  t.event('screenshot', `${tag} lightbox open`);
+  await t.wait(500);
+  const close = box().querySelector('.lb-close');
+  const cr = close.getBoundingClientRect();
+  if (cr.width < 44 || cr.height < 44) t.problem('warning', `${tag}: lightbox close button ${Math.round(cr.width)}x${Math.round(cr.height)}px, under 44`);
+  close.click();
+  try { await t.until(() => box().hidden, 3000, 'the lightbox to close'); t.event('lightbox-closed', `${tag}: closed by tap`); } catch { t.problem('warning', `${tag}: lightbox did not close`); }
 }

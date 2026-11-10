@@ -59,5 +59,7 @@
   </footer>
   <script src="./js/hawkes-release.js" data-releases="./releases.json" defer></script>
   <script src="./site/site.js"></script>
+  <!-- Playtest: registers window.hawkesPlaytest only when a bot drives the page -->
+  <script>if(navigator.webdriver||/[?&]playtest=/.test(location.search)){var s=document.createElement("script");s.type="module";s.src="./site/playtest.js";document.head.appendChild(s)}</script>
 </body>
 </html>
