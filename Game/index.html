@@ -90,7 +90,9 @@
     #unity-loading-bar.failed .ld-busy { display: none; }
     #unity-loading-bar.failed .ld-fail { display: block; }
     #unity-loading-bar .ld-fail p { font: 700 15px/1.5 Nunito, Arial, sans-serif; margin-top: 10px; color: #d9f2e4; }
-    #unity-loading-bar .ld-fail small { display: block; margin-top: 8px; font: 700 12px Nunito, Arial, sans-serif; opacity: .6; word-break: break-all; }
+    #unity-loading-bar .ld-art { display: block; width: 100%; height: 120px; object-fit: cover; object-position: 20% 50%; border-radius: 14px; border: 3px solid #10281c; margin-bottom: 12px; }
+    #unity-loading-bar .ld-back { margin-top: 14px !important; }
+    #unity-loading-bar .ld-back a { color: #8fd9b4; }
     #unity-retry {
       margin-top: 16px;
       font: 600 18px Fredoka, "Trebuchet MS", Arial, sans-serif;
@@ -307,15 +309,16 @@
       <div class="ld-busy" role="status" aria-live="off">
         <div class="ld-title">Loading Yooba Land</div>
         <div id="unity-progress-bar-empty" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="unity-progress-bar-full"></div></div>
-        <div class="ld-pct" id="unity-progress-text">0%</div>
+        <div class="ld-pct"><span id="unity-progress-text">0%</span> <span id="unity-label"></span></div>
         <div class="ld-tip" id="unity-tip"></div>
       </div>
       <div class="ld-fail" role="alert">
+        <img class="ld-art" src="../images/hero-yooba-960.jpg" alt="" width="960" height="540">
         <div class="ld-title">Yooba got lost on the way</div>
-        <p>The game didn't finish loading. Check your connection, then try again.</p>
-        <small id="unity-fail-detail"></small>
-        <button type="button" id="unity-retry">Try again</button>
-        <p style="margin-top: 14px;"><a class="home" href="../">Back home</a></p>
+        <p id="unity-fail-line">The meadow didn't open this time. Let's give it another go.</p>
+        <small id="unity-fail-detail" hidden></small>
+        <button type="button" id="unity-retry">Retry</button>
+        <p class="ld-back"><a class="home" href="../">Back to Yooba Land</a></p>
       </div>
     </div>
     <div id="missing-build">
@@ -360,16 +363,10 @@
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var warningBanner = document.querySelector("#unity-warning");
 
+      // No raw Unity banner text: errors go to the branded failure panel, warnings to the console.
       function unityShowBanner(msg, type) {
-        var div = document.createElement("div");
-        div.innerHTML = msg;
-        div.style.cssText = "background:" + (type === "warning" ? "rgba(255,193,7,0.95)" : "rgba(180,40,40,0.95)") + ";color:#111;padding:10px 14px;margin-top:8px;border-radius:6px;font-family:Arial,sans-serif;";
-        warningBanner.appendChild(div);
-        if (type !== "error") {
-          setTimeout(function () {
-            if (div.parentElement) div.parentElement.removeChild(div);
-          }, 5000);
-        }
+        if (type === "error") loadFailed(String(msg).replace(/<[^>]*>/g, ""));
+        else console.warn("Unity:", msg);
       }
 
       // Lore while the biggest download of the site comes in: from the story the game tells (docs/story.md).
@@ -385,22 +382,129 @@
       ];
       var tipEl = document.getElementById("unity-tip");
       var pctEl = document.getElementById("unity-progress-text");
+      var labelEl = document.getElementById("unity-label");
       var barEmpty = document.getElementById("unity-progress-bar-empty");
       var tipIndex = Math.floor(Math.random() * tips.length);
       var tipTimer = null;
       function showTip() { tipEl.textContent = tips[tipIndex]; tipIndex = (tipIndex + 1) % tips.length; }
-      // Local rotation only: no requests. Stopped when the game runs or the load fails.
-      showTip();
-      tipTimer = setInterval(showTip, 4500);
+
+      // Honest bar: Unity's loader fills 0-70%, the game's own content progress (window.yoobaLoad) 70-100%.
+      var STALL_MS = 45000;
+      var stallTimer = null;
+      var unityInstance = null;
+      var loadDone = false;
+      var attempt = 0;
+      var gameReported = false;
+      var finishTimer = null;
+      function setBar(pct, label) {
+        pct = Math.max(0, Math.min(100, Math.round(pct)));
+        progressBarFull.style.width = pct + "%";
+        pctEl.textContent = pct + "%";
+        barEmpty.setAttribute("aria-valuenow", pct);
+        if (label !== undefined) labelEl.textContent = label ? "\u00b7 " + label : "";
+      }
+      // Any progress re-arms the 45 s watchdog (event-driven: no polling).
+      function armStall() {
+        clearTimeout(stallTimer);
+        stallTimer = setTimeout(function () { loadFailed("No progress for 45 s"); }, STALL_MS);
+      }
+      function showGame() {
+        if (loadDone) return;
+        loadDone = true;
+        clearTimeout(stallTimer);
+        clearTimeout(finishTimer);
+        clearInterval(tipTimer);
+        setBar(100);
+        loadingBar.style.display = "none";
+        container.className += " loaded";
+        document.documentElement.className += " rp-game";
+      }
+      // The game calls this as it gathers its content: yoobaLoad(0..1, "Gathering the meadow\u2026"). 1 ends the load.
+      window.yoobaLoad = function (progress, label) {
+        if (loadDone || loadingBar.className === "failed") return;
+        gameReported = true;
+        progress = Math.max(0, Math.min(1, Number(progress) || 0));
+        setBar(70 + 30 * progress, label || "Gathering the meadow\u2026");
+        armStall();
+        if (progress >= 1 && unityInstance) showGame();
+      };
 
       function loadFailed(message) {
+        if (loadDone) return;
         clearInterval(tipTimer);
+        clearTimeout(stallTimer);
+        clearTimeout(finishTimer);
         loadingBar.className = "failed";
         loadingBar.style.display = "";
         document.getElementById("unity-fail-detail").textContent = String(message || "").slice(0, 200);
         console.error("Yooba Land failed to load:", message);
       }
-      document.getElementById("unity-retry").addEventListener("click", function () { location.reload(); });
+
+      function hasWebGL() {
+        try {
+          var c = document.createElement("canvas");
+          return !!(c.getContext("webgl2") || c.getContext("webgl"));
+        } catch (e) { return false; }
+      }
+
+      // ?loadfail=1 or ?playtest=fail-load points the loader at a missing file, to see the failure screen (playtests).
+      var failLoad = /[?&]loadfail=1\b/.test(location.search) || /[?&]playtest=fail-load\b/.test(location.search);
+
+      function startLoad() {
+        attempt++;
+        container.setAttribute("data-attempt", attempt);
+        loadingBar.className = "";
+        loadingBar.style.display = "";
+        gameReported = false;
+        setBar(0, "");
+        showTip();
+        clearInterval(tipTimer);
+        // Local rotation only: no requests. Stopped when the game runs or the load fails.
+        tipTimer = setInterval(showTip, 4500);
+        if (!hasWebGL()) {
+          loadFailed("WebGL is not supported");
+          document.getElementById("unity-fail-line").textContent = "This browser can't draw Yooba Land. Try another browser or device.";
+          return;
+        }
+        document.getElementById("unity-fail-line").textContent = "The meadow didn't open this time. Let's give it another go.";
+        armStall();
+        var old = document.getElementById("unity-loader-script");
+        if (old) old.remove();
+        var loader = document.createElement("script");
+        loader.id = "unity-loader-script";
+        loader.src = failLoad ? buildBase + "does-not-exist.loader.js?a=" + attempt : buildUrl + ".loader.js?v=" + gameVersion;
+        var mine = attempt;
+        loader.onload = function () {
+          if (mine !== attempt) return;
+          createUnityInstance(canvas, config, function (progress) {
+            if (mine !== attempt) return;
+            // Unity reports 0.9 when the download is done and 1 when it has started.
+            setBar(70 * Math.min(1, progress / 0.9), "");
+            armStall();
+          }).then(function (instance) {
+            if (mine !== attempt) { instance.Quit(); return; }
+            unityInstance = instance;
+            setBar(70);
+            // A game that never calls yoobaLoad still gets in after a short grace.
+            if (gameReported) return;
+            finishTimer = setTimeout(function () { if (!gameReported) showGame(); }, 3000);
+          }).catch(function (message) {
+            if (mine === attempt) loadFailed(message);
+          });
+        };
+        loader.onerror = function () {
+          if (mine === attempt) loadFailed("Could not load " + loader.src);
+        };
+        document.body.appendChild(loader);
+      }
+
+      // Retry without a full page reload: quit any half-started instance, then load again.
+      document.getElementById("unity-retry").addEventListener("click", function () {
+        var inst = unityInstance;
+        unityInstance = null;
+        var again = function () { startLoad(); };
+        if (inst && inst.Quit) inst.Quit().then(again, again); else again();
+      });
 
       function fitCanvas() {
         var width = window.visualViewport ? window.visualViewport.width : window.innerWidth;
@@ -429,29 +533,7 @@
         showBanner: unityShowBanner,
       };
 
-      var loader = document.createElement("script");
-      // ?loadfail=1 or ?playtest=fail-load points the loader at a missing file, to see the failure screen (playtests).
-      var failLoad = /[?&]loadfail=1\b/.test(location.search) || /[?&]playtest=fail-load\b/.test(location.search);
-      loader.src = failLoad ? buildBase + "does-not-exist.loader.js" : buildUrl + ".loader.js?v=" + gameVersion;
-      loader.onload = function () {
-        createUnityInstance(canvas, config, function (progress) {
-          var pct = Math.round(100 * progress);
-          progressBarFull.style.width = pct + "%";
-          pctEl.textContent = pct + "%";
-          barEmpty.setAttribute("aria-valuenow", pct);
-        }).then(function () {
-          clearInterval(tipTimer);
-          loadingBar.style.display = "none";
-          container.className += " loaded";
-          document.documentElement.className += " rp-game";
-        }).catch(function (message) {
-          loadFailed(message);
-        });
-      };
-      loader.onerror = function () {
-        loadFailed("Could not load " + loader.src);
-      };
-      document.body.appendChild(loader);
+      startLoad();
     }
   </script>
   <script>
