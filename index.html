@@ -103,6 +103,38 @@
     </div>
   </section>
 
+  <section class="band explore" id="explore">
+    <div class="section">
+      <p class="kicker kicker-dark">The island</p>
+      <h2>Explore Yooba Land</h2>
+      <p class="lede">Pan and zoom the map. Tap a place to peek, then play from there.</p>
+      <div class="explore-stage" data-explore-map>
+        <div class="explore-map-col">
+          <div class="explore-viewport" aria-label="Map of Yooba Land" role="application">
+            <p class="explore-hint">Drag to pan · pinch or +/− to zoom</p>
+            <div class="explore-canvas"></div>
+          </div>
+          <div class="explore-zoom" aria-label="Zoom">
+            <button type="button" data-explore-zoom="in" aria-label="Zoom in">+</button>
+            <button type="button" data-explore-zoom="out" aria-label="Zoom out">−</button>
+          </div>
+        </div>
+        <div class="explore-side">
+          <p class="explore-empty">Tap a pin on the map to see a place.</p>
+          <aside class="explore-card" hidden aria-live="polite">
+            <button type="button" class="explore-card-close" aria-label="Close place card">×</button>
+            <img class="explore-card-img" alt="" width="640" height="400" decoding="async">
+            <div class="explore-card-body">
+              <h3 class="explore-card-name"></h3>
+              <p class="explore-card-hook"></p>
+              <a class="play" href="./Game/" data-explore-play><span class="play-icon" aria-hidden="true"></span>Play</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section">
     <h2>What Yooba Land is</h2>
     <p class="lede">A cartoon world you walk through, with other people in it.</p>
@@ -234,6 +266,7 @@
   </footer>
   <script src="./site/gallery.js" defer></script>
   <script src="./site/site.js"></script>
+  <script src="./site/map-explore.js" defer></script>
   <script src="./site/motion.js" defer></script>
   <!-- Playtest: the Hawkes playtest contract (docs: hawkesstudio playtest.md), loaded only when a bot drives the page -->
   <script>if(navigator.webdriver||/[?&]playtest=/.test(location.search)){var s=document.createElement("script");s.type="module";s.src="./site/playtest.js";document.head.appendChild(s)}</script>

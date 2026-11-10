@@ -560,3 +560,230 @@ button.play, .contact-form button {
 .devlog h3 { margin: 0.2rem 0 0.4rem; }
 .devlog p { margin: 0; }
 @media (max-width: 800px) { .devlog { grid-template-columns: 1fr; } }
+
+/* Explore Yooba Land: pan/zoom map after the cast, place cards (side on desktop, bottom sheet on phones) */
+.explore { padding-top: 0.4rem; }
+.explore-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+  gap: 1rem;
+  align-items: stretch;
+  margin-top: 1.2rem;
+}
+.explore-map-col { position: relative; min-width: 0; }
+.explore-viewport {
+  position: relative;
+  min-height: clamp(320px, 52vh, 560px);
+  overflow: hidden;
+  border: 3px solid var(--outline);
+  border-radius: 22px;
+  box-shadow: 0 6px 0 var(--outline);
+  background:
+    radial-gradient(ellipse at 30% 20%, #e8fbff 0%, transparent 55%),
+    linear-gradient(180deg, #7fd6e8 0%, #a8d672 70%, #f2d48a 100%);
+  touch-action: none;
+  overscroll-behavior: contain;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.explore-viewport:active { cursor: grabbing; }
+.explore-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.explore-canvas svg { pointer-events: auto; }
+.explore-canvas .place { outline: none; }
+.explore-canvas .place:focus-visible circle {
+  stroke: var(--sun);
+  stroke-width: 6;
+}
+.explore-canvas .place.is-active circle {
+  stroke: var(--green-deep);
+  filter: drop-shadow(0 0 0.35rem rgba(255, 229, 106, 0.9));
+}
+.explore-error {
+  margin: 1.5rem;
+  padding: 1rem;
+  font-weight: 800;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+}
+.explore-zoom {
+  position: absolute;
+  z-index: 3;
+  left: 0.85rem;
+  bottom: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.explore-zoom button {
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 3px solid var(--outline);
+  border-radius: 14px;
+  background: var(--sun);
+  color: var(--green-deep);
+  font: 800 1.35rem Fredoka, "Trebuchet MS", sans-serif;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--outline);
+}
+.explore-zoom button:hover { transform: translateY(1px); box-shadow: 0 2px 0 var(--outline); }
+.explore-zoom button:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.explore-hint {
+  position: absolute;
+  z-index: 2;
+  top: 0.85rem;
+  left: 0.85rem;
+  margin: 0;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(247, 251, 246, 0.92);
+  border: 2px solid var(--outline);
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+.explore-stage.is-ready .explore-hint { display: none; }
+.explore-side {
+  position: relative;
+  min-height: clamp(320px, 52vh, 560px);
+  display: flex;
+  flex-direction: column;
+}
+.explore-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--card);
+  border: 3px solid var(--outline);
+  border-radius: 22px;
+  box-shadow: 0 6px 0 var(--outline);
+  overflow: hidden;
+}
+.explore-card[hidden] { display: none; }
+.explore-card-close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  z-index: 2;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 3px solid var(--outline);
+  border-radius: 999px;
+  background: var(--sun);
+  color: var(--outline);
+  font: 800 1.2rem Nunito, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+.explore-card-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-bottom: 3px solid var(--outline);
+  background: var(--sky-game);
+}
+.explore-card-body { padding: 0.9rem 1rem 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; flex: 1; }
+.explore-card-name { margin: 0; font-size: 1.35rem; padding-right: 2rem; }
+.explore-card-hook { margin: 0; color: var(--ink-soft); font-weight: 700; flex: 1; }
+.explore-card .play { align-self: flex-start; margin-top: 0.35rem; }
+.explore-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  margin: 0;
+  padding: 1.2rem;
+  text-align: center;
+  color: var(--ink-soft);
+  font-weight: 800;
+  border: 3px dashed var(--line);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.55);
+}
+.explore-stage.is-card-open .explore-empty { display: none; }
+
+@media (max-width: 800px) {
+  .explore-stage {
+    display: block;
+    margin-top: 1rem;
+  }
+  .explore-side { min-height: 0; }
+  .explore-viewport { min-height: min(62vh, 420px); }
+  .explore-empty { display: none; }
+  .explore-card {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    flex: none;
+    min-height: 0;
+    max-height: min(58vh, 420px);
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -6px 0 var(--outline);
+    display: grid;
+    grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
+    grid-template-rows: auto;
+  }
+  .explore-card[hidden] { display: none; }
+  .explore-card-img {
+    height: 100%;
+    min-height: 140px;
+    aspect-ratio: auto;
+    border-bottom: 0;
+    border-right: 3px solid var(--outline);
+    object-fit: cover;
+  }
+  .explore-card-body { padding: 0.85rem 1rem 1.1rem; overflow: auto; }
+  .explore-card-name { font-size: 1.2rem; }
+  body:has(.explore-stage.is-card-open) { overflow: hidden; }
+}
+
+/* Playtest phone frame: force bottom-sheet card inside a 390 px shell */
+.explore-force-phone .explore-stage {
+  display: block;
+  width: 390px;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.explore-force-phone .explore-side { position: static; min-height: 0; }
+.explore-force-phone .explore-empty { display: none; }
+.explore-force-phone .explore-map-col { position: relative; }
+.explore-force-phone .explore-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
+  max-height: 240px;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -4px 0 var(--outline);
+}
+.explore-force-phone .explore-card[hidden] { display: none; }
+.explore-force-phone .explore-card-img {
+  height: 100%;
+  min-height: 120px;
+  aspect-ratio: auto;
+  border-bottom: 0;
+  border-right: 3px solid var(--outline);
+}
+.explore-force-phone .explore-viewport { min-height: 360px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-canvas { transition: none !important; }
+}

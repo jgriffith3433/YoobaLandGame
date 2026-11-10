@@ -11,7 +11,7 @@
   // Reveal targets: section headings, ledes, card rows, gallery, devlog, posts. Rows stagger by position.
   var groups = [
     ".section > h2, .section > .lede, .section > .kicker, .cast-note, .live",
-    ".cast-grid > li", ".cards > .card", ".gallery > figure", ".devlog > li", ".posts > .post-link"
+    ".cast-grid > li", ".explore-stage", ".cards > .card", ".gallery > figure", ".devlog > li", ".posts > .post-link"
   ];
   var targets = [];
   groups.forEach(function (sel) {
