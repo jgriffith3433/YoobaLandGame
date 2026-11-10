@@ -71,7 +71,7 @@ Yooba Land is a warm, bright, hand-crafted island-and-reach world (`x` from `-90
 - **Eating, growing, and glowing**: Every berry, carrot, golden seed, and glowing orb Yooba eats chimes a warm note, fills his belly meter, and nudges him along the Road Home.
 - **Landmark discoveries**: Stepping up to each biome's signature landmark (*The Murmur Oak*, *The Bramble Arch*, *The Standing Arch*, *The Sunspire Sunflower*, *The Great Glowcap*, *The Stacked Spire*, *The Heron Post*, *The Windcaller Stones*) triggers Yooba's spoken thought and logs the biome on the world map.
 - **Waterway play**: Pushing the log raft across Glimmer Lake, diving into Bubble Hollow, racing Ottie around Glimmer Island, and hopping across Barnaby's seventeen lily pads in Willow Water without splashing.
-- **Sound-led exploration**: Each region and pocket biome carries its own continuous ambient sound bed—whispering pine needles, wren-filled brambles, wind flutes, marsh frogs, cavern echoes, surf on Sugarsand, and the low chime of Glowcap Grove—so players hear a biome before its landmark comes into view.
+- **Sound-led exploration**: Each region and pocket biome carries its own continuous ambient sound bed—whispering pine needles, wren-filled brambles, wind flutes, marsh frogs, cavern echoes, surf on Sugarsand, and the low chime of Glowcap Grove—so players hear a biome before its landmark comes into view. On the website's **Explore Yooba Land** map (`#explore`), turning sound on (`yooba-map-sound`) crossfades these same ambient loops as visitors move from pin to pin, while **Follow the Road Home** traces a glowing golden trail through Chapters 1 to 8 alongside drifting clouds, shimmering lake surfaces, and a tiny green Yooba walking the road.
 
 ## Story beats
 
