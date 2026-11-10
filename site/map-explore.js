@@ -204,9 +204,15 @@
     wantAmbient = path || null;
     if (!soundOn || !path) { if (!path) stopAmbient(); return; }
     var src = MAP_BASE + String(path).replace(/^\.\//, "");
-    var cur = voices.filter(function (v) { return v.src === src && v.to !== 0; })[0];
-    if (cur) return;
-    voices.forEach(function (v) { if (v.to !== 0) fadeVoice(v, 0, 900); });
+    var cur = voices.filter(function (v) { return v.src === src; })[0];
+    voices.forEach(function (v) { if (v !== cur && v.to !== 0) fadeVoice(v, 0, 900); });
+    if (cur) {
+      if (cur.to !== AMBIENT_VOL) {
+        try { if (cur.el.paused) cur.el.play().catch(function () {}); } catch (e) { /* ignore */ }
+        fadeVoice(cur, AMBIENT_VOL, 900);
+      }
+      return;
+    }
     try {
       var el = new Audio(src);
       el.loop = true;
@@ -295,7 +301,7 @@
     function walk() {
       var from = drawn;
       var to = stops[j.i].at;
-      if (j.i === 0 || reduce || to <= from) { drawn = to; trail.style.strokeDashoffset = String(len - to); pause(); return; }
+      if (j.i === 0 || reduce || to <= from) { drawn = to; trail.style.strokeDashoffset = reduce ? "0" : String(len - to); pause(); return; }
       var t0 = performance.now();
       var dur = Math.max(700, (to - from) * 6);
       function frame(now) {
@@ -328,10 +334,10 @@
       html += '<g class="life-cloud" style="--dx:' + c[0] + 'px;animation-duration:' + (60 + i * 18) + 's;animation-delay:-' + (i * 21) +
         's" transform="translate(0,' + c[1] + ') scale(' + c[2] + ')"><path d="M0,24 C-4,8 18,2 28,12 C34,-2 62,-2 66,16 C84,12 90,32 70,34 L8,34 C-4,34 -6,28 0,24Z" fill="#fff" opacity=".7"/></g>';
     });
-    [["glimmer-lake", 40], ["willow-water", 26]].forEach(function (w) {
-      var p = placesById[w[0]];
-      if (!p) return;
-      var x = p.map[0], y = p.map[1], r = w[1];
+    [["glimmer-lake", 40], ["willow-water", 26], [null, 22, 632, 128]].forEach(function (w) {
+      var p = w[0] ? placesById[w[0]] : null;
+      if (w[0] && !p) return;
+      var x = p ? p.map[0] : w[2], y = p ? p.map[1] : w[3], r = w[1];
       html += '<path class="life-shimmer" d="M' + (x - r * 0.5) + ',' + (y - 4) + ' q' + (r * 0.25) + ',-5 ' + (r * 0.5) + ',0 t' + (r * 0.5) + ',0" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>' +
         '<path class="life-shimmer life-shimmer-b" d="M' + (x - r * 0.3) + ',' + (y + 7) + ' q' + (r * 0.2) + ',-4 ' + (r * 0.4) + ',0 t' + (r * 0.4) + ',0" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>';
     });
@@ -340,7 +346,7 @@
       var w = document.createElementNS(NS, "g");
       w.setAttribute("class", "life-yooba");
       w.style.offsetPath = 'path("' + road.getAttribute("d") + '")';
-      w.innerHTML = '<ellipse cy="9" rx="7" ry="2.5" fill="#000" opacity=".2"/><g class="life-bob"><circle r="7" cy="0" fill="#ffd54a" stroke="#7a2f22" stroke-width="2"/><circle cx="-2.5" cy="-1.5" r="1" fill="#3a2a14"/><circle cx="2.5" cy="-1.5" r="1" fill="#3a2a14"/></g>';
+      w.innerHTML = '<ellipse cy="9" rx="7" ry="2.5" fill="#000" opacity=".2"/><g class="life-bob"><path d="M-3,-6 L-3.5,-10 M3,-6 L3.5,-10" stroke="#10281c" stroke-width="1.8" stroke-linecap="round"/><circle r="7" cy="0" fill="#23c34a" stroke="#10281c" stroke-width="2"/><circle cx="-3.5" cy="-10.5" r="2" fill="#fff" stroke="#10281c" stroke-width="1.3"/><circle cx="3.5" cy="-10.5" r="2" fill="#fff" stroke="#10281c" stroke-width="1.3"/><circle cx="-3.5" cy="-10.5" r="0.8" fill="#10281c"/><circle cx="3.5" cy="-10.5" r="0.8" fill="#10281c"/></g>';
       g.appendChild(w);
     }
     svgEl.appendChild(g);
@@ -569,7 +575,7 @@
           loadMap();
         }
       });
-    }, { rootMargin: "120px 0px", threshold: 0.05 });
+    }, { rootMargin: "360px 0px", threshold: 0.01 });
     io.observe(root);
   } else {
     loadMap();
