@@ -86,6 +86,13 @@ installPlaytest({
     tags: ['full', 'phone'],
     description: 'Home Explore Yooba Land: scroll to the map, pan and zoom, open three place cards with pictures and Play; ' +
       'screenshots at desktop and at 390 px (bottom sheet). Play href stays ./Game/.',
+  }, {
+    id: 'map-alive',
+    title: 'Map alive: sound crossfade, Road Home journey, idle life',
+    seconds: 90,
+    tags: ['full'],
+    description: 'Home Explore map: turn sound on, open two places (ambience crossfades), watch the idle life, ' +
+      'run Follow the Road Home through chapters 1-8, and skip a second run.',
   }],
 
   async start(id, options, t) {
@@ -99,6 +106,13 @@ installPlaytest({
       event.stopImmediatePropagation();
     };
     window.addEventListener('click', holdPlay, true);
+
+    if (id === 'map-alive') {
+      try { await runMapAlive({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') }); } finally {
+        window.removeEventListener('click', holdPlay, true);
+      }
+      return;
+    }
 
     if (id === 'map') {
       try {
@@ -445,6 +459,54 @@ async function runMapExplore({ t, flag, finish }) {
   document.documentElement.classList.remove('explore-force-phone');
   t.progress(1);
   t.scene('Done');
+  finish(true);
+}
+
+async function runMapAlive({ t, flag, finish }) {
+  const stage = document.querySelector('[data-explore-map]');
+  if (!stage) { flag('Explore map is missing.'); finish(false); return; }
+  const click = (sel) => stage.querySelector(sel).click();
+  t.scene('Map alive');
+  stage.scrollIntoView({ behavior: 'auto', block: 'center' });
+  await t.until(() => window.yoobaExplore && window.yoobaExplore.ready(), 20000, 'the explore map');
+  const ex = window.yoobaExplore;
+  if (ex.soundOn()) click('[data-explore-sound]'); // start from the default (off)
+  t.event('sound-default', 'sound off by default');
+  click('[data-explore-sound]');
+  if (!ex.soundOn()) flag('Sound toggle did not turn sound on.');
+  const pin = (id) => stage.querySelector('[data-place="' + id + '"]');
+  pin('yooba-town').dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+  await t.wait(1300);
+  const a = ex.audioState().voices.filter((v) => v.to > 0);
+  t.event('ambience', 'yooba-town: ' + a.map((v) => v.src.split('/').pop()).join(','));
+  if (a.length !== 1) flag('Opening a place should play exactly one ambient loop.');
+  pin('mistwood').dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+  await t.wait(300);
+  const mid = ex.audioState().voices;
+  t.event('crossfade', 'voices during switch: ' + mid.length);
+  if (mid.length < 2) flag('Switching places did not crossfade (two loops expected mid-fade).');
+  await t.wait(1200);
+  const after = ex.audioState().voices.filter((v) => v.to > 0);
+  if (after.length !== 1 || !/WhisperingForest/.test(after[0].src)) flag('After switching, only Mistwood ambience should remain.');
+  ex.closeCard();
+  t.progress(0.4);
+  t.event('idle-life', 'clouds, water shimmer and walking Yooba running: ' + ex.lifeRunning());
+  if (!ex.lifeRunning()) flag('Idle life on the map is not animating (it may be reduced-motion).');
+  t.scene('Road Home');
+  click('[data-explore-journey]');
+  const seen = new Set();
+  await t.until(() => { const o = ex.getOpenId(); if (o) seen.add(o); return !ex.journey().running; }, 60000, 'the journey to finish');
+  t.metric('journeyChapters', ex.journey().visited);
+  t.event('journey-done', 'chapters visited ' + ex.journey().visited + ', state ' + ex.journey().state);
+  if (ex.journey().visited !== 8 || ex.journey().state !== 'done') flag('Follow the Road Home did not visit all 8 chapters.');
+  t.progress(0.8);
+  click('[data-explore-journey]');
+  await t.wait(1500);
+  click('[data-explore-journey]');
+  await t.wait(200);
+  t.event('journey-skipped', 'state ' + ex.journey().state);
+  if (ex.journey().running || ex.journey().state !== 'skipped') flag('Skipping the journey did not stop it.');
+  t.progress(1);
   finish(true);
 }
 
