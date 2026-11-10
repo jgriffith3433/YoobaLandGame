@@ -202,17 +202,46 @@
     a.home {
       color: #8fd9b4;
     }
-    /* Back to the site home (bottom left, clear of the fullscreen button). Same tone as the version label. */
-    #home-link {
-      position: absolute;
-      left: 64px;
-      bottom: 14px;
-      z-index: 3;
-      color: rgba(255, 255, 255, 0.7);
-      font: 700 13px Nunito, Arial, sans-serif;
-      text-decoration: none;
+    /* Control strip, top left, clear of the notch (safe-area insets). It fades away during play (html.chrome-idle)
+       and comes back on a tap or move near the corner. */
+    #chrome-strip {
+      position: fixed;
+      top: calc(8px + env(safe-area-inset-top));
+      left: calc(10px + env(safe-area-inset-left));
+      z-index: 9000;
+      display: flex;
+      gap: 8px;
+      transition: opacity 0.4s ease;
     }
-    #home-link:hover, #home-link:focus-visible { color: #ffe56a; }
+    html.chrome-idle #chrome-strip { opacity: 0; pointer-events: none; }
+    #chrome-reveal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: calc(120px + env(safe-area-inset-left));
+      height: calc(72px + env(safe-area-inset-top));
+      z-index: 8999;
+      display: none;
+    }
+    html.chrome-idle #chrome-reveal { display: block; }
+    #home-link, #fullscreen-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      width: 44px;
+      height: 44px;
+      border: 3px solid #10281c;
+      border-radius: 14px;
+      background: rgba(255, 229, 106, 0.92);
+      color: #143226;
+      box-shadow: 0 3px 0 #10281c;
+      font: 700 22px/1 Nunito, Arial, sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    #home-link:active, #fullscreen-button:active { transform: translateY(2px); box-shadow: 0 1px 0 #10281c; }
     /* Phones held upright: a full-screen prompt to turn the phone sideways. Touch devices only (a laptop never sees it). */
     #rotate-prompt {
       display: none;
@@ -271,26 +300,14 @@
     @media (orientation: portrait) and (pointer: coarse) {
       html:not(.rp-upright):not(.rp-game) #rotate-prompt { display: flex; }
     }
-    /* Fullscreen toggle, bottom left (clear of the version label). Hidden where the browser has no element fullscreen. */
-    #fullscreen-button {
-      display: none;
-      position: absolute;
-      left: 12px;
-      bottom: 8px;
-      z-index: 3;
-      width: 44px;
-      height: 44px;
-      border: 3px solid #10281c;
-      border-radius: 14px;
-      background: rgba(255, 229, 106, 0.92);
-      color: #143226;
-      box-shadow: 0 3px 0 #10281c;
-      font: 700 22px/1 Nunito, Arial, sans-serif;
-      cursor: pointer;
-      touch-action: manipulation;
+    /* Fullscreen toggle: hidden where the browser has no element fullscreen. */
+    #fullscreen-button { display: none; }
+    #fullscreen-button.available { display: inline-flex; }
+    /* Landscape: the rotate prompt is gone for good and never takes a tap; Tap to play sits above every overlay. */
+    @media (orientation: landscape) {
+      #rotate-prompt { display: none !important; pointer-events: none !important; }
+      html body #hawkes-tap { z-index: 10001; }
     }
-    #fullscreen-button:active { transform: translateY(2px); box-shadow: 0 1px 0 #10281c; }
-    #fullscreen-button.available { display: block; }
   </style>
   <script>window.YOOBA_BUILD = "v185";</script>
   <script>window.HAWKES_NET_ENDPOINT = window.HAWKES_NET_ENDPOINT || 'https://net.hawkesgen.ai'; // builds before 2026-10-28 have net.hawkesgen.com baked in; beta pages set their own first</script>
@@ -345,8 +362,11 @@
       } catch (e) {}
     });
   </script>
-  <button type="button" id="fullscreen-button" aria-label="Enter fullscreen" title="Fullscreen" aria-pressed="false">&#x26F6;</button>
-  <a id="home-link" class="home" href="../" title="Back to Yooba Land home">Home</a>
+  <div id="chrome-reveal"></div>
+  <div id="chrome-strip">
+    <a id="home-link" class="home" href="../" title="Back to Yooba Land home" aria-label="Back to Yooba Land home">&#x2190;</a>
+    <button type="button" id="fullscreen-button" aria-label="Enter fullscreen" title="Fullscreen" aria-pressed="false">&#x26F6;</button>
+  </div>
   <div id="version-display"></div>
   <script>
     var gameVersion = window.YOOBA_BUILD;
@@ -610,6 +630,64 @@
       document.addEventListener("fullscreenchange", render);
       document.addEventListener("webkitfullscreenchange", render);
       render();
+    })();
+  </script>
+  <script>
+    // Control strip: Leave-the-game question, fade during play, iOS bar fallback. Tap to play: pointerdown and
+    // touchend count as well as click, and the prompt goes as soon as the audio context is running.
+    (function () {
+      var root = document.documentElement;
+      var home = document.getElementById("home-link");
+      home.addEventListener("click", function (e) {
+        if (!window.confirm("Leave the game?")) e.preventDefault();
+      });
+
+      var idleTimer = 0;
+      function show() { root.classList.remove("chrome-idle"); clearTimeout(idleTimer); arm(); }
+      function arm() {
+        clearTimeout(idleTimer);
+        if (document.getElementById("hawkes-tap")) return;
+        idleTimer = setTimeout(function () { root.classList.add("chrome-idle"); }, 4000);
+      }
+      var reveal = document.getElementById("chrome-reveal");
+      reveal.addEventListener("pointerdown", function (e) { e.stopPropagation(); show(); });
+      reveal.addEventListener("pointermove", show);
+      reveal.addEventListener("touchstart", function (e) { e.stopPropagation(); show(); }, { passive: true });
+
+      function dismissTap() {
+        var tap = document.getElementById("hawkes-tap");
+        if (tap && !tap.classList.contains("gone")) tap.click();
+      }
+      function audioRunning() {
+        try { return window.hawkesSound && JSON.parse(window.hawkesSound.state()).audio === "running"; } catch (e) { return false; }
+      }
+      function onTapGesture(e) {
+        var tap = document.getElementById("hawkes-tap");
+        if (!tap || !tap.contains(e.target)) return;
+        dismissTap();
+        var tries = 0;
+        (function check() {
+          var left = document.getElementById("hawkes-tap");
+          if (left && audioRunning()) { left.className = "gone"; left.style.pointerEvents = "none"; }
+          if (left && ++tries < 20) setTimeout(check, 100);
+        })();
+      }
+      document.addEventListener("pointerdown", onTapGesture, true);
+      document.addEventListener("touchend", onTapGesture, true);
+
+      // Start the fade timer once Tap to play is gone.
+      var watch = new MutationObserver(function () {
+        if (!document.getElementById("hawkes-tap") || document.getElementById("hawkes-tap").classList.contains("gone")) arm();
+      });
+      watch.observe(document.body, { childList: true, attributes: true, subtree: true, attributeFilter: ["class"] });
+
+      // No element fullscreen (iPhone Safari): nudge the page up so the address bar tucks away.
+      var el = document.documentElement;
+      if (!(el.requestFullscreen || el.webkitRequestFullscreen)) {
+        var hide = function () { setTimeout(function () { window.scrollTo(0, 1); }, 300); };
+        window.addEventListener("orientationchange", hide);
+        window.addEventListener("load", hide);
+      }
     })();
   </script>
 </body>
