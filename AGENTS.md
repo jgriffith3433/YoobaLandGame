@@ -24,7 +24,10 @@ the API and AWS keys and runs the shared GPU fleet. This project never holds tho
 
 The home page implements the playtest contract (`site/playtest.js`, with the `hawkes-playtest.js` and `hawkes-perf.js`
 helpers copied from hawkesstudio `clients/web`). It loads only when a bot drives the page (`navigator.webdriver` or
-`?playtest=`), so players download nothing. Scenario `play-flow` (start point `at: "load-failed"`) plays the Play flow:
-hero holds still, press Play, the game page's loading screen (progress bar, rotating lore lines), the canvas
-appearing without moving, a failed load (`?loadfail=1`) with its Try again button. The game page itself has no
-contract of its own: the Unity game's bridge registers `smoke`, `explore` and `full` there.
+`?playtest=`), so players download nothing. Scenarios open `Game/` in a full-window frame:
+- `play-flow` (start point `at: "load-failed"`): hero holds still, Play, loading (progress bar, lore lines), canvas
+  without moving, failed load (`?loadfail=1`) with Try again
+- `play-fail`: `Game/?playtest=fail-load` (loader simulates a failed Unity load) and the failure screen
+- `play-rotate` (phone): portrait rotate prompt, then landscape, then Tap to play gets the first pointerdown
+- `play-chrome`: fullscreen button toggles; the Home link returns to the site home
+The game page itself has no contract of its own: the Unity game's bridge registers `smoke`, `explore` and `full` there.

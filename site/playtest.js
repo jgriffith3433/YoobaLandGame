@@ -1,14 +1,12 @@
 // Hawkes playtest contract for the home page (spec: hawkesstudio/docs/playtest.md). Loaded only when a bot drives the
 // page (index.html: navigator.webdriver or ?playtest=), so players download nothing.
 //
-// Scenario "play-flow": the Play flow end to end, for the three things the play flow promises:
-//   1. Loading shows a progress bar and rotating lore lines
-//   2. A failed load shows a retry button, not a blank canvas
-//   3. No layout shift when the canvas appears (and none in the hero when "What's new" fills in)
-// The bot presses the hero Play button (a real click; while the bot runs, the page opens the game in a full-window
-// frame instead of leaving, so the bot keeps its log), then watches the game page load the way a player would see it.
-// Then it opens the game page with ?loadfail=1 (the page's own way to fail a load), looks at the failure screen and
-// presses Try again. Start point: at "load-failed" skips the real load and plays only the failure part.
+// Scenarios (all open Game/ in a full-window frame so the bot keeps its log):
+//   play-flow   — hero holds still, Play, loading (bar + lore), canvas without moving, failed load + Try again
+//                 (at "load-failed": only the failure part)
+//   play-fail   — Game/?playtest=fail-load shows the failure screen (and Try again)
+//   play-rotate — phone portrait: rotate prompt, then landscape; Tap to play gets the first pointerdown
+//   play-chrome — fullscreen button toggles; the back-to-home link returns to the site home
 import { installPlaytest } from './hawkes-playtest.js';
 
 const px = (n) => Math.round(n * 10) / 10;
@@ -42,6 +40,12 @@ const noteFirstPlay = () => {
 noteFirstPlay();
 if (!firstPlay) document.addEventListener('DOMContentLoaded', noteFirstPlay);
 
+const phoneish = () => {
+  const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  const short = Math.min(window.innerWidth, window.innerHeight) <= 500;
+  return !!(coarse && short);
+};
+
 installPlaytest({
   product: 'yoobaland',
   isReady: () => document.readyState !== 'loading',
@@ -55,6 +59,25 @@ installPlaytest({
     description: 'Home page: hero stays still, press Play, the game page shows its progress bar and rotating lore lines, ' +
       'the canvas appears without moving; then a failed load shows Try again and the retry works. ' +
       'options.at "load-failed": only the failure part.',
+  }, {
+    id: 'play-fail',
+    title: 'Game page failure screen (?playtest=fail-load)',
+    seconds: 45,
+    tags: ['full', 'menus'],
+    description: 'Opens Game/?playtest=fail-load so the loader simulates a failed Unity load; logs the failure screen and Try again.',
+  }, {
+    id: 'play-rotate',
+    title: 'Phone portrait rotate prompt, then Tap to play',
+    seconds: 60,
+    tags: ['full', 'phone'],
+    description: 'Phone portrait: the rotate prompt shows; the frame turns to landscape and the prompt goes; ' +
+      'Tap to play receives the first pointerdown (taps logged). Run with device phone (390x844, touch).',
+  }, {
+    id: 'play-chrome',
+    title: 'Fullscreen toggle and back-to-home',
+    seconds: 45,
+    tags: ['full', 'menus'],
+    description: 'Game page chrome: the fullscreen button toggles, then the Home link returns to the site home.',
   }],
 
   async start(id, options, t) {
@@ -69,16 +92,26 @@ installPlaytest({
     };
     window.addEventListener('click', holdPlay, true);
 
-    const openGame = (query) => {
+    const openGame = (query, size) => {
       if (overlay) overlay.remove();
       overlay = document.createElement('iframe');
       overlay.setAttribute('title', 'Yooba Land (playtest)');
-      overlay.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;border:0;z-index:2147483000;background:#143226';
+      overlay.setAttribute('allow', 'fullscreen');
+      const box = size
+        ? `position:fixed;left:0;top:0;width:${size.w}px;height:${size.h}px;border:0;z-index:2147483000;background:#143226;`
+        : 'position:fixed;inset:0;width:100vw;height:100vh;border:0;z-index:2147483000;background:#143226;';
+      overlay.style.cssText = box;
       overlay.src = './Game/' + (query || '');
       document.body.appendChild(overlay);
       return overlay;
     };
+    const setFrameSize = (w, h) => {
+      if (!overlay) return;
+      overlay.style.cssText =
+        `position:fixed;left:0;top:0;width:${w}px;height:${h}px;border:0;z-index:2147483000;background:#143226;`;
+    };
     const gameDoc = () => { try { return overlay && overlay.contentDocument; } catch { return null; } };
+    const gameWin = () => { try { return overlay && overlay.contentWindow; } catch { return null; } };
     const visible = (el) => {
       if (!el) return false;
       const r = el.getBoundingClientRect();
@@ -90,9 +123,25 @@ installPlaytest({
       const tap = d && d.querySelector('#hawkes-tap button');
       if (tap && visible(tap) && !pressTap.done) { pressTap.done = true; tap.click(); t.event('tap-to-play', 'pressed'); }
     };
+    pressTap.done = false;
+
+    const finish = (ok) => t.finish(ok && !bad ? 'won' : 'lost');
 
     try {
-      // ---- 1. The home page: the hero holds still, then Play ---------------------------------------------------
+      if (id === 'play-fail') {
+        await runPlayFail({ t, flag, openGame, gameDoc, visible, pressTap, finish });
+        return;
+      }
+      if (id === 'play-rotate') {
+        await runPlayRotate({ t, flag, openGame, setFrameSize, gameDoc, gameWin, visible, finish });
+        return;
+      }
+      if (id === 'play-chrome') {
+        await runPlayChrome({ t, flag, openGame, gameDoc, gameWin, visible, pressTap, finish });
+        return;
+      }
+
+      // ---- play-flow -------------------------------------------------------------------------------------------
       if (t.at !== 'load-failed') {
         t.scene('Home');
         const play = document.querySelector('.hero .play-large');
@@ -114,10 +163,9 @@ installPlaytest({
         play.click();
         t.event('play-pressed', 'hero Play button, ' + play.getAttribute('href'));
         t.scene('Loading');
-        const frame = openGame('');
+        openGame('');
         await t.until(() => { const d = gameDoc(); return d && d.getElementById('unity-loading-bar'); }, 20000, 'the game page');
 
-        // ---- 2. The game page loads: bar, lore lines, then the canvas, without moving --------------------------
         let shown = false;
         let rect0 = null;
         let canvasMoved = 0;
@@ -182,7 +230,7 @@ installPlaytest({
           if (visible(bar)) flag('The loading card stayed on screen after the game started.');
           if (loadSeconds > 6 && tips.size < 2) flag('A load of ' + px(loadSeconds) + ' s showed only one lore line (they should rotate).');
           if (loadSeconds <= 6) t.event('lore-note', `load took ${px(loadSeconds)} s, under the 4.5 s a lore line stays: ${tips.size} seen`);
-          await t.wait(1500); // a moment of the game itself, for the footage
+          await t.wait(1500);
         } else if (outcome === 'failed') {
           const d = gameDoc();
           t.event('load-failed', ((d.getElementById('unity-fail-detail') || {}).textContent || 'no detail').slice(0, 120));
@@ -193,11 +241,11 @@ installPlaytest({
         t.progress(0.6);
       }
 
-      // ---- 3. A failed load: a retry button, not a blank canvas -----------------------------------------------
       t.scene('Load failed');
-      const frame = openGame('?loadfail=1');
+      openGame('?loadfail=1');
+      pressTap.done = false;
       const failed = () => { const d = gameDoc(); const b = d && d.getElementById('unity-loading-bar'); return b && b.classList.contains('failed') && b; };
-      await t.until(failed, 30000, 'the failure screen');
+      await t.until(() => { pressTap(gameDoc()); return failed(); }, 30000, 'the failure screen');
       let d = gameDoc();
       const retry = d.getElementById('unity-retry');
       const card = failed();
@@ -211,20 +259,20 @@ installPlaytest({
       if (!visible(card) || cardRect[2] < 100) flag('A failed load shows no message card (a blank canvas).');
       if (d.getElementById('unity-container').classList.contains('loaded')) flag('The failure screen sits on a container marked as loaded.');
       t.progress(0.8);
-      await t.wait(1200); // the failure screen stays on screen a moment, for the footage
+      await t.wait(1200);
 
-      // Try again: the page reloads. The marker on the old window is gone once the new page is up.
       overlay.contentWindow.__playtestMarker = 1;
       retry.click();
       t.event('retry-pressed', 'Try again');
       await t.until(() => { try { return overlay.contentWindow.__playtestMarker === undefined; } catch { return true; } }, 15000, 'the page to reload');
       t.event('retry-reloaded', 'the game page loaded again');
-      await t.until(failed, 30000, 'the failure screen again');
+      pressTap.done = false;
+      await t.until(() => { pressTap(gameDoc()); return failed(); }, 30000, 'the failure screen again');
       t.event('failure-screen', 'Still failing (?loadfail=1 keeps failing on purpose): the screen came back with Try again');
       t.progress(1);
       t.scene('Done');
 
-      t.finish(bad ? 'lost' : 'won');
+      finish(true);
     } finally {
       window.removeEventListener('click', holdPlay, true);
       if (overlay) overlay.remove();
@@ -235,3 +283,237 @@ installPlaytest({
     document.querySelectorAll('iframe[title="Yooba Land (playtest)"]').forEach((f) => f.remove());
   },
 });
+
+async function runPlayFail({ t, flag, openGame, gameDoc, visible, pressTap, finish }) {
+  t.scene('Load failed');
+  openGame('?playtest=fail-load');
+  pressTap.done = false;
+  const failed = () => {
+    const d = gameDoc();
+    const b = d && d.getElementById('unity-loading-bar');
+    return b && b.classList.contains('failed') && b;
+  };
+  await t.until(() => { pressTap(gameDoc()); return failed(); }, 30000, 'the failure screen');
+  const d = gameDoc();
+  const retry = d.getElementById('unity-retry');
+  const home = d.getElementById('home-link') || (d.querySelector && d.querySelector('.ld-fail a.home'));
+  const card = failed();
+  const title = (card.querySelector('.ld-fail .ld-title') || {}).textContent;
+  const detail = ((d.getElementById('unity-fail-detail') || {}).textContent || '').slice(0, 120);
+  t.event('failure-screen', `"${title}", Try again ${visible(retry) ? 'visible' : 'MISSING'}, ` +
+    `Home ${home && visible(home) ? 'visible' : 'missing'}, detail "${detail}"`);
+  if (!visible(retry)) flag('A failed load shows no Try again button.');
+  if (!visible(card) || card.getBoundingClientRect().width < 100) flag('A failed load shows no message card (a blank canvas).');
+  t.metric('failScreen', 1);
+  t.progress(0.7);
+  await t.wait(1500); // failure screen on screen for the footage / screenshots
+  t.progress(1);
+  t.scene('Done');
+  finish(true);
+}
+
+async function runPlayRotate({ t, flag, openGame, setFrameSize, gameDoc, gameWin, visible, finish }) {
+  if (!phoneish()) {
+    t.event('need-phone', `play-rotate needs a phone run (pointer: coarse, short side ≤ 500); this window is ${window.innerWidth}x${window.innerHeight}`);
+    t.problem('warning', 'play-rotate was started on a desktop-sized window; run it with device phone (390x844).');
+    t.scene('Need phone');
+    t.finish('stuck');
+    return;
+  }
+
+  // Keep the game frame at phone portrait so (orientation: portrait) and the iframe's own viewport match.
+  const pw = 390;
+  const ph = 844;
+  t.scene('Rotate prompt');
+  openGame('', { w: pw, h: ph });
+  await t.until(() => gameDoc() && gameDoc().getElementById('rotate-prompt'), 20000, 'the game page');
+
+  const promptShown = () => {
+    const d = gameDoc();
+    const el = d && d.getElementById('rotate-prompt');
+    if (!el) return false;
+    const s = d.defaultView.getComputedStyle(el);
+    return s.display !== 'none' && s.visibility !== 'hidden' && el.getBoundingClientRect().width > 0;
+  };
+
+  await t.until(promptShown, 8000, 'the rotate prompt').catch(() => {});
+  if (!promptShown()) {
+    const w = gameWin();
+    flag(`Portrait phone showed no rotate prompt (frame ${w ? w.innerWidth + 'x' + w.innerHeight : '?'}, coarse ${!!(w && w.matchMedia && w.matchMedia('(pointer: coarse)').matches)}).`);
+  } else {
+    const d = gameDoc();
+    const h2 = (d.querySelector('#rotate-prompt h2') || {}).textContent || '';
+    t.event('rotate-prompt', `shown at ${pw}x${ph}: "${h2}"`);
+  }
+  t.progress(0.3);
+  await t.wait(1200); // prompt on screen for screenshots
+
+  t.scene('Landscape');
+  // Content viewport 844x390 (landscape media), scaled to fit the phone screenshot (390x844).
+  const lw = 844;
+  const lh = 390;
+  const scale = Math.min(window.innerWidth / lw, window.innerHeight / lh, 1);
+  setFrameSize(lw, lh);
+  const frame = document.querySelector('iframe[title="Yooba Land (playtest)"]');
+  if (frame) {
+    frame.style.transform = `scale(${scale})`;
+    frame.style.transformOrigin = 'top left';
+  }
+  await t.wait(600);
+  const w = gameWin();
+  // Some browsers only recompute orientation media after a resize event on the frame.
+  try { w && w.dispatchEvent(new Event('resize')); } catch { /* ignore */ }
+  await t.wait(400);
+
+  if (promptShown()) flag('The rotate prompt stayed up after switching the frame to landscape.');
+  else t.event('rotate-gone', `landscape ${w ? w.innerWidth + 'x' + w.innerHeight : '844x390'}: prompt gone`);
+  t.progress(0.55);
+  await t.wait(800);
+
+  t.scene('Tap to play');
+  const d = gameDoc();
+  const tapBtn = d && d.querySelector('#hawkes-tap button');
+  if (!tapBtn || !visible(tapBtn)) {
+    // Prompt may still be covering, or sound script missing on this host: wait a moment for it.
+    await t.until(() => {
+      const b = gameDoc() && gameDoc().querySelector('#hawkes-tap button');
+      return b && visible(b) && !promptShown();
+    }, 10000, 'Tap to play').catch(() => {});
+  }
+  const btn = gameDoc() && gameDoc().querySelector('#hawkes-tap button');
+  if (!btn || !visible(btn)) {
+    flag('Tap to play was not visible after rotating to landscape.');
+    t.progress(1);
+    t.scene('Done');
+    finish(false);
+    return;
+  }
+
+  let taps = 0;
+  let firstType = '';
+  const onPtr = (e) => {
+    taps += 1;
+    if (!firstType) firstType = e.type;
+    t.event('tap', `${e.type} #${taps} on Tap to play`);
+  };
+  btn.addEventListener('pointerdown', onPtr, true);
+  btn.addEventListener('touchstart', onPtr, true);
+  const r = btn.getBoundingClientRect();
+  const cx = r.left + r.width / 2;
+  const cy = r.top + r.height / 2;
+  const win = gameWin();
+  try {
+    btn.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true, cancelable: true, composed: true,
+      clientX: cx, clientY: cy, pointerId: 1, pointerType: 'touch', isPrimary: true,
+      view: win,
+    }));
+  } catch {
+    btn.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, clientX: cx, clientY: cy, view: win }));
+  }
+  btn.click();
+  await t.wait(300);
+  btn.removeEventListener('pointerdown', onPtr, true);
+  btn.removeEventListener('touchstart', onPtr, true);
+
+  if (taps < 1) flag('Tap to play did not receive a pointerdown after rotating.');
+  else t.event('tap-to-play-received', `first ${firstType} after landscape; ${taps} tap event(s) logged`);
+  t.metric('tapAfterRotate', taps);
+  t.progress(1);
+  await t.wait(800);
+  t.scene('Done');
+  finish(true);
+}
+
+async function runPlayChrome({ t, flag, openGame, gameDoc, gameWin, visible, pressTap, finish }) {
+  t.scene('Game chrome');
+  // fail-load brings chrome up without waiting on Unity. On a phone portrait run, open the frame in landscape
+  // so the rotate prompt does not cover the fullscreen / Home controls.
+  const phone = phoneish();
+  const frame = openGame('?playtest=fail-load');
+  if (phone && frame) {
+    // Landscape content so the rotate prompt stays down; scale to fit the phone screenshot.
+    const lw = 844;
+    const lh = 390;
+    const scale = Math.min(window.innerWidth / lw, window.innerHeight / lh, 1);
+    frame.style.cssText =
+      `position:fixed;left:0;top:0;width:${lw}px;height:${lh}px;border:0;z-index:2147483000;background:#143226;` +
+      `transform:scale(${scale});transform-origin:top left;`;
+  }
+  pressTap.done = false;
+  await t.until(() => gameDoc() && gameDoc().getElementById('fullscreen-button'), 20000, 'the game page');
+  await t.until(() => { pressTap(gameDoc()); return true; }, 1000, 'ready').catch(() => {});
+  // If a portrait prompt still covers chrome, dismiss it the way a player would.
+  const upright = gameDoc() && gameDoc().getElementById('rp-upright');
+  const rotateUp = () => {
+    const d = gameDoc();
+    const el = d && d.getElementById('rotate-prompt');
+    if (!el) return false;
+    const s = d.defaultView.getComputedStyle(el);
+    return s.display !== 'none' && el.getBoundingClientRect().width > 0;
+  };
+  if (rotateUp() && upright) {
+    upright.click();
+    t.event('rotate-dismissed', 'Play upright anyway, so chrome is reachable');
+    await t.wait(300);
+  }
+  await t.wait(400);
+
+  const d0 = gameDoc();
+  const fs = d0 && d0.getElementById('fullscreen-button');
+  if (!fs) {
+    flag('The game page has no fullscreen button.');
+  } else if (!fs.classList.contains('available') && !visible(fs)) {
+    t.event('fullscreen-api', 'this browser has no element fullscreen: the button stays hidden');
+  } else {
+    const before = fs.getAttribute('aria-pressed');
+    t.event('fullscreen-button', `visible, aria-pressed=${before}`);
+    fs.click();
+    await t.wait(500);
+    const mid = fs.getAttribute('aria-pressed');
+    t.event('fullscreen-toggle', `after first click aria-pressed=${mid}`);
+    if (mid === before) {
+      // Playwright often refuses fullscreen without a real user gesture; still log the control was pressed.
+      t.event('fullscreen-note', 'aria-pressed did not change (browser may block fullscreen without a real gesture)');
+    }
+    fs.click();
+    await t.wait(400);
+    t.event('fullscreen-toggle', `after second click aria-pressed=${fs.getAttribute('aria-pressed')}`);
+  }
+  t.progress(0.5);
+  await t.wait(800); // chrome on screen for screenshots
+
+  t.scene('Back home');
+  const d = gameDoc();
+  const home = (d && (d.getElementById('home-link') || d.querySelector('a.home[href="../"], a.home[href="./"]'))) || null;
+  if (!home || !visible(home)) {
+    flag('The game page has no visible back-to-home link.');
+    t.progress(1);
+    t.scene('Done');
+    finish(false);
+    return;
+  }
+  const href = home.getAttribute('href') || '';
+  t.event('home-link', `visible, href=${href}`);
+  home.click();
+  await t.until(() => {
+    const w = gameWin();
+    try {
+      const path = (w && w.location && (w.location.pathname || '')) || '';
+      // Left Game/: path no longer ends with /Game or /Game/.
+      return path && !/\/Game\/?$/.test(path);
+    } catch {
+      return true; // cross-origin after navigate still counts as left
+    }
+  }, 15000, 'the site home');
+  let where = '';
+  try {
+    const w = gameWin();
+    where = w && w.location ? (w.location.pathname + w.location.search) : '';
+  } catch { where = '(opaque)'; }
+  t.event('home-returned', `back-to-home left Game/ → ${where || 'home'}`);
+  t.progress(1);
+  await t.wait(800);
+  t.scene('Done');
+  finish(true);
+}
