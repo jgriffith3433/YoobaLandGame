@@ -1,5 +1,17 @@
 # Yooba Land: story as the site tells it
-Sources: releases.json notes. Yooba is small and hungry and wants to get home; he came from The Gust and lands inside a glass fence.
-Past the broken glass is a town of other Yoobas. Named people: Old Reed (fishing, "sit still"), Bramley (farmer, gave a golden seed),
-the mayor, a whistling goatherd. Home page cast: Yooba, the other Yooba, Old Reed, Bramley.
-Portraits of Reed and Bramley are vector stand-ins (index.html); real ones need GPU art.
+Sources: `releases.json` notes and the game's canon (`Story.md`, `World.md`, `RoadHome.json`, `Biomes.json`, `YoobaWorld.json`). Yooba is small and hungry and wants to get home; he came from The Gust and lands inside a glass fence.
+Past the broken glass is a town of other Yoobas. Named people: Old Reed (fishing by Glimmer Lake, "sit still"), Bramley (farmer in Seedvale, gave a golden seed),
+the mayor (Mayor Plump in Yooba Town), Piper (a whistling goatherd in the Whistling Hills), Sir Tin (the rusting knight at Crumblecrown Castle), Fern (in the Mistwood lanterns), Captain Salt and Lumen (on the Sugarsand Coast), and Old Hush (by the Beacon Bell on Frostcap Peak). Home page cast: Yooba, the other Yooba, Old Reed, Bramley.
+Portraits of Reed and Bramley are vector stand-ins (`index.html`); real ones need GPU art.
+
+## The Road Home and the World Map
+Yooba Land is a 2.75 km by 2 km island-and-reach world (`x` from `-900` to `1850`, `z` from `-900` to `1100`) linked by cobble roads, dirt trails, waterways, and the eight-chapter **Road Home**:
+1. **Yooba Town** (`[0, 140]`): Where Yooba wakes inside the Glass Garden (`[0, 50]`), breaks the cracked pane, and meets the other Yoobas and Mayor Plump around the clock tower square.
+2. **Seedvale Meadows** (`[0, -300]`): Low golden fields south of town with Bramley's farm, slow turning windmills (`[-500, -250]`), **Glimmer Lake** (`[-300, -420]`, where Old Reed fishes and Ottie races rafts), **Willow Water** (`[265, -322]`, seven linked ponds and runs where Barnaby counts seventeen lily pads), and the **Reed Marsh** (`[-510, -570]`, where a heron stands on one leg on the Heron Post).
+3. **Whistling Hills** (`[-400, 100]`): Windy western ridges where Piper tends goats, Whistle Brook cascades down from the **Windy Hilltop** (`[-375, 380]`, ring of the Windcaller Stones), and the northwest woods hold the **Whispering Forest** (`[-740, 530]`, the humming Murmur Oak) and **Bramble Thicket** (`[-640, 530]`, the thorny Bramble Arch and Bramble Brook).
+4. **Crumblecrown Castle** (`[-500, 850]`): A polite ruin on the northwest hill where Sir Tin guards the drawbridge (`[-500, 742]`) and **Boulder Canyon** (`[-640, 1025]`) stacks pancake-flat stones into the Stacked Spire.
+5. **Mistwood Forest** (`[100, 700]`): Giant northern trees hung with paper lanterns around Fern's Treehouse Village, the Oldest Tree (`[200, 950]`), Mistpool (`[100, 620]`), and **Glowcap Grove** (`[290, 660]`, lit by the Great Glowcap mushroom).
+6. **Sugarsand Coast** (`[700, -300]`): Warm eastern beaches, Captain Salt's port, Lumen's Lighthouse (`[1000, -50]`), and the high **Skyport** plateau (`[718, 352]`) bordered by the **Mossy Ruins** (`[340, 500]`, the Standing Arch) and **Flower Meadow** (`[440, 500]`, the giant Sunspire Sunflower).
+7. **Frostcap Peak** (`[850, 950]`): The snow-dusted northeastern summit above Icing Lake (`[680, 780]`), where Old Hush tends the path to the Beacon Bell that calls the Sky Whale.
+8. **Licorice Reach** (`[1780, -480]`): An always-dusk eastern peninsula past the Pale Pier (`[1240, -880]`) and the Ink Pool (`[1520, -620]`), where the Dark Bell and the last orb wait on Bell Hill.
+
