@@ -79,6 +79,10 @@ The home **Meet the people** strip (`#characters`) is driven by `site/cast/cast.
 - **Waterway play**: Pushing the log raft across Glimmer Lake, diving into Bubble Hollow, racing Ottie around Glimmer Island, and hopping across Barnaby's seventeen lily pads in Willow Water without splashing.
 - **Sound-led exploration**: Each region and pocket biome carries its own continuous ambient sound bed—whispering pine needles, wren-filled brambles, wind flutes, marsh frogs, cavern echoes, surf on Sugarsand, and the low chime of Glowcap Grove—so players hear a biome before its landmark comes into view. On the website's **Explore Yooba Land** map (`#explore`), turning sound on (`yooba-map-sound`) crossfades these same ambient loops as visitors move from pin to pin, while **Follow the Road Home** traces a glowing golden trail through Chapters 1 to 8 alongside drifting clouds, shimmering lake surfaces, and a tiny green Yooba walking the road.
 
+## Site trailer (how visitors first see the slice)
+
+The website hero plays a short cut of real Glass Garden → street → Yooba Town square play (`docs/trailer.md`). It opens on eating and growing — the same core verb as the Road Home — then walks Yooba into town. Music and voices are the game's own. No new lore: the trailer only shows beats already true in this bible.
+
 ## Site: What's new cards
 
 The website's What's new / Devlog cards retell each release in player voice (chip, picture or muted clip, up to five lines). They point at the same Road Home places the bible names (Glass Garden, Yooba Town market, The Gust, Licorice Reach's Dark Bell) rather than inventing new locales. When a card has a Play link it opens the browser game; it does not teleport to a chapter.
