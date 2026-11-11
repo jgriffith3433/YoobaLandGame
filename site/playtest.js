@@ -1229,6 +1229,27 @@ async function runTrailer({ t, flag, finish }) {
   t.scene('Home');
   const watch = document.querySelector('.hero [data-trailer-open]');
   const play = document.querySelector('.hero .play-large');
+  const trailerRoot = document.querySelector('.hero [data-trailer]');
+  if (trailerRoot && trailerRoot.getAttribute('data-trailer-enabled') === 'false') {
+    // Flag off: the cut has not shipped, so the hero must not offer it and must not ask for its files.
+    await t.wait(800);
+    t.event('trailer-off', 'trailer: off');
+    t.log('trailer: off');
+    const shown = watch && watch.getClientRects().length > 0 && getComputedStyle(watch).display !== 'none';
+    if (shown) flag('Watch the trailer button is visible while the trailer flag is off.');
+    const asked = performance.getEntriesByType('resource').filter((e) => /trailer/i.test(e.name));
+    t.metric('trailerRequests', asked.length);
+    if (asked.length) flag('Page requested a trailer file while the flag is off: ' + asked[0].name);
+    if (play) {
+      const r = play.getBoundingClientRect();
+      t.metric('playBottom', px(r.bottom));
+      t.event('hero-fold', `Play bottom ${px(r.bottom)} of ${innerHeight}`);
+      if (r.bottom > innerHeight) flag('Hero Play is below the fold.');
+    } else flag('No Play button in the hero.');
+    t.scene('Done');
+    finish(true);
+    return;
+  }
   if (!watch) {
     flag('No Watch the trailer button in the hero.');
     t.scene('Done');

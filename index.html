@@ -59,7 +59,8 @@
         <p class="hero-version"><a href="./whatsnew.html" data-hawkes-version data-prefix="What's new in v" hidden></a></p>
         <!-- /Hawkes release -->
       </div>
-      <div class="hero-cta" data-trailer data-video="./images/trailer.mp4" data-video-portrait="./images/trailer-portrait.mp4" data-poster="./images/trailer-poster.jpg">
+      <!-- Trailer switch: set data-trailer-enabled="true" when images/trailer*.mp4 and trailer-poster.jpg ship (CSS hides the button, trailer.js and the playtest read this one attribute) -->
+      <div class="hero-cta" data-trailer data-trailer-enabled="false" data-video="./images/trailer.mp4" data-video-portrait="./images/trailer-portrait.mp4" data-poster="./images/trailer-poster.jpg">
         <a class="play play-large" href="./Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
         <button type="button" class="watch-trailer" data-trailer-open>Watch the trailer</button>
       </div>
