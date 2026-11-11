@@ -1,1 +1,0 @@
-- lesson: images/ is skip-worktree here — the checkout has no images, so image resizing can't be done or measured in this task; whatsnew.html and hawkes-credits.css are overwritten by the Unity deploy (YoobaWebBuild), so edit them there.
