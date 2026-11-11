@@ -661,67 +661,131 @@ async function runMapExplore({ t, flag, finish }) {
   await t.wait(900); // map on screen for screenshots
 
   const viewport = stage.querySelector('.explore-viewport');
-  const before = window.yoobaExplore.getTransform();
-  const slack = window.yoobaExplore.panSlack ? window.yoobaExplore.panSlack() : { x: -1, y: -1 };
-  t.metric('mapPanSlackX', px(slack.x));
-  t.metric('mapPanSlackY', px(slack.y));
-  t.event('map-pan-slack', `clamp allows ~${px(slack.x)}px x / ${px(slack.y)}px y from start view`);
-  if (slack.x >= 0 && slack.x < 16 && slack.y < 16) {
-    flag('Start view has almost no pan room (clamp still pins the map).');
-  }
-  // Real pointer pan across the viewport (keeps the page from scrolling sideways via touch-action: none).
-  // All moves are synchronous: awaiting between moves let lostpointercapture clear panOrigin mid-drag.
-  const vr = viewport.getBoundingClientRect();
-  const cx = vr.left + vr.width / 2;
-  const cy = vr.top + vr.height / 2;
-  const dispatchPtr = (type, x, y, id = 1) => {
+  const ex = window.yoobaExplore;
+  // Wait until the map has stopped moving (a card's centring glide, a resize re-fit) before measuring a gesture.
+  const settle = async () => {
+    let last = ex.getTransform();
+    let still = 0;
+    for (let k = 0; k < 60 && still < 3; k++) {
+      await t.wait(90);
+      const cur = ex.getTransform();
+      still = (cur.x === last.x && cur.y === last.y && cur.scale === last.scale && !(ex.panRoom && ex.panRoom().moving)) ? still + 1 : 0;
+      last = cur;
+    }
+  };
+  // Pointer events go to whatever element is under the finger (a pin, the map art, the frame), like a real touch,
+  // and bubble to the frame's handlers.
+  const dispatchPtr = (type, x, y, id = 1, kind = 'touch') => {
+    const target = document.elementFromPoint(x, y) || viewport;
+    const host = viewport.contains(target) ? target : viewport;
     try {
-      viewport.dispatchEvent(new PointerEvent(type, {
+      host.dispatchEvent(new PointerEvent(type, {
         bubbles: true, cancelable: true, composed: true,
-        clientX: x, clientY: y, pointerId: id, pointerType: 'touch', isPrimary: id === 1,
-        buttons: type === 'pointerup' || type === 'pointercancel' ? 0 : 1,
+        clientX: x, clientY: y, pointerId: id, pointerType: kind, isPrimary: id === 1,
+        button: 0, buttons: type === 'pointerup' || type === 'pointercancel' ? 0 : 1,
       }));
     } catch {
-      viewport.dispatchEvent(new MouseEvent(type === 'pointerdown' ? 'mousedown' : type === 'pointerup' ? 'mouseup' : 'mousemove', {
+      host.dispatchEvent(new MouseEvent(type === 'pointerdown' ? 'mousedown' : type === 'pointerup' ? 'mouseup' : 'mousemove', {
         bubbles: true, cancelable: true, clientX: x, clientY: y,
       }));
     }
   };
-  dispatchPtr('pointerdown', cx, cy);
-  for (let k = 1; k <= 8; k++) {
-    dispatchPtr('pointermove', cx - 12 * k, cy + 6 * k);
-  }
-  dispatchPtr('pointerup', cx - 96, cy + 48);
-  await t.wait(200);
-  const afterPan = window.yoobaExplore.getTransform();
-  const panDist = Math.hypot(afterPan.x - before.x, afterPan.y - before.y);
-  t.metric('mapPanPx', px(panDist));
-  t.event('map-pan', `dragged ~${px(panDist)}px (from scale ${px(before.scale)})`);
-  if (panDist < 8) flag('Panning the map did not move it.');
+  // One-finger drag with the pointer sequence a finger makes, toward the side that has room to move.
+  // Moves are synchronous so lostpointercapture on a synthetic pointer cannot clear the drag mid-way.
+  const drag = (distance) => {
+    const room = ex.panRoom();
+    const dirX = room.right >= room.left ? 1 : -1;
+    const dirY = room.down >= room.up ? 1 : -1;
+    const roomX = dirX > 0 ? room.right : room.left;
+    const roomY = dirY > 0 ? room.down : room.up;
+    // Aim at `distance` px along x if there is room there, else along y.
+    const useX = roomX >= distance * 0.5 || roomX >= roomY;
+    const total = Math.max(0, Math.min(distance, useX ? roomX : roomY));
+    const vr = viewport.getBoundingClientRect();
+    const sx = vr.left + vr.width / 2;
+    const sy = vr.top + Math.min(vr.height / 2, 150);
+    const steps = 10;
+    dispatchPtr('pointerdown', sx, sy);
+    for (let k = 1; k <= steps; k++) {
+      const d = (total * k) / steps;
+      dispatchPtr('pointermove', useX ? sx + dirX * d : sx, useX ? sy : sy + dirY * d);
+    }
+    dispatchPtr('pointerup', useX ? sx + dirX * total : sx, useX ? sy : sy + dirY * total);
+    return { axis: useX ? 'x' : 'y', asked: total, room: { x: roomX, y: roomY } };
+  };
+  const dragAndMeasure = async (label, distance) => {
+    await settle();
+    const b = ex.getTransform();
+    const scrollX0 = window.scrollX || window.pageXOffset || 0;
+    const info = drag(distance);
+    await t.wait(250);
+    const a = ex.getTransform();
+    const moved = Math.hypot(a.x - b.x, a.y - b.y);
+    const scrollDelta = Math.abs((window.scrollX || window.pageXOffset || 0) - scrollX0);
+    t.metric(`${label}Px`, px(moved));
+    t.event(`${label}`, `one-finger drag along ${info.axis}: asked ${px(info.asked)}px, map moved ${px(moved)}px ` +
+      `(room x ${px(info.room.x)} / y ${px(info.room.y)}, scale ${px(a.scale)}), page scrollX delta ${px(scrollDelta)}`);
+    if (info.asked >= 8 && moved < 8) flag(`One-finger drag (${label}) did not move the map.`);
+    if (info.asked < 8) flag(`The map had no room to drag (${label}): the clamp pins it.`);
+    if (scrollDelta > 2) flag('Dragging the map scrolled the page sideways.');
+    return moved;
+  };
+  const tap = async (el) => {
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+    dispatchPtr('pointerdown', x, y);
+    dispatchPtr('pointerup', x, y);
+    el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, clientX: x, clientY: y }));
+  };
+
+  await settle();
+  const before = ex.getTransform();
+  const slack = ex.panSlack();
+  t.metric('mapPanSlackX', px(slack.x));
+  t.metric('mapPanSlackY', px(slack.y));
+  t.event('map-pan-slack', `clamp allows ~${px(slack.x)}px x / ${px(slack.y)}px y from start view (scale ${px(before.scale)})`);
+  if (slack.x < 16 && slack.y < 16) flag('Start view has almost no pan room (clamp still pins the map).');
+  const panMoved = await dragAndMeasure('map-pan', 96);
+  t.metric('mapPanPx', px(panMoved));
   t.progress(0.28);
 
-  // Two-finger pinch zoom (acceptance: pinch feels smooth).
-  const scaleBeforePinch = window.yoobaExplore.getTransform().scale;
-  dispatchPtr('pointerdown', cx - 40, cy, 1);
-  dispatchPtr('pointerdown', cx + 40, cy, 2);
-  dispatchPtr('pointermove', cx - 70, cy, 1);
-  dispatchPtr('pointermove', cx + 70, cy, 2);
-  dispatchPtr('pointerup', cx - 70, cy, 1);
-  dispatchPtr('pointerup', cx + 70, cy, 2);
-  await t.wait(200);
-  const afterPinch = window.yoobaExplore.getTransform();
+  // Two-finger pinch: spread two fingers apart, then bring them together, around the middle of the frame.
+  const pinch = async (from, to, steps = 8) => {
+    const vr = viewport.getBoundingClientRect();
+    const cx = vr.left + vr.width / 2;
+    const cy = vr.top + Math.min(vr.height / 2, 150);
+    dispatchPtr('pointerdown', cx - from, cy, 1);
+    dispatchPtr('pointerdown', cx + from, cy, 2);
+    for (let k = 1; k <= steps; k++) {
+      const h = from + ((to - from) * k) / steps;
+      dispatchPtr('pointermove', cx - h, cy, 1);
+      dispatchPtr('pointermove', cx + h, cy, 2);
+    }
+    dispatchPtr('pointerup', cx - to, cy, 1);
+    dispatchPtr('pointerup', cx + to, cy, 2);
+  };
+  await settle();
+  const scaleBeforePinch = ex.getTransform().scale;
+  await pinch(40, 90); // fingers spread: zoom in
+  await t.wait(250);
+  const afterPinch = ex.getTransform();
   t.metric('mapPinchScale', px(afterPinch.scale));
-  t.event('map-pinch', `scale ${px(scaleBeforePinch)} → ${px(afterPinch.scale)}`);
-  if (afterPinch.scale <= scaleBeforePinch + 0.02) {
-    // Fall back to the +/- control so the zoom criterion is still visible if PointerEvent multi-touch is limited.
-    const zoomBtn = stage.querySelector('[data-explore-zoom="in"]');
-    if (zoomBtn) zoomBtn.click();
-    else window.yoobaExplore.zoomBy(1.25);
-    await t.wait(200);
-    const afterBtn = window.yoobaExplore.getTransform();
-    t.event('map-zoom', `+/- fallback scale ${px(afterPinch.scale)} → ${px(afterBtn.scale)}`);
-    if (afterBtn.scale <= scaleBeforePinch + 0.02) flag('Pinch and zoom-in did not raise the map scale.');
-  }
+  t.event('map-pinch', `two fingers spread, scale ${px(scaleBeforePinch)} → ${px(afterPinch.scale)}`);
+  if (afterPinch.scale <= scaleBeforePinch + 0.02) flag('Pinching out did not zoom the map in.');
+  await t.wait(300);
+  await pinch(90, 50); // fingers together: zoom out a little
+  await t.wait(250);
+  const afterPinchIn = ex.getTransform();
+  t.event('map-pinch-in', `two fingers together, scale ${px(afterPinch.scale)} → ${px(afterPinchIn.scale)}`);
+  if (afterPinchIn.scale >= afterPinch.scale - 0.02) flag('Pinching in did not zoom the map out.');
+  // The +/- buttons too.
+  const zoomBtn = stage.querySelector('[data-explore-zoom="in"]');
+  const scaleBeforeBtn = ex.getTransform().scale;
+  if (zoomBtn) { await tap(zoomBtn); await t.wait(200); }
+  const afterBtn = ex.getTransform();
+  t.event('map-zoom-button', `+ button, scale ${px(scaleBeforeBtn)} → ${px(afterBtn.scale)}`);
+  if (zoomBtn && afterBtn.scale <= scaleBeforeBtn + 0.02) flag('The + button did not zoom the map in.');
   t.progress(0.4);
   await t.wait(700);
 
@@ -729,11 +793,8 @@ async function runMapExplore({ t, flag, finish }) {
   for (let i = 0; i < cards.length; i++) {
     const id = cards[i];
     const pin = stage.querySelector(`[data-place="${id}"]`);
-    if (pin) {
-      pin.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-    } else {
-      window.yoobaExplore.openPlace(id, false);
-    }
+    if (pin) await tap(pin);
+    else flag(`Pin for ${id} is missing from the map.`);
     await t.until(() => window.yoobaExplore.getOpenId() === id, 8000, `card ${id}`);
     const card = stage.querySelector('.explore-card');
     const img = stage.querySelector('.explore-card-img');
@@ -765,8 +826,8 @@ async function runMapExplore({ t, flag, finish }) {
   await t.wait(300);
   const phonePin = stage.querySelector('[data-place="sugarsand"]') || stage.querySelector('[data-place="yooba-town"]');
   const phoneId = phonePin && phonePin.getAttribute('data-place') || 'yooba-town';
-  if (phonePin) phonePin.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-  else window.yoobaExplore.openPlace(phoneId, false);
+  if (phonePin) await tap(phonePin);
+  else flag(`Pin for ${phoneId} is missing from the map.`);
   await t.until(() => window.yoobaExplore.getOpenId() === phoneId, 8000, 'phone card');
   const phoneCard = stage.querySelector('.explore-card');
   const phoneW = Math.round(stage.getBoundingClientRect().width);
@@ -777,27 +838,25 @@ async function runMapExplore({ t, flag, finish }) {
   if (!sheet) flag('Phone layout did not show an open place card.');
   // Desktop run forces 390 via .explore-force-phone; native phone runs are already ~390.
   if (phoneW > 420) flag(`Phone map frame is ${phoneW}px wide (expected ~390).`);
-  // One-finger pan on the phone frame (page must not scroll sideways).
-  const scrollX0 = window.scrollX || window.pageXOffset || 0;
-  const pvr = viewport.getBoundingClientRect();
-  const pcx = pvr.left + pvr.width / 2;
-  const pcy = pvr.top + Math.min(120, pvr.height / 3);
-  const phoneBefore = window.yoobaExplore.getTransform();
-  const phoneSlack = window.yoobaExplore.panSlack ? window.yoobaExplore.panSlack() : { x: -1, y: -1 };
+  // One-finger drag on the phone frame (the page must not scroll sideways). The card's centring glide has to
+  // finish first, and the drag goes toward the side with room: the pin just centred can pin the map to an edge.
+  const phoneSlack = ex.panSlack();
   t.metric('mapPhonePanSlackX', px(phoneSlack.x));
-  dispatchPtr('pointerdown', pcx, pcy);
-  for (let k = 1; k <= 8; k++) dispatchPtr('pointermove', pcx + 12 * k, pcy);
-  dispatchPtr('pointerup', pcx + 96, pcy);
-  await t.wait(200);
-  const phoneAfter = window.yoobaExplore.getTransform();
-  const phonePan = Math.hypot(phoneAfter.x - phoneBefore.x, phoneAfter.y - phoneBefore.y);
+  const phonePan = await dragAndMeasure('map-phone-drag', 96);
   t.metric('mapPhonePanPx', px(phonePan));
-  t.event('map-phone-drag', `phone one-finger drag moved the map ~${px(phonePan)}px (slack ${px(phoneSlack.x)}px)`);
-  if (phonePan < 8) flag('One-finger drag on the phone-sized map did not move it.');
-  const scrollX1 = window.scrollX || window.pageXOffset || 0;
-  t.metric('pageScrollX', px(Math.abs(scrollX1 - scrollX0)));
-  t.event('map-phone-pan', `page scrollX delta ${px(Math.abs(scrollX1 - scrollX0))}`);
-  if (Math.abs(scrollX1 - scrollX0) > 2) flag('Panning the map scrolled the page sideways.');
+  t.metric('pageScrollX', px(Math.abs((window.scrollX || window.pageXOffset || 0))));
+  t.event('map-phone-pan', `page scrollX ${px(window.scrollX || window.pageXOffset || 0)} after the drag`);
+  if (phoneW <= 420) {
+    // Pinch on the phone-sized frame too.
+    await settle();
+    const s0 = ex.getTransform().scale;
+    await pinch(30, 70, 6);
+    await t.wait(250);
+    const s1 = ex.getTransform().scale;
+    t.metric('mapPhonePinchScale', px(s1));
+    t.event('map-phone-pinch', `phone-sized pinch, scale ${px(s0)} → ${px(s1)}`);
+    if (s0 < 2.9 && s1 <= s0 + 0.02) flag('Pinching out on the phone-sized map did not zoom it in.');
+  }
   const overflowX = document.documentElement.scrollWidth - document.documentElement.clientWidth;
   t.metric('pageOverflowX', overflowX);
   if (overflowX > 2) flag(`The page is ${overflowX}px wider than the screen (sideways scroll).`);
