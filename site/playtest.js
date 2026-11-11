@@ -10,6 +10,8 @@
 //   map         — Explore Yooba Land: pan, zoom, open three place cards; screenshots at desktop and 390 px
 //   pages       — every page at 1280 and 390 px: scroll, measure (sideways scroll, tap targets, tiny text, images
 //                 without size, console errors), gallery lightbox by tap. Measures only.
+//   map-alive   — Explore map sound, Road Home journey, idle life
+//   trailer     — Hero Watch the trailer: sound, first 5 s, portrait full-bleed, close restores scroll
 // The contract registers on every page (each page loads this file when a bot drives it); paths resolve from BASE.
 import { installPlaytest } from './hawkes-playtest.js';
 
@@ -106,6 +108,13 @@ installPlaytest({
     tags: ['full'],
     description: 'Home Explore map: turn sound on, open two places (ambience crossfades), watch the idle life, ' +
       'run Follow the Road Home through chapters 1-8, and skip a second run.',
+  }, {
+    id: 'trailer',
+    title: 'Hero Watch the trailer: sound, first 5 s, portrait cut, close restores page',
+    seconds: 90,
+    tags: ['full', 'phone', 'menus'],
+    description: 'Home hero: press Watch the trailer (real click unlocks audio), play with sound, log the first 5 s, ' +
+      'on a portrait phone (390x844) use the vertical cut full-screen, then close and confirm scroll and hero stay put.',
   }],
 
   async start(id, options, t) {
@@ -127,6 +136,15 @@ installPlaytest({
 
     if (id === 'map-alive') {
       try { await runMapAlive({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') }); } finally {
+        window.removeEventListener('click', holdPlay, true);
+      }
+      return;
+    }
+
+    if (id === 'trailer') {
+      try {
+        await runTrailer({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') });
+      } finally {
         window.removeEventListener('click', holdPlay, true);
       }
       return;
@@ -665,6 +683,161 @@ async function runPlayRotate({ t, flag, openGame, setFrameSize, gameDoc, gameWin
   t.metric('tapAfterRotate', taps);
   t.progress(1);
   await t.wait(800);
+  t.scene('Done');
+  finish(true);
+}
+
+async function runTrailer({ t, flag, finish }) {
+  t.scene('Home');
+  const watch = document.querySelector('.hero [data-trailer-open]');
+  const play = document.querySelector('.hero .play-large');
+  if (!watch) {
+    flag('No Watch the trailer button in the hero.');
+    t.scene('Done');
+    finish(false);
+    return;
+  }
+  noteFirstPlay();
+  const versionLine = document.querySelector('.hero-version [data-hawkes-version]');
+  await t.until(() => !versionLine || !versionLine.hidden, 8000, "the What's new line").catch(() => t.log("What's new line never appeared"));
+  await t.wait(800);
+
+  // Scroll a little so restore-after-close is measurable, then open from that spot.
+  // Capture hero rects AFTER this scroll so close+restore is not compared against a pre-scroll viewport.
+  window.scrollTo(0, 120);
+  await t.wait(200);
+  const scrollBefore = window.scrollY || window.pageYOffset || 0;
+  const playRect0 = play ? layoutOf(play) : null;
+  const watchRect0 = layoutOf(watch);
+  t.metric('scrollBeforeTrailer', px(scrollBefore));
+  t.event('hero-ready', `Watch the trailer at ${watchRect0.map(px).join(',')}; scrolled to ${px(scrollBefore)}`);
+
+  let opened = null;
+  let playing = null;
+  let five = null;
+  let missing = null;
+  const onOpen = (e) => { opened = e.detail || {}; };
+  const onPlay = (e) => { playing = e.detail || {}; };
+  const onFive = (e) => { five = e.detail || {}; };
+  const onMissing = (e) => { missing = e.detail || {}; };
+  window.addEventListener('trailer:open', onOpen);
+  window.addEventListener('trailer:playing', onPlay);
+  window.addEventListener('trailer:five', onFive);
+  window.addEventListener('trailer:missing', onMissing);
+
+  // Real click unlocks audio (element.click alone often leaves video muted/blocked).
+  const r = watch.getBoundingClientRect();
+  const cx = r.left + r.width / 2;
+  const cy = r.top + r.height / 2;
+  try {
+    watch.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true, cancelable: true, composed: true,
+      clientX: cx, clientY: cy, pointerId: 1, pointerType: 'mouse', isPrimary: true,
+    }));
+  } catch { /* older browsers */ }
+  watch.click();
+  t.event('trailer-pressed', 'Watch the trailer');
+  t.scene('Trailer');
+  t.progress(0.2);
+
+  await t.until(() => document.querySelector('.trailer-overlay') || missing, 8000, 'the trailer overlay');
+  if (!document.querySelector('.trailer-overlay')) {
+    flag('Trailer overlay did not open.');
+    window.removeEventListener('trailer:open', onOpen);
+    window.removeEventListener('trailer:playing', onPlay);
+    window.removeEventListener('trailer:five', onFive);
+    window.removeEventListener('trailer:missing', onMissing);
+    t.scene('Done');
+    finish(false);
+    return;
+  }
+  t.event('trailer-open', opened ? JSON.stringify(opened) : 'overlay present');
+
+  await t.until(() => playing || missing, 12000, 'trailer playing or missing file').catch(() => {});
+  // Final mp4s are held until grow juice + grounded town are on beta (docs/trailer.md). While they are
+  // absent, log it — do not fail the player/scroll criteria. Once files land, muted / short / fill flags apply.
+  const hasCut = !missing && !!playing;
+  if (missing) {
+    t.event('trailer-missing', `${missing.src || ''} (hold: cut after k_6c339fe0702c + k_3001ea3be60f on beta)`);
+    t.log('Trailer media not on this build yet; player and close/scroll still checked.');
+  } else if (!playing) {
+    flag('Trailer did not start playing.');
+  } else {
+    t.event('trailer-playing', `src=${playing.src || ''}, muted=${playing.muted}, ${playing.width}x${playing.height}, portrait=${playing.portrait}`);
+    t.metric('trailerMuted', playing.muted ? 1 : 0);
+    if (playing.muted) flag('Trailer is muted; it must play with sound.');
+  }
+  t.progress(0.45);
+
+  const phone = phoneish() || (window.innerWidth <= 420 && window.innerHeight >= window.innerWidth);
+  const overlayEl = document.querySelector('.trailer-overlay');
+  if (phone) {
+    if (!overlayEl || !overlayEl.classList.contains('is-portrait')) {
+      if (hasCut) flag('Portrait phone did not use the vertical trailer cut (missing is-portrait).');
+      else t.event('trailer-portrait', 'is-portrait expected once vertical cut ships');
+    } else {
+      const box = overlayEl.querySelector('.trailer-box');
+      const br = box && box.getBoundingClientRect();
+      const fills = br && br.width >= window.innerWidth * 0.95 && br.height >= window.innerHeight * 0.95;
+      t.event('trailer-portrait', fills
+        ? `vertical cut full-bleed ${px(br.width)}x${px(br.height)} in ${window.innerWidth}x${window.innerHeight}`
+        : `is-portrait but box ${br ? `${px(br.width)}x${px(br.height)}` : 'missing'}`);
+      t.metric('trailerFillW', br ? px(br.width) : 0);
+      t.metric('trailerFillH', br ? px(br.height) : 0);
+      if (hasCut && !fills) flag('Portrait trailer box does not fill the 390x844 screen.');
+    }
+  } else {
+    t.event('trailer-desktop', 'landscape/desktop 16:9 box');
+  }
+
+  // Hold through the first 5 s so the review can see eat/grow when the real cut is present.
+  await t.until(() => five || missing, 8000, 'first 5 seconds').catch(() => {});
+  if (five) {
+    t.event('trailer-five', `t=${px(five.time)}s`);
+    t.metric('trailerFiveAt', px(five.time));
+  } else if (hasCut) {
+    const v = window.yoobaTrailer && window.yoobaTrailer.video && window.yoobaTrailer.video();
+    const tNow = v ? v.currentTime : 0;
+    t.metric('trailerTime', px(tNow));
+    if (tNow < 4.5) flag(`Trailer had only ${px(tNow)}s before close; need the first 5 s on screen.`);
+    else t.event('trailer-five', `timeupdate fallback t=${px(tNow)}s`);
+  } else {
+    t.event('trailer-five', 'skipped while cut is held');
+  }
+  t.progress(0.7);
+  await t.wait(600);
+
+  const closeBtn = document.querySelector('.trailer-close');
+  if (closeBtn) closeBtn.click();
+  else if (window.yoobaTrailer) window.yoobaTrailer.close();
+  await t.until(() => !document.querySelector('.trailer-overlay'), 5000, 'trailer closed');
+  t.event('trailer-closed', 'close control');
+  await t.wait(300);
+
+  const scrollAfter = window.scrollY || window.pageYOffset || 0;
+  t.metric('scrollAfterTrailer', px(scrollAfter));
+  t.metric('scrollDelta', px(Math.abs(scrollAfter - scrollBefore)));
+  if (Math.abs(scrollAfter - scrollBefore) > 4) {
+    flag(`Closing the trailer moved the page (scroll ${px(scrollBefore)} → ${px(scrollAfter)}).`);
+  } else {
+    t.event('scroll-restored', `back at ${px(scrollAfter)}`);
+  }
+
+  if (play && playRect0) {
+    const moved = drift(playRect0, layoutOf(play));
+    t.metric('heroPlayMovedPx', px(moved));
+    if (moved > 2) flag(`Hero Play button jumped ${px(moved)}px after closing the trailer.`);
+    else t.event('hero-stable', `Play button moved ${px(moved)}px after trailer`);
+  }
+  const watchMoved = drift(watchRect0, layoutOf(watch));
+  t.metric('watchMovedPx', px(watchMoved));
+  if (watchMoved > 2) flag(`Watch the trailer button jumped ${px(watchMoved)}px after close.`);
+
+  window.removeEventListener('trailer:open', onOpen);
+  window.removeEventListener('trailer:playing', onPlay);
+  window.removeEventListener('trailer:five', onFive);
+  window.removeEventListener('trailer:missing', onMissing);
+  t.progress(1);
   t.scene('Done');
   finish(true);
 }

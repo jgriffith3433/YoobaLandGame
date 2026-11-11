@@ -4,6 +4,9 @@ Past the broken glass is a town of other Yoobas. Named people: Old Reed (fishing
 the mayor (Mayor Plump in Yooba Town), Piper (a whistling goatherd in the Whistling Hills), Sir Tin (the rusting knight at Crumblecrown Castle), Fern (in the Mistwood lanterns), Captain Salt and Lumen (on the Sugarsand Coast), and Old Hush (by the Beacon Bell on Frostcap Peak). Home page cast: Yooba, the other Yooba, Old Reed, Bramley.
 Portraits of Reed and Bramley are vector stand-ins (`index.html`); real ones need GPU art.
 
+## Trailer (hero)
+The home-page hero offers **Watch the trailer**: about 50 s of real slice play (Glass Garden → street → Yooba Town square), leading with Yooba eating and growing in the first 5 s. Cut sheet and hold rules: `docs/trailer.md`.
+
 ## The Road Home and the World Map
 The home page **Explore Yooba Land** section (`#explore`) shows the island map from `site/map/` (SVG + `places.json`): pan, zoom, and tap a pin for a place card (picture, hook, Play → `./Game/`). A visitor-remembered sound toggle (`yooba-map-sound`, off by default) crossfades each place's ambient sound bed when its card opens; **Follow the Road Home** animates a glowing gold trail along the dotted path from Chapter 1 to Chapter 8, pausing on each chapter pin with its picture (skippable, static under reduced motion); and gentle CSS idle life—drifting clouds, shimmering water on Glimmer Lake, Willow Water, and Icing Lake, and a tiny green Yooba walking the path—pauses whenever the map scrolls off-screen. The same place data drives the standalone map page.
 Yooba Land is a 2.75 km by 2 km island-and-reach world (`x` from `-900` to `1850`, `z` from `-900` to `1100`) linked by cobble roads, dirt trails, waterways, and the eight-chapter **Road Home**:
