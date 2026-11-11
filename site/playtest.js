@@ -541,22 +541,28 @@ async function runCast({ t, flag, finish }) {
   t.event('cast-ready', `cards: ${ids.join(',')}`);
   if (ids.length < 3) flag(`Cast should list at least 3 characters (got ${ids.length}).`);
 
-  const tapCard = (id) => {
+  const tapCard = (id, type = 'mouse') => {
     const btn = section.querySelector(`.cast-hit[data-cast-id="${id}"]`);
     if (!btn) return false;
-    // Real pointer so audio unlock works the way a player tap does.
+    // Real pointer sequence, then the click a player's tap produces.
     const r = btn.getBoundingClientRect();
     const x = r.left + r.width / 2;
     const y = r.top + Math.min(40, r.height / 3);
-    const opts = { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 1, pointerType: 'mouse' };
+    const opts = { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 1, pointerType: type, isPrimary: true };
     btn.dispatchEvent(new PointerEvent('pointerdown', opts));
     btn.dispatchEvent(new PointerEvent('pointerup', opts));
     btn.click();
     return true;
   };
+  // The caption and reaction appear synchronously on a tap, but a missing or short voice file clears them within
+  // moments, so read them right at the tap instead of waiting for them.
+  const reactingNow = (id) => !!section.querySelector(`.cast-hit[data-cast-id="${id}"] .cast-art.is-react-bounce, .cast-hit[data-cast-id="${id}"] .cast-art.is-react-blink, .cast-hit[data-cast-id="${id}"] .cast-art.is-react-lean, .cast-hit[data-cast-id="${id}"].is-speaking`);
+  const voiceRequests = () => (performance.getEntriesByType('resource') || []).filter((e) => /\/cast\/voice\//.test(e.name)).length;
 
   if (ids.some((id) => cast.momentLoaded(id))) flag('A cast moment loaded before any card was opened.');
   else t.event('cast-moments-idle', 'no moment media loaded before the first tap');
+  if (voiceRequests() > 0) flag('Cast audio was requested before the first tap.');
+  else t.event('cast-audio-idle', 'no cast audio requested before the first tap');
   const firstThree = ids.slice(0, 3);
   const seenCaptions = [];
   for (let i = 0; i < firstThree.length; i++) {
@@ -565,9 +571,8 @@ async function runCast({ t, flag, finish }) {
       flag(`No cast button for ${id}.`);
       continue;
     }
-    await t.until(() => cast.speakingId() === id && !!cast.caption(), 6000, `${id} caption`).catch(() => {});
     const caption = cast.caption();
-    const reacting = !!section.querySelector(`.cast-hit[data-cast-id="${id}"] .cast-art.is-react-bounce, .cast-hit[data-cast-id="${id}"] .cast-art.is-react-blink, .cast-hit[data-cast-id="${id}"] .cast-art.is-react-lean, .cast-hit[data-cast-id="${id}"].is-speaking`);
+    const reacting = reactingNow(id);
     t.event('cast-moment', `${id}: moment loaded=${cast.momentLoaded(id)}, others loaded=${ids.filter((o) => o !== id && cast.momentLoaded(o)).length}`);
     t.event('cast-speak', `${id}: "${caption.slice(0, 80)}" react=${reacting ? 'yes' : 'no'}`);
     if (!caption) flag(`${id} showed no caption bubble.`);
@@ -575,24 +580,27 @@ async function runCast({ t, flag, finish }) {
     seenCaptions.push(caption);
     t.metric('castSpoken', i + 1);
     await t.wait(900); // caption on screen for screenshots
-    // Second tap stops speech (criterion: tap again cycles / stop while speaking).
+    // Same character again: if still speaking the tap stops it, and the next tap plays a different line.
     if (i === 0) {
-      tapCard(id);
-      await t.wait(200);
-      if (cast.speakingId() === id) flag('Second tap on a speaking card should stop it.');
-      else t.event('cast-stop', `${id} stopped on second tap`);
-      tapCard(id);
-      await t.until(() => cast.speakingId() === id && !!cast.caption(), 6000, `${id} next line`).catch(() => {});
-      const next = cast.caption();
-      t.event('cast-cycle', `${id} next: "${(next || '').slice(0, 80)}"`);
-      if (next && seenCaptions[0] && next === seenCaptions[0] && (cast.cards().length || 1)) {
-        // With 3 lines, random pick never repeats the previous index; same caption only if one line.
-        t.event('cast-cycle-same', 'caption matched previous (allowed only with one line)');
+      const first = caption;
+      if (cast.speakingId() === id) {
+        tapCard(id);
+        if (cast.speakingId() === id) flag('A tap on a speaking card should stop it.');
+        else t.event('cast-stop', `${id} stopped on second tap`);
+      } else {
+        t.event('cast-line-ended', `${id} line already finished; next tap plays another line`);
       }
-      await t.wait(700);
+      tapCard(id);
+      const next = cast.caption();
+      const nextReact = reactingNow(id);
+      t.event('cast-cycle', `${id} first: "${(first || '').slice(0, 60)}" next: "${(next || '').slice(0, 60)}" react=${nextReact ? 'yes' : 'no'} different=${next && next !== first ? 'yes' : 'no'}`);
+      if (!next) flag(`${id} tapped again showed no caption.`);
+      else if (next === first) flag(`${id} tapped again repeated the same line.`);
+      await t.wait(900);
     }
     t.progress(0.15 + 0.18 * (i + 1));
   }
+  t.event('cast-audio-after-tap', `voice requests after taps: ${voiceRequests()}`);
   t.event('cast-shot-desktop', 'cast strip at desktop width');
   t.progress(0.75);
 
@@ -616,9 +624,9 @@ async function runCast({ t, flag, finish }) {
     await t.wait(250);
   }
   const phoneId = firstThree[1] || firstThree[0];
-  tapCard(phoneId);
-  await t.until(() => cast.speakingId() === phoneId && !!cast.caption(), 6000, 'phone caption').catch(() => {});
+  tapCard(phoneId, 'touch');
   const phoneCap = cast.caption();
+  t.event('cast-phone-touch', `${phoneId} tapped by touch, react=${reactingNow(phoneId) ? 'yes' : 'no'}`);
   const phoneW = Math.round(section.getBoundingClientRect().width);
   const scrollX1 = window.scrollX || window.pageXOffset || 0;
   t.metric('castPhoneWidth', phoneW);
@@ -626,6 +634,9 @@ async function runCast({ t, flag, finish }) {
   t.event('cast-shot-phone', `390-style width ${phoneW}px, caption "${(phoneCap || '').slice(0, 60)}", page scrollX Δ ${Math.abs(scrollX1 - scrollX0)}`);
   if (!phoneCap) flag('Phone cast tap showed no caption.');
   if (Math.abs(scrollX1 - scrollX0) > 2) flag('Swiping the cast row scrolled the page sideways.');
+  const small = Array.from(section.querySelectorAll('.cast-hit')).filter((b) => { const r = b.getBoundingClientRect(); return r.width < 44 || r.height < 44; });
+  t.event('cast-tap-targets', `${small.length} of ${ids.length} cards under 44 px`);
+  if (small.length) flag('A cast card tap target is under 44 px.');
   // Cards must not be clipped off the forced phone frame
   const card = section.querySelector('.cast-card');
   if (card) {
