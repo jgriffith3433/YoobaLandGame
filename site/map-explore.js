@@ -41,6 +41,14 @@
     panBy: function (dx, dy) { setTransform(tx + dx, ty + dy, scale); },
     zoomBy: function (factor, cx, cy) { zoomAt(factor, cx, cy); },
     getTransform: function () { return { x: tx, y: ty, scale: scale }; },
+    // How far clampTransform will let x/y move from the current pose (for the map scenario).
+    panSlack: function () {
+      var left = clampTransform(tx - 1e5, ty, scale);
+      var right = clampTransform(tx + 1e5, ty, scale);
+      var up = clampTransform(tx, ty - 1e5, scale);
+      var down = clampTransform(tx, ty + 1e5, scale);
+      return { x: Math.abs(right.x - left.x), y: Math.abs(down.y - up.y) };
+    },
     getOpenId: function () { return openId; },
     soundOn: function () { return soundOn; },
     audioState: function () {
@@ -458,6 +466,9 @@
   }
 
   // Pointer pan (mouse / one finger). Pinch handled separately.
+  // Track gestures ourselves: never clear panOrigin on lostpointercapture. Synthetic playtest
+  // PointerEvents often make setPointerCapture throw or immediately lose capture; treating that
+  // as pointerup aborted the drag while pinch (two sync downs+moves) still worked.
   var pointers = new Map();
   var dragMoved = false;
   var panOrigin = null;
@@ -534,7 +545,7 @@
   viewport.addEventListener("pointermove", onPointerMove);
   viewport.addEventListener("pointerup", onPointerUp);
   viewport.addEventListener("pointercancel", onPointerUp);
-  viewport.addEventListener("lostpointercapture", onPointerUp);
+  // Intentionally no lostpointercapture → onPointerUp: losing capture must not end the drag.
 
   viewport.addEventListener("wheel", function (e) {
     e.preventDefault();
