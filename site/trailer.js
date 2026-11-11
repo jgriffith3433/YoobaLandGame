@@ -5,6 +5,11 @@
   var root = document.querySelector("[data-trailer]");
   if (!root) return;
 
+  // One switch: data-trailer-enabled="false" on the hero CTA hides the button (CSS) and keeps the player dormant.
+  var enabled = root.getAttribute("data-trailer-enabled") !== "false";
+  window.yoobaTrailerEnabled = enabled;
+  if (!enabled) return;
+
   var openBtn = root.querySelector("[data-trailer-open]");
   if (!openBtn) return;
 
