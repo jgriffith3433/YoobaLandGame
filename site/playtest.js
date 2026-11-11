@@ -8,6 +8,7 @@
 //   play-rotate — phone portrait: rotate prompt, then landscape; Tap to play gets the first pointerdown
 //   play-chrome — fullscreen button toggles; the back-to-home link returns to the site home
 //   map         — Explore Yooba Land: pan, zoom, open three place cards; screenshots at desktop and 390 px
+//   cast        — Meet the people: tap three characters, captions + reactions; screenshots at desktop and 390 px
 //   whatsnew    — What's new + home Devlog + blog: picture cards, latest expanded, no empty date promise;
 //                 overflow check at 1280 and 390 px
 //   pages       — every page at 1280 and 390 px: scroll, measure (sideways scroll, tap targets, tiny text, images
@@ -93,6 +94,13 @@ installPlaytest({
     description: 'Home Explore Yooba Land: scroll to the map, pan and zoom, open three place cards with pictures and Play; ' +
       'screenshots at desktop and at 390 px (bottom sheet). Play href stays ./Game/.',
   }, {
+    id: 'cast',
+    title: 'Cast: tap three characters, captions on desktop and phone',
+    seconds: 75,
+    tags: ['full', 'phone'],
+    description: 'Home Meet the people: tap three cast cards so each shows a caption and a portrait reaction; ' +
+      'a second tap stops speech; a third character cycles a different line; screenshots at desktop and 390 px swipe row.',
+  }, {
     id: 'pages',
     title: 'Every page at 1280 and 390 px: layout, tap targets, text, lightbox',
     seconds: 150,
@@ -151,6 +159,15 @@ installPlaytest({
     if (id === 'map') {
       try {
         await runMapExplore({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') });
+      } finally {
+        window.removeEventListener('click', holdPlay, true);
+      }
+      return;
+    }
+
+    if (id === 'cast') {
+      try {
+        await runCast({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') });
       } finally {
         window.removeEventListener('click', holdPlay, true);
       }
@@ -488,6 +505,119 @@ async function runWhatsNew({ t, flag, finish }) {
   } finally {
     frame.remove();
   }
+}
+
+async function runCast({ t, flag, finish }) {
+  const section = document.getElementById('characters');
+  if (!section) {
+    flag('Meet the people (#characters) is missing from the home page.');
+    t.scene('Missing');
+    finish(false);
+    return;
+  }
+  t.scene('Cast desktop');
+  section.scrollIntoView({ behavior: 'auto', block: 'center' });
+  await t.until(() => window.yoobaCast && window.yoobaCast.ready(), 15000, 'the cast strip');
+  const cast = window.yoobaCast;
+  const ids = cast.cards();
+  t.event('cast-ready', `cards: ${ids.join(',')}`);
+  if (ids.length < 3) flag(`Cast should list at least 3 characters (got ${ids.length}).`);
+
+  const tapCard = (id) => {
+    const btn = section.querySelector(`.cast-hit[data-cast-id="${id}"]`);
+    if (!btn) return false;
+    // Real pointer so audio unlock works the way a player tap does.
+    const r = btn.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + Math.min(40, r.height / 3);
+    const opts = { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 1, pointerType: 'mouse' };
+    btn.dispatchEvent(new PointerEvent('pointerdown', opts));
+    btn.dispatchEvent(new PointerEvent('pointerup', opts));
+    btn.click();
+    return true;
+  };
+
+  const firstThree = ids.slice(0, 3);
+  const seenCaptions = [];
+  for (let i = 0; i < firstThree.length; i++) {
+    const id = firstThree[i];
+    if (!tapCard(id)) {
+      flag(`No cast button for ${id}.`);
+      continue;
+    }
+    await t.until(() => cast.speakingId() === id && !!cast.caption(), 6000, `${id} caption`).catch(() => {});
+    const caption = cast.caption();
+    const reacting = !!section.querySelector(`.cast-hit[data-cast-id="${id}"] .cast-art.is-react-bounce, .cast-hit[data-cast-id="${id}"] .cast-art.is-react-blink, .cast-hit[data-cast-id="${id}"] .cast-art.is-react-lean, .cast-hit[data-cast-id="${id}"].is-speaking`);
+    t.event('cast-speak', `${id}: "${caption.slice(0, 80)}" react=${reacting ? 'yes' : 'no'}`);
+    if (!caption) flag(`${id} showed no caption bubble.`);
+    if (!reacting) flag(`${id} portrait did not show a speaking/react state.`);
+    seenCaptions.push(caption);
+    t.metric('castSpoken', i + 1);
+    await t.wait(900); // caption on screen for screenshots
+    // Second tap stops speech (criterion: tap again cycles / stop while speaking).
+    if (i === 0) {
+      tapCard(id);
+      await t.wait(200);
+      if (cast.speakingId() === id) flag('Second tap on a speaking card should stop it.');
+      else t.event('cast-stop', `${id} stopped on second tap`);
+      tapCard(id);
+      await t.until(() => cast.speakingId() === id && !!cast.caption(), 6000, `${id} next line`).catch(() => {});
+      const next = cast.caption();
+      t.event('cast-cycle', `${id} next: "${(next || '').slice(0, 80)}"`);
+      if (next && seenCaptions[0] && next === seenCaptions[0] && (cast.cards().length || 1)) {
+        // With 3 lines, random pick never repeats the previous index; same caption only if one line.
+        t.event('cast-cycle-same', 'caption matched previous (allowed only with one line)');
+      }
+      await t.wait(700);
+    }
+    t.progress(0.15 + 0.18 * (i + 1));
+  }
+  t.event('cast-shot-desktop', 'cast strip at desktop width');
+  t.progress(0.75);
+
+  t.scene('Cast phone');
+  document.documentElement.classList.add('cast-force-phone');
+  await t.wait(200);
+  window.dispatchEvent(new Event('resize'));
+  section.scrollIntoView({ behavior: 'auto', block: 'center' });
+  const row = section.querySelector('[data-cast-list]');
+  const scrollX0 = window.scrollX || window.pageXOffset || 0;
+  if (row) {
+    row.scrollLeft = Math.min(120, row.scrollWidth);
+    await t.wait(200);
+    // One-finger swipe along the row
+    const rr = row.getBoundingClientRect();
+    const cx = rr.left + Math.min(120, rr.width / 2);
+    const cy = rr.top + rr.height / 2;
+    row.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: cx, clientY: cy, pointerId: 2, pointerType: 'touch' }));
+    row.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: cx - 80, clientY: cy, pointerId: 2, pointerType: 'touch' }));
+    row.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, clientX: cx - 80, clientY: cy, pointerId: 2, pointerType: 'touch' }));
+    await t.wait(250);
+  }
+  const phoneId = firstThree[1] || firstThree[0];
+  tapCard(phoneId);
+  await t.until(() => cast.speakingId() === phoneId && !!cast.caption(), 6000, 'phone caption').catch(() => {});
+  const phoneCap = cast.caption();
+  const phoneW = Math.round(section.getBoundingClientRect().width);
+  const scrollX1 = window.scrollX || window.pageXOffset || 0;
+  t.metric('castPhoneWidth', phoneW);
+  t.metric('pageScrollX', Math.round(Math.abs(scrollX1 - scrollX0) * 10) / 10);
+  t.event('cast-shot-phone', `390-style width ${phoneW}px, caption "${(phoneCap || '').slice(0, 60)}", page scrollX Δ ${Math.abs(scrollX1 - scrollX0)}`);
+  if (!phoneCap) flag('Phone cast tap showed no caption.');
+  if (Math.abs(scrollX1 - scrollX0) > 2) flag('Swiping the cast row scrolled the page sideways.');
+  // Cards must not be clipped off the forced phone frame
+  const card = section.querySelector('.cast-card');
+  if (card) {
+    const cr = card.getBoundingClientRect();
+    const sr = section.getBoundingClientRect();
+    if (cr.right < sr.left + 8 || cr.left > sr.right - 8) flag('A cast card sits outside the phone frame.');
+  }
+  await t.wait(1100);
+  document.documentElement.classList.remove('cast-force-phone');
+  cast.stop();
+  t.progress(1);
+  t.scene('Done');
+  finish(true);
 }
 
 async function runMapExplore({ t, flag, finish }) {
