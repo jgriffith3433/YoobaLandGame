@@ -100,8 +100,21 @@
     };
   }
 
+  // Touch size of a pin: a transparent circle that is always about 46 screen px across, whatever the zoom
+  // (its radius in map units shrinks as the map grows). It makes the pin's box a 44 px target; taps that land
+  // in it are routed to the nearest pin by the click handler below, so crowded pins never steal each other's taps.
+  var HIT_PX = 23;
+  var hitScale = 0;
+  function sizeHits() {
+    if (!svgEl || hitScale === scale) return;
+    hitScale = scale;
+    var r = String(Math.round((HIT_PX / scale) * 10) / 10);
+    svgEl.querySelectorAll(".place-hit").forEach(function (c) { c.setAttribute("r", r); });
+  }
+
   function applyTransform() {
     canvas.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + scale + ")";
+    sizeHits();
   }
 
   function setTransform(x, y, s, animate) {
@@ -405,12 +418,20 @@
 
   function wirePins() {
     if (!svgEl) return;
+    var NS = "http://www.w3.org/2000/svg";
     placeList.forEach(function (p) {
       var g = svgEl.querySelector('[data-place="' + p.id + '"]');
       if (!g) return;
       g.setAttribute("tabindex", "0");
       g.setAttribute("role", "button");
       g.setAttribute("aria-label", p.name);
+      var hit = document.createElementNS(NS, "circle");
+      hit.setAttribute("class", "place-hit");
+      hit.setAttribute("cx", String(p.map[0]));
+      hit.setAttribute("cy", String(p.map[1]));
+      hit.setAttribute("fill", "none");
+      hit.setAttribute("pointer-events", "none");
+      g.insertBefore(hit, g.firstChild);
       var go = function (e) {
         if (e) e.preventDefault();
         openPlace(p.id, true);
@@ -461,6 +482,8 @@
         svgEl.style.height = VIEW_H + "px";
       }
       wirePins();
+      hitScale = 0;
+      sizeHits();
       addLife();
       resetView();
       loaded = true;
@@ -563,6 +586,22 @@
     var factor = e.deltaY > 0 ? 0.9 : 1.1;
     zoomAt(factor, e.clientX, e.clientY);
   }, { passive: false });
+
+  // A tap that misses every pin's own shape opens the nearest pin within touch reach (about 23 screen px).
+  viewport.addEventListener("click", function (e) {
+    if (!loaded || dragMoved || !placeList.length) return;
+    if (e.target.closest && e.target.closest(".place, button, a, aside")) return;
+    var r = viewport.getBoundingClientRect();
+    var mx = (e.clientX - r.left - tx) / scale;
+    var my = (e.clientY - r.top - ty) / scale;
+    var best = null;
+    var bestD = HIT_PX / scale;
+    placeList.forEach(function (p) {
+      var d = Math.hypot(p.map[0] - mx, p.map[1] - my);
+      if (d <= bestD) { best = p; bestD = d; }
+    });
+    if (best) openPlace(best.id, true);
+  });
 
   if (zoomIn) zoomIn.addEventListener("click", function () { zoomAt(1.2); });
   if (zoomOut) zoomOut.addEventListener("click", function () { zoomAt(1 / 1.2); });
