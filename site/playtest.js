@@ -659,7 +659,15 @@ async function runMapExplore({ t, flag, finish }) {
 
   const viewport = stage.querySelector('.explore-viewport');
   const before = window.yoobaExplore.getTransform();
+  const slack = window.yoobaExplore.panSlack ? window.yoobaExplore.panSlack() : { x: -1, y: -1 };
+  t.metric('mapPanSlackX', px(slack.x));
+  t.metric('mapPanSlackY', px(slack.y));
+  t.event('map-pan-slack', `clamp allows ~${px(slack.x)}px x / ${px(slack.y)}px y from start view`);
+  if (slack.x >= 0 && slack.x < 16 && slack.y < 16) {
+    flag('Start view has almost no pan room (clamp still pins the map).');
+  }
   // Real pointer pan across the viewport (keeps the page from scrolling sideways via touch-action: none).
+  // All moves are synchronous: awaiting between moves let lostpointercapture clear panOrigin mid-drag.
   const vr = viewport.getBoundingClientRect();
   const cx = vr.left + vr.width / 2;
   const cy = vr.top + vr.height / 2;
@@ -677,16 +685,15 @@ async function runMapExplore({ t, flag, finish }) {
     }
   };
   dispatchPtr('pointerdown', cx, cy);
-  for (let k = 1; k <= 8; k++) { // a drag is many small moves, like a finger
-    dispatchPtr('pointermove', cx - 9 * k, cy + 5 * k);
-    await t.wait(16);
+  for (let k = 1; k <= 8; k++) {
+    dispatchPtr('pointermove', cx - 12 * k, cy + 6 * k);
   }
-  dispatchPtr('pointerup', cx - 72, cy + 40);
+  dispatchPtr('pointerup', cx - 96, cy + 48);
   await t.wait(200);
   const afterPan = window.yoobaExplore.getTransform();
   const panDist = Math.hypot(afterPan.x - before.x, afterPan.y - before.y);
   t.metric('mapPanPx', px(panDist));
-  t.event('map-pan', `dragged ~${px(panDist)}px`);
+  t.event('map-pan', `dragged ~${px(panDist)}px (from scale ${px(before.scale)})`);
   if (panDist < 8) flag('Panning the map did not move it.');
   t.progress(0.28);
 
@@ -773,14 +780,16 @@ async function runMapExplore({ t, flag, finish }) {
   const pcx = pvr.left + pvr.width / 2;
   const pcy = pvr.top + Math.min(120, pvr.height / 3);
   const phoneBefore = window.yoobaExplore.getTransform();
+  const phoneSlack = window.yoobaExplore.panSlack ? window.yoobaExplore.panSlack() : { x: -1, y: -1 };
+  t.metric('mapPhonePanSlackX', px(phoneSlack.x));
   dispatchPtr('pointerdown', pcx, pcy);
-  for (let k = 1; k <= 6; k++) { dispatchPtr('pointermove', pcx + 9 * k, pcy); await t.wait(16); }
-  dispatchPtr('pointerup', pcx + 54, pcy);
+  for (let k = 1; k <= 8; k++) dispatchPtr('pointermove', pcx + 12 * k, pcy);
+  dispatchPtr('pointerup', pcx + 96, pcy);
   await t.wait(200);
   const phoneAfter = window.yoobaExplore.getTransform();
   const phonePan = Math.hypot(phoneAfter.x - phoneBefore.x, phoneAfter.y - phoneBefore.y);
   t.metric('mapPhonePanPx', px(phonePan));
-  t.event('map-phone-drag', `phone one-finger drag moved the map ~${px(phonePan)}px`);
+  t.event('map-phone-drag', `phone one-finger drag moved the map ~${px(phonePan)}px (slack ${px(phoneSlack.x)}px)`);
   if (phonePan < 8) flag('One-finger drag on the phone-sized map did not move it.');
   const scrollX1 = window.scrollX || window.pageXOffset || 0;
   t.metric('pageScrollX', px(Math.abs(scrollX1 - scrollX0)));
