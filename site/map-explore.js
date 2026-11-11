@@ -70,22 +70,13 @@
     var vh = r.height;
     var mw = VIEW_W * s;
     var mh = VIEW_H * s;
-    // Keep at least 28% of the shorter side of the map on screen so it can't be lost.
-    var marginX = Math.min(mw * 0.28, vw * 0.45);
-    var marginY = Math.min(mh * 0.28, vh * 0.45);
-    var minX = vw - mw - marginX;
-    var maxX = marginX;
-    var minY = vh - mh - marginY;
-    var maxY = marginY;
-    if (mw <= vw) {
-      minX = maxX = (vw - mw) / 2;
-    }
-    if (mh <= vh) {
-      minY = maxY = (vh - mh) / 2;
-    }
+    // Always pannable, never lost: at least 60% of the smaller of (map, frame) stays inside the frame on each axis.
+    // (The old clamp pinned the map in place whenever it fit the frame, so at the start view nothing could be dragged.)
+    var keepX = Math.min(mw, vw) * 0.6;
+    var keepY = Math.min(mh, vh) * 0.6;
     return {
-      x: Math.min(maxX, Math.max(minX, x)),
-      y: Math.min(maxY, Math.max(minY, y)),
+      x: Math.min(vw - keepX, Math.max(keepX - mw, x)),
+      y: Math.min(vh - keepY, Math.max(keepY - mh, y)),
       scale: Math.min(MAX_SCALE, Math.max(MIN_SCALE * fitScale(), s)),
     };
   }
@@ -145,8 +136,9 @@
   }
 
   function resetView() {
-    var s = fitScale();
     var r = viewport.getBoundingClientRect();
+    // Desktop: the whole map. Phones / narrow frames: fill the frame's height so there is always room to drag.
+    var s = r.width < 640 ? Math.max(r.width / VIEW_W, r.height / VIEW_H) : fitScale();
     setTransform((r.width - VIEW_W * s) / 2, (r.height - VIEW_H * s) / 2, s, false);
   }
 
