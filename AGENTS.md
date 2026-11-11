@@ -34,5 +34,6 @@ helpers copied from hawkesstudio `clients/web`). It loads only when a bot drives
 - `trailer`: Watch the trailer from the hero — plays with sound, first 5 s, portrait vertical cut full-bleed, close restores scroll
 - `cast`: Meet the people — tap three characters for captions + portrait reactions; screenshots at desktop and 390 px
 - `whatsnew`: What's new + home Devlog + blog picture cards; newest expanded; no empty live-moment date; 1280 and 390 px
+- `first-minute`: home first impression — eat/grow headline, way-home premise, phone fold at 390x844, no live-moment, Gnash villain or absent, Play together online-only, gallery hooks without metres
 The game page itself has no contract of its own: the Unity game's bridge registers `smoke`, `explore` and `full` there.
 Trailer cut sheet: `docs/trailer.md` (hold the final mp4 compose until grow juice + grounded town are on beta).

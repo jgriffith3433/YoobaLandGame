@@ -21,7 +21,10 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
 
 body {
   margin: 0;
@@ -30,6 +33,7 @@ body {
   color: var(--ink);
   background: var(--paper);
   line-height: 1.55;
+  overflow-x: clip;
 }
 
 img { max-width: 100%; }
@@ -52,7 +56,8 @@ h1, h2, h3, .brand, .play, .kicker {
   align-items: center;
   gap: 1rem;
   min-height: 72px;
-  padding: 0.7rem 1.25rem;
+  /* Keep the first-row chrome a known height so phone hero fold math (100svh - 72px) holds. */
+  padding: 0.55rem 1.25rem;
   background: var(--green-deep);
   border-bottom: 4px solid var(--sun);
 }
@@ -559,7 +564,9 @@ button.play, .contact-form button {
   .hero {
     align-items: flex-end;
     justify-content: flex-start;
-    min-height: clamp(480px, 78vh, 700px);
+    /* Fill the first screen under the sticky topbar so headline, art, premise and Play stay above the fold. */
+    min-height: calc(100svh - 72px);
+    max-height: none;
   }
 
   .hero-photo { object-position: 4% 50%; }
@@ -571,7 +578,17 @@ button.play, .contact-form button {
   .hero-panel {
     width: 100%;
     margin: 0;
-    padding: 1.3rem 1.25rem 1.6rem;
+    padding: 0.9rem 1.15rem 1.15rem;
+    gap: 0.85rem;
+  }
+
+  .hero-panel h1 {
+    margin: 0.15rem 0 0.35rem;
+    font-size: clamp(1.7rem, 7.2vw, 2.35rem);
+  }
+
+  .hero-panel .kicker {
+    font-size: 0.82rem;
   }
 
   .cards, .post-link { grid-template-columns: 1fr; }
@@ -601,6 +618,11 @@ button.play, .contact-form button {
 }
 
 .hero-panel .hero-premise { font-size: 1.2rem; font-weight: 700; }
+
+@media (max-width: 800px) {
+  /* After the desktop premise size so the phone fold shrink actually wins. */
+  .hero-panel .hero-premise { font-size: 1.05rem; }
+}
 
 /* The "What's new in v…" line is filled in after releases.json loads. Its one line is a fixed box from the first
    paint (one body line-height, 1.55, of the hero's 1.12rem copy), so the centred hero copy and the Play button don't

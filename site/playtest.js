@@ -15,6 +15,7 @@
 //                 without size, console errors), gallery lightbox by tap. Measures only.
 //   map-alive   — Explore map sound, Road Home journey, idle life
 //   trailer     — Hero Watch the trailer: sound, first 5 s, portrait full-bleed, close restores scroll
+//   first-minute — Home first impression: eat/grow/home copy, phone fold, no live-moment, Gnash villain, gallery hooks
 // The contract registers on every page (each page loads this file when a bot drives it); paths resolve from BASE.
 import { installPlaytest } from './hawkes-playtest.js';
 
@@ -132,6 +133,15 @@ installPlaytest({
     tags: ['full', 'phone'],
     description: 'What\'s new picture cards (version/date chip, media, 3-5 notes, newest expanded), home Devlog strip, ' +
       'blog cards in the same style; no empty live-moment date; overflow check at 1280 and 390 px.',
+  }, {
+    id: 'first-minute',
+    title: 'First-minute promise: eat, grow, home — phone fold and honest copy',
+    seconds: 75,
+    tags: ['full', 'phone'],
+    description: 'Home page first impression at desktop then 390x844 touch: hero headline has eat+grow, premise names ' +
+      'finding the way home, headline/key art/premise/Play sit above the fold with no sideways scroll; no empty ' +
+      'live-moment; Gnash is villain or absent from cast (never friendly); Play together says online-only; gallery ' +
+      'captions have no metres or distance numbers.',
   }],
 
   async start(id, options, t) {
@@ -148,6 +158,15 @@ installPlaytest({
 
     if (id === 'pages') {
       try { await runPages({ t }); } finally { window.removeEventListener('click', holdPlay, true); }
+      return;
+    }
+
+    if (id === 'first-minute') {
+      try {
+        await runFirstMinute({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') });
+      } finally {
+        window.removeEventListener('click', holdPlay, true);
+      }
       return;
     }
 
@@ -384,6 +403,145 @@ installPlaytest({
     document.querySelectorAll('iframe[title="Yooba Land (playtest)"], iframe[title="Yooba Land (pages)"]').forEach((f) => f.remove());
   },
 });
+
+async function runFirstMinute({ t, flag, finish }) {
+  const frame = document.createElement('iframe');
+  frame.setAttribute('title', 'Yooba Land (first-minute)');
+  document.body.appendChild(frame);
+  const setSize = (w, h) => {
+    frame.style.cssText =
+      `position:fixed;left:0;top:0;width:${w}px;height:${h}px;border:0;z-index:2147483000;background:#f7fbf6;`;
+  };
+  const loadHome = async (w, h, label) => {
+    setSize(w, h);
+    frame.src = 'about:blank';
+    await t.wait(40);
+    frame.src = BASE + 'index.html';
+    await t.until(() => {
+      const d = frame.contentDocument;
+      return d && d.readyState === 'complete' && frame.contentWindow.location.href !== 'about:blank';
+    }, 20000, label);
+    await t.wait(500);
+    return { win: frame.contentWindow, doc: frame.contentDocument };
+  };
+  const aboveFold = (win, el) => {
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    const vh = win.innerHeight;
+    return r.width > 0 && r.height > 0 && r.top >= -1 && r.bottom <= vh + 1;
+  };
+  const overflowX = (win, doc, tag) => {
+    const vw = win.innerWidth;
+    const sw = doc.documentElement.scrollWidth;
+    t.metric(`${tag}OverflowX`, Math.max(0, sw - vw));
+    if (sw > vw + 1) {
+      flag(`${tag}: sideways scroll, scrollWidth ${sw} > ${vw}`);
+      return true;
+    }
+    t.event('no-sideways', `${tag}: scrollWidth ${sw} ≤ ${vw}`);
+    return false;
+  };
+  const checkCopy = (doc, tag) => {
+    const h1 = ((doc.querySelector('.hero h1') || {}).textContent || '').trim();
+    const premise = ((doc.querySelector('.hero .hero-premise') || {}).textContent || '').trim();
+    const h1Low = h1.toLowerCase();
+    const premiseLow = premise.toLowerCase();
+    t.event('hero-copy', `${tag}: h1="${h1.slice(0, 80)}" premise="${premise.slice(0, 80)}"`);
+    if (!/\beat\b/i.test(h1Low) || !/\bgrow\b/i.test(h1Low)) {
+      flag(`${tag}: hero headline must contain "eat" and "grow" (got "${h1}").`);
+    }
+    if (!/find(?:ing)? the way home|way home/i.test(premiseLow)) {
+      flag(`${tag}: premise must name finding the way home (got "${premise}").`);
+    }
+    const live = doc.querySelector('[data-live-moment], .live');
+    if (live) flag(`${tag}: home still has a next-live-moment block.`);
+    if (/will be posted here|date and time will be posted|Be there when it happens/i.test(doc.body.textContent || '')) {
+      flag(`${tag}: home still promises a live moment without a date.`);
+    }
+    t.event('no-live-promise', live ? 'still present' : 'next-live-moment block gone');
+
+    const castText = ((doc.querySelector('#characters') || {}).textContent || '');
+    // Only judge sentences that name Gnash — Pip/Kelp "friendly" who-lines must not false-fail.
+    const gnashBits = (castText.match(/[^.!?]*\bgnash\b[^.!?]*/gi) || []).map((s) => s.trim()).filter(Boolean);
+    const gnashBlob = gnashBits.join(' | ');
+    const gnashFriendly = gnashBits.some((s) => /\b(friend|friendly|walk together|wants to walk|kind|nice)\b/i.test(s));
+    const gnashVillain = gnashBits.some((s) => /\b(evil|villain|says no|bridge)\b/i.test(s));
+    const gnashAbsent = gnashBits.length === 0;
+    t.event('gnash-cast', `${tag}: absent=${gnashAbsent}, villain=${gnashVillain}, friendly=${gnashFriendly}` +
+      (gnashBlob ? `; bits="${gnashBlob.slice(0, 120)}"` : ''));
+    if (gnashFriendly) flag(`${tag}: cast must not call Gnash friendly.`);
+    if (!gnashAbsent && !gnashVillain) flag(`${tag}: Gnash is on the cast strip without being the bridge villain.`);
+
+    const playTogether = [...doc.querySelectorAll('.card')].find((c) => /Play together/i.test((c.querySelector('h3') || {}).textContent || ''));
+    const together = ((playTogether && playTogether.textContent) || '').toLowerCase();
+    t.event('play-together', `${tag}: "${((playTogether && playTogether.textContent) || '').replace(/\s+/g, ' ').trim().slice(0, 120)}"`);
+    if (!playTogether || !(/online/.test(together) && /(only when|when they are|appear only)/i.test(together))) {
+      flag(`${tag}: Play together must say other players appear only when they are online.`);
+    }
+
+    const caps = [...doc.querySelectorAll('.gallery figcaption, .gallery [data-caption]')].map((el) =>
+      (el.getAttribute('data-caption') || el.textContent || '').trim());
+    const badCap = caps.find((c) => /\bmetres?\b|\bmeters?\b|\b\d+\s*(m|metres?|meters?)\b/i.test(c) || /\b\d+\s*(metres?|meters?|m)\s*off\b/i.test(c));
+    t.event('gallery-caps', `${tag}: ${caps.length} captions` + (badCap ? `; bad "${badCap}"` : '; no distance HUD quotes'));
+    if (badCap) flag(`${tag}: gallery caption still has metres or a distance number ("${badCap}").`);
+    return { h1, premise };
+  };
+
+  try {
+    t.scene('First-minute desktop');
+    let { win, doc } = await loadHome(1280, 800, 'home desktop');
+    win.scrollTo(0, 0);
+    await t.wait(400);
+    checkCopy(doc, 'desktop');
+    overflowX(win, doc, 'desktop');
+    t.event('screenshot', 'first-minute @1280 hero');
+    t.progress(0.35);
+
+    t.scene('First-minute phone');
+    ({ win, doc } = await loadHome(390, 844, 'home phone 390x844'));
+    win.scrollTo(0, 0);
+    await t.wait(500);
+    // Touch-first: a real pointerdown on the hero Play (no mouse/keyboard).
+    const play = doc.querySelector('.hero .play-large');
+    if (play) {
+      const r = play.getBoundingClientRect();
+      const x = r.left + r.width / 2;
+      const y = r.top + r.height / 2;
+      const opts = { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 1, pointerType: 'touch', isPrimary: true };
+      play.dispatchEvent(new win.PointerEvent('pointerdown', opts));
+      play.dispatchEvent(new win.PointerEvent('pointerup', opts));
+      t.event('phone-touch', 'pointerdown on hero Play');
+    } else {
+      flag('phone: no hero Play button.');
+    }
+    checkCopy(doc, 'phone');
+    const h1 = doc.querySelector('.hero h1');
+    const premise = doc.querySelector('.hero .hero-premise');
+    const art = doc.querySelector('.hero .hero-photo, .hero video.hero-photo, .hero img.hero-photo');
+    const foldBits = [
+      ['headline', h1],
+      ['key-art', art],
+      ['premise', premise],
+      ['play', play],
+    ];
+    for (const [name, el] of foldBits) {
+      const ok = aboveFold(win, el);
+      const r = el ? el.getBoundingClientRect() : null;
+      t.event('fold', `phone ${name}: ${ok ? 'above fold' : 'BELOW'} ` +
+        (r ? `top=${px(r.top)} bottom=${px(r.bottom)} vh=${win.innerHeight}` : 'missing'));
+      if (!el) flag(`phone: hero ${name} is missing.`);
+      else if (!ok) flag(`phone @390x844: hero ${name} is not above the fold.`);
+    }
+    overflowX(win, doc, 'phone');
+    t.metric('phoneViewport', win.innerHeight);
+    t.event('screenshot', 'first-minute @390 hero fold');
+    t.progress(1);
+    t.scene('Done');
+    finish(true);
+  } finally {
+    frame.remove();
+  }
+}
 
 async function runWhatsNew({ t, flag, finish }) {
   const frame = document.createElement('iframe');
