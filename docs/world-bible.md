@@ -31,7 +31,7 @@ Yooba Land is a warm, bright, hand-crafted island-and-reach world (`x` from `-90
 
 ## Landmarks
 
-- **The Glass Garden (`[0, 50]`)**: The ring of tall glass panes south of Yooba Town where one cracked pane lets Yooba out into the world.
+- **The Glass Garden (`[0, 50]`)**: The ring of tall glass panes south of Yooba Town where one cracked pane lets Yooba out into the world. Inside: apples, Gnash's bridge, and a Zorlith orb on the path past the glass.
 - **Yooba Town Clock Tower (`[0, 140]`)**: The timber-and-stone bell tower in the middle of Yooba Town Square.
 - **Bramley's Farm & The Twin Windmills (`[0, -300]` & `[-500, -250]`)**: The warm red barn, pumpkin rows, and slow-turning wooden sails of Seedvale.
 - **Old Reed's Boathouse & Glimmer Island (`[-300, -420]`)**: The lantern-lit dock on Glimmer Lake and the tiny island reached by raft or swimming.
@@ -54,7 +54,9 @@ Yooba Land is a warm, bright, hand-crafted island-and-reach world (`x` from `-90
 ## Who lives here
 
 - **Yooba**: A small, round, bright-green creature with big curious eyes and a permanent rumble in his tummy. Speaks in short, earnest observations (*"I am a little bit hungry."*, *"The big tree is humming. It is saying my name. Quietly."*).
-- **The Other Yoobas (Pip, Mallow, Trundle, Clover)**: Round neighbours in Yooba Town who welcome Yooba once he steps past the broken glass pane and point him toward Mayor Plump.
+- **Gnash**: The evil Yooba who drops onto the Glass Garden bridge. Truly evil (J, 2026-10-19): Yooba Land's one antagonist. He does not fight; he stands in the way and means every word (*"I am this world's necessary evil..."*). Nobody in town says his name out loud. Later chapters may bring him back. The site cast never presents him as friendly — he is named as the bridge villain or left off the strip.
+- **Zorlith orbs**: Glowing stones that lean toward home. Eight of them light the Road Home; eating one holds whoever carries it to the size they are at home. The Glass Garden's hovering orb is a Zorlith orb (never "a big red orb" on the site).
+- **The Other Yoobas (Pip, Mallow, Trundle, Clover)**: Round neighbours in Yooba Town who welcome Yooba once he steps past the broken glass pane and point him toward Mayor Plump. Pip is the friendly town Yooba on the home cast — not Gnash.
 - **Mayor Plump**: The portly, sash-wearing mayor of Yooba Town (`[0, 140]`) who keeps the town clock wound and explains the eight chapters of the Road Home.
 - **Bramley**: The unhurried Seedvale farmer (`[0, -300]`) who trades a golden seed for a hand with his scattered carrots and stubborn windmill.
 - **Old Reed**: A patient angler on the Glimmer Lake dock (`[-300, -420]`) whose whole philosophy is *"Sit still. The fish don't hurry, and neither does the lake."*
@@ -70,7 +72,11 @@ Yooba Land is a warm, bright, hand-crafted island-and-reach world (`x` from `-90
 
 ### Home page cast (site)
 
-The home **Meet the people** strip (`#characters`) is driven by `site/cast/cast.json`: Yooba, Pip (the other Yooba), Old Reed, Bramley, Kelp, and Wren. Each card plays cycling voice lines with a caption bubble; portraits react with a per-character CSS motion (bounce, blink, or lean).
+The home **Meet the people** strip (`#characters`) is driven by `site/cast/cast.json`: Yooba, Pip (friendly town Yooba), Old Reed, Bramley, Kelp, and Wren. Gnash is absent from the strip and called out as the bridge villain nearby. Each card plays cycling voice lines with a caption bubble; portraits react with a per-character CSS motion (bounce, blink, or lean).
+
+## Site: first-minute promise
+
+The home hero states the game in one breath: **eat**, **grow** (size joke: the world stays tiny), and **find the way home**. Play-together copy says other players appear only when they are online. Gallery captions are one-line hooks with no distance HUD quotes.
 
 ## What happens
 
@@ -89,7 +95,7 @@ The website's What's new / Devlog cards retell each release in player voice (chi
 
 ## Story beats
 
-1. **The Gust and the Glass Garden (`main-1-1`, Yooba Town)**: Dropped from the swirling Gust into the Glass Garden, Yooba nudges through the one cracked pane, meets the other Yoobas in Yooba Town Square, and hears from Mayor Plump how the Road Home leads up to the Sky Whale.
+1. **The Gust and the Glass Garden (`main-1-1`, Yooba Town)**: Dropped from the swirling Gust into the Glass Garden, Yooba eats and grows, meets Gnash on the bridge, breaks the cracked pane, eats a Zorlith orb on the path (it shrinks him to home size), meets the other Yoobas in Yooba Town Square, and hears from Mayor Plump how the Road Home leads up to the Sky Whale.
 2. **Seeds in the Low Fields (`main-2-1`, Seedvale Meadows)**: South in Seedvale, Yooba helps Bramley at the farm, learns to sit still with Old Reed at Glimmer Lake, races Ottie, and hops the lily pads of Willow Water for a golden seed.
 3. **The Whistling Hills (`main-3-1`, Whistling Hills)**: Climbing west along Whistle Brook and Bramble Brook, Yooba helps Piper gather stray goats among the Whistle Rocks and explores the Whispering Forest, Bramble Thicket, and Windy Hilltop.
 4. **The Crown on the Hill (`main-4-1`, Crumblecrown Castle)**: Across the drawbridge of Crumblecrown Castle, Yooba helps Sir Tin oil the ancient gears and climbs into Boulder Canyon to see the Stacked Spire.
