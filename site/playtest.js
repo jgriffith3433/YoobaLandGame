@@ -555,6 +555,8 @@ async function runCast({ t, flag, finish }) {
     return true;
   };
 
+  if (ids.some((id) => cast.momentLoaded(id))) flag('A cast moment loaded before any card was opened.');
+  else t.event('cast-moments-idle', 'no moment media loaded before the first tap');
   const firstThree = ids.slice(0, 3);
   const seenCaptions = [];
   for (let i = 0; i < firstThree.length; i++) {
@@ -566,6 +568,7 @@ async function runCast({ t, flag, finish }) {
     await t.until(() => cast.speakingId() === id && !!cast.caption(), 6000, `${id} caption`).catch(() => {});
     const caption = cast.caption();
     const reacting = !!section.querySelector(`.cast-hit[data-cast-id="${id}"] .cast-art.is-react-bounce, .cast-hit[data-cast-id="${id}"] .cast-art.is-react-blink, .cast-hit[data-cast-id="${id}"] .cast-art.is-react-lean, .cast-hit[data-cast-id="${id}"].is-speaking`);
+    t.event('cast-moment', `${id}: moment loaded=${cast.momentLoaded(id)}, others loaded=${ids.filter((o) => o !== id && cast.momentLoaded(o)).length}`);
     t.event('cast-speak', `${id}: "${caption.slice(0, 80)}" react=${reacting ? 'yes' : 'no'}`);
     if (!caption) flag(`${id} showed no caption bubble.`);
     if (!reacting) flag(`${id} portrait did not show a speaking/react state.`);
