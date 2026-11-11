@@ -12,7 +12,8 @@
 //   whatsnew    — What's new + home Devlog + blog: picture cards, latest expanded, no empty date promise;
 //                 overflow check at 1280 and 390 px
 //   pages       — every page at 1280 and 390 px: scroll, measure (sideways scroll, tap targets, tiny text, images
-//                 without size, console errors), gallery lightbox by tap. Measures only.
+//                 without size, console errors), gallery lightbox by tap, then Play from every page by touch at 390 px
+//                 (the game page must open and start loading). The Unity game shell is measured but not counted.
 //   map-alive   — Explore map sound, Road Home journey, idle life
 //   trailer     — Hero Watch the trailer: sound, first 5 s, portrait full-bleed, close restores scroll
 //   first-minute — Home first impression: eat/grow/home copy, phone fold, no live-moment, Gnash villain, gallery hooks
@@ -111,7 +112,8 @@ installPlaytest({
     description: 'Visits home, blog index, a post, What\'s new, privacy, contact and the game shell; scrolls each top to bottom at ' +
       '1280 and 390 px with screenshots; reports sideways scroll (with the widest element), tap targets under 44 px, ' +
       'images without width/height, text under 14 px and console errors; opens and closes the gallery lightbox by tap. ' +
-      'Run once with prefers-reduced-motion emulated (the run says whether it was). Measure only: findings are warnings.',
+      'At 390 px it then taps Play on every site page (header, and the hero too on home) and checks the game page opens and starts loading. ' +
+      'Run once with prefers-reduced-motion emulated (the run says whether it was). Layout findings are warnings; a Play that does not start the game is a bug. The Unity game shell is measured but not counted (it is built by the Unity deploy).',
   }, {
     id: 'map-alive',
     title: 'Map alive: sound crossfade, Road Home journey, idle life',
@@ -1506,7 +1508,7 @@ const PAGES = [
   ['whatsnew', 'whatsnew.html'],
   ['privacy', 'privacypolicy.html'],
   ['contact', 'contact.html'],
-  ['game shell', 'Game/?playtest=fail-load'],
+  ['game shell', 'Game/?playtest=fail-load', 'shell'],
 ];
 const SIZES = [['1280', 1280, 800], ['390', 390, 844]];
 
@@ -1572,9 +1574,12 @@ async function runPages({ t }) {
   const setSize = (w, h) => { frame.style.cssText = `position:fixed;left:0;top:0;width:${w}px;height:${h}px;border:0;z-index:2147483000;background:#fff;`; };
   const total = PAGES.length * SIZES.length;
   let done = 0;
-  const totals = { overflow: 0, tiny: 0, small: 0, noDims: 0, errors: 0 };
+  const totals = { overflow: 0, tiny: 0, small: 0, noDims: 0, errors: 0, playFailed: 0 };
   try {
-    for (const [label, path] of PAGES) {
+    for (const [label, path, kind] of PAGES) {
+      // The game shell is Game/index.html, written by the Unity deploy (YoobaWebBuild): measured and reported, but it
+      // is not this site's to edit, so its findings stay out of the totals the criteria read.
+      const shell = kind === 'shell';
       for (const [sizeName, w, h] of SIZES) {
         const tag = `${label} @${sizeName}`;
         t.scene(tag);
@@ -1623,23 +1628,31 @@ async function runPages({ t }) {
         for (const e of (win.performance.getEntriesByType('resource') || [])) {
           if (e.responseStatus >= 400) errors.push(`resource ${e.responseStatus}: ${e.name.slice(-80)}`);
         }
-        const note = (kind, list, what) => {
+        const note = (list, what) => {
           if (!list.length) return;
           const shown = list.slice(0, 6).join('; ') + (list.length > 6 ? `; +${list.length - 6} more` : '');
-          t.problem('warning', `${tag}: ${list.length} ${what}: ${shown}`);
+          t.problem('warning', `${tag}${shell ? ' (Unity shell, not counted)' : ''}: ${list.length} ${what}: ${shown}`);
         };
+        const count = (key, n) => { if (!shell) totals[key] += n; };
         if (m.overflow) {
-          totals.overflow++;
+          count('overflow', 1);
           t.problem('warning', `${tag}: sideways scroll, scrollWidth ${m.overflow.scrollWidth} > ${m.overflow.innerWidth}; widest ${m.overflow.widest} reaches ${m.overflow.right}px`);
         }
-        note('tiny', m.tiny, 'tap targets under 44 px'); totals.tiny += m.tiny.length;
-        note('small', m.smallText, 'text runs under 14 px'); totals.small += m.smallText.length;
-        note('dims', m.noDims, 'images without width and height'); totals.noDims += m.noDims.length;
-        note('err', [...new Set(errors)], 'console errors'); totals.errors += new Set(errors).size;
-        t.event('page-measured', `${tag}: overflow ${m.overflow ? 'YES' : 'no'}, tap targets <44 ${m.tiny.length}, text <14px ${m.smallText.length}, images w/o size ${m.noDims.length}, errors ${new Set(errors).size}, looping animations ${m.animations}`);
+        note(m.tiny, 'tap targets under 44 px'); count('tiny', m.tiny.length);
+        note(m.smallText, 'text runs under 14 px'); count('small', m.smallText.length);
+        note(m.noDims, 'images without width and height'); count('noDims', m.noDims.length);
+        // The shell is opened in its failure state on purpose, so its 404 is expected there.
+        const seenErrors = [...new Set(errors)].filter((e) => !(shell && /does-not-exist/.test(e)));
+        note(seenErrors, 'console errors'); count('errors', seenErrors.length);
+        t.event('page-measured', `${tag}: overflow ${m.overflow ? 'YES' : 'no'}, tap targets <44 ${m.tiny.length}, text <14px ${m.smallText.length}, images w/o size ${m.noDims.length}, errors ${seenErrors.length}, looping animations ${m.animations}${shell ? ' (Unity shell, not counted)' : ''}`);
         if (reduced && m.animations) t.problem('warning', `${tag}: ${m.animations} looping animations still run with reduced motion on`);
 
         if (label === 'home') await lightbox({ t, win, doc, tag, touch: sizeName === '390' });
+        // Last, because it leaves the page: Play from this page, by touch, at phone size.
+        if (!shell && sizeName === '390') {
+          const ok = await playFrom({ t, frame, win, doc, tag, label });
+          totals.playFailed += ok ? 0 : 1;
+        }
         done++;
         t.progress(done / total);
       }
@@ -1648,6 +1661,62 @@ async function runPages({ t }) {
   for (const [k, v] of Object.entries(totals)) t.metric('total_' + k, v);
   t.scene('Done');
   t.finish('done');
+}
+
+// A finger on a link: touch pointer events, then the click the browser sends after a tap.
+function tap(win, el) {
+  const r = el.getBoundingClientRect();
+  const at = { bubbles: true, cancelable: true, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, pointerType: 'touch', isPrimary: true };
+  el.dispatchEvent(new win.PointerEvent('pointerdown', at));
+  el.dispatchEvent(new win.PointerEvent('pointerup', at));
+  el.click();
+}
+
+// Play from a page: tap its header Play (and, on home, the big hero Play too); the game page must open and begin its load
+// (the Unity loader script is requested, or the Tap to play screen is up) rather than a 404 or a blank page.
+async function playFrom({ t, frame, win, doc, tag, label }) {
+  const targets = [['header', doc.querySelector('.topbar .play')]];
+  if (label === 'home') targets.push(['hero', doc.querySelector('.hero .play-large')]);
+  let allOk = true;
+  for (const [where, el] of targets) {
+    const what = `${tag}: ${where} Play`;
+    if (!el) { t.problem('bug', `${what} is missing`); allOk = false; continue; }
+    if (where !== 'header') {
+      frame.src = BASE + 'index.html';
+      await t.until(() => { const d = frame.contentDocument; return d && d.readyState === 'complete' && /index\.html$/.test(frame.contentWindow.location.pathname); }, 20000, 'the home page again');
+      await t.wait(400);
+    }
+    const from = where === 'header' ? el : frame.contentDocument.querySelector('.hero .play-large');
+    from.scrollIntoView({ block: 'center' });
+    await t.wait(200);
+    tap(frame.contentWindow, from);
+    let started = false;
+    try {
+      await t.until(() => {
+        const d = frame.contentDocument;
+        let path = '';
+        try { path = frame.contentWindow.location.pathname; } catch { return false; }
+        if (!/\/Game\/?$/.test(path) || !d || d.readyState === 'loading' || !d.getElementById('unity-container')) return false;
+        const loader = d.getElementById('unity-loader-script');
+        return !!d.getElementById('hawkes-tap') || (!!loader && !/does-not-exist/.test(loader.src));
+      }, 15000, `${what} to open the game`);
+      started = true;
+    } catch { /* reported below */ }
+    if (started) {
+      const d = frame.contentDocument;
+      const failed = d.getElementById('unity-loading-bar') && d.getElementById('unity-loading-bar').classList.contains('failed');
+      t.event('play-started', `${what}: game page opened and began loading${failed ? ' (this browser could not draw WebGL, so the game showed its failure screen)' : ''}`);
+      t.event('screenshot', `${what} started the game`);
+      await t.wait(600);
+    } else {
+      allOk = false;
+      let at = '';
+      try { at = frame.contentWindow.location.pathname; } catch { at = '(unreadable)'; }
+      t.problem('bug', `${what} did not start the game: the frame is at ${at} and the loader was not requested`);
+    }
+  }
+  frame.src = 'about:blank';
+  return allOk;
 }
 
 async function lightbox({ t, win, doc, tag, touch }) {

@@ -1080,8 +1080,14 @@ button.play, .contact-form button {
   min-height: 44px;
 }
 .menu a { min-height: 44px; }
-.hawkes-credits a { min-height: 44px; }
-.site-footer .hawkes-credits { font-size: 0.875rem; }
+.hawkes-credits a { min-height: 44px; min-width: 44px; }
+/* Short words ("Blog", "Play") are still a full 44 px wide to tap. */
+.footer-links a { min-width: 44px; justify-content: center; }
+/* hawkes-credits.css is the deploy's and loads after this file, so this needs the extra specificity to hold 14 px. */
+footer.site-footer .hawkes-credits, footer.site-footer .hawkes-credits a, footer.site-footer .hawkes-gen-name { font-size: 0.9rem; }
+/* Buttons take the page's text size (the browser default is 13.3 px). */
+button { font-size: 1rem; }
+.play { min-height: 44px; }
 .menu-toggle { min-width: 44px; justify-content: center; }
 .explore-card-close, .explore-zoom button { min-width: 44px; justify-content: center; }
 .post-card { display: block; }
