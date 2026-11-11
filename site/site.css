@@ -660,6 +660,10 @@ button.play, .contact-form button {
   transform-origin: 50% 80%;
 }
 .cast-art img, .cast-art svg { display: block; width: 100%; height: 100%; object-fit: cover; max-width: none; }
+.cast-moment { display: block; border-bottom: 3px solid var(--outline); background: var(--sky-game); }
+.cast-moment[hidden] { display: none; }
+.cast-moment img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.cast-moment-cap { display: block; padding: 0.25rem 0.7rem; font-size: 0.85rem; font-weight: 700; color: var(--ink-soft); }
 .cast-card h3 { margin: 0.7rem 1rem 0.2rem; font-size: 1.35rem; }
 .cast-card .cast-who { margin: 0 1rem 1rem; color: var(--ink-soft); }
 .cast-note { margin: 1.4rem 0 0; color: var(--ink-soft); font-weight: 700; }

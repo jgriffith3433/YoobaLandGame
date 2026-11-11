@@ -78,6 +78,20 @@
     }, 4200);
   }
 
+  // The in-game moment still loads once, the first time its card is opened (no request before that).
+  function openMoment(c, card) {
+    var fig = card.querySelector("[data-cast-moment]");
+    if (!fig || !c.moment) return;
+    if (!fig.querySelector("img")) {
+      var img = new Image();
+      img.alt = c.moment.alt || c.name;
+      img.decoding = "async";
+      img.src = resolve(c.moment.src);
+      fig.insertBefore(img, fig.firstChild);
+    }
+    fig.hidden = false;
+  }
+
   function speak(c, card) {
     var pick = pickLine(c);
     if (!pick) return;
@@ -89,6 +103,7 @@
       bubble.textContent = pick.line.caption || "";
       bubble.hidden = !pick.line.caption;
     }
+    openMoment(c, card);
     card.classList.add("is-speaking");
     card.setAttribute("aria-pressed", "true");
     speakingId = c.id;
@@ -170,6 +185,17 @@
     who.textContent = c.who || "";
 
     btn.appendChild(art);
+    if (c.moment) {
+      var fig = document.createElement("span");
+      fig.className = "cast-moment";
+      fig.setAttribute("data-cast-moment", "");
+      fig.hidden = true;
+      var cap = document.createElement("span");
+      cap.className = "cast-moment-cap";
+      cap.textContent = c.moment.label || "";
+      fig.appendChild(cap);
+      btn.appendChild(fig);
+    }
     btn.appendChild(bubble);
     btn.appendChild(name);
     btn.appendChild(who);
@@ -196,6 +222,10 @@
       return bubble && !bubble.hidden ? (bubble.textContent || "") : "";
     },
     stop: stopSpeaking,
+    momentLoaded: function (id) {
+      var card = cardFor(id);
+      return !!(card && card.querySelector("[data-cast-moment] img"));
+    },
     tap: function (id) {
       var c = (data && data.cast || []).filter(function (x) { return x.id === id; })[0];
       var card = cardFor(id);

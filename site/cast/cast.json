@@ -1,5 +1,5 @@
 {
- "_about": "Cast of Yooba Land for the home Meet the people strip. Captions match in-game lines. Media under site/cast/; portraits are SVG stand-ins until GPU art is approved.",
+ "_about": "Cast of Yooba Land for the home Meet the people strip. Captions match in-game lines. Media under site/cast/; portraits are SVG stand-ins until GPU art is approved. Moments: stand-in stills drawn in code, loaded only when a card is opened; swap src for playtest-footage stills/loops when exported.",
  "cast": [
   {
    "id": "yooba",
@@ -8,10 +8,24 @@
    "portrait": "portrait/yooba.svg",
    "react": "bounce",
    "voice": [
-    { "src": "voice/yooba-1.mp3", "caption": "My tummy is making noises." },
-    { "src": "voice/yooba-2.mp3", "caption": "Nom. Nom! NOM." },
-    { "src": "voice/yooba-3.mp3", "caption": "I did a thing!" }
-   ]
+    {
+     "src": "voice/yooba-1.mp3",
+     "caption": "My tummy is making noises."
+    },
+    {
+     "src": "voice/yooba-2.mp3",
+     "caption": "Nom. Nom! NOM."
+    },
+    {
+     "src": "voice/yooba-3.mp3",
+     "caption": "I did a thing!"
+    }
+   ],
+   "moment": {
+    "src": "moment/yooba.svg",
+    "alt": "Yooba on the green, apples all around.",
+    "label": "Yooba, hungry on the green"
+   }
   },
   {
    "id": "pip",
@@ -20,10 +34,24 @@
    "portrait": "portrait/pip.svg",
    "react": "blink",
    "voice": [
-    { "src": "voice/pip-1.mp3", "caption": "Are you new? Are you a farmer? Why are you so small?" },
-    { "src": "voice/pip-2.mp3", "caption": "I'm Pip! I'm small too. Small fits places." },
-    { "src": "voice/pip-3.mp3", "caption": "Apples by the humming stone! Hold E and you can carry one. Or just eat it. I would." }
-   ]
+    {
+     "src": "voice/pip-1.mp3",
+     "caption": "Are you new? Are you a farmer? Why are you so small?"
+    },
+    {
+     "src": "voice/pip-2.mp3",
+     "caption": "I'm Pip! I'm small too. Small fits places."
+    },
+    {
+     "src": "voice/pip-3.mp3",
+     "caption": "Apples by the humming stone! Hold E and you can carry one. Or just eat it. I would."
+    }
+   ],
+   "moment": {
+    "src": "moment/pip.svg",
+    "alt": "Pip by the humming stone with the apples.",
+    "label": "Pip, by the humming stone"
+   }
   },
   {
    "id": "reed",
@@ -32,10 +60,24 @@
    "portrait": "portrait/reed.svg",
    "react": "lean",
    "voice": [
-    { "src": "voice/reed-1.mp3", "caption": "Shh. You'll scare the fish." },
-    { "src": "voice/reed-2.mp3", "caption": "...You want to fish? Everyone wants to fish. Nobody wants to wait." },
-    { "src": "voice/reed-3.mp3", "caption": "Tell Bramley the lake says hello. He'll know." }
-   ]
+    {
+     "src": "voice/reed-1.mp3",
+     "caption": "Shh. You'll scare the fish."
+    },
+    {
+     "src": "voice/reed-2.mp3",
+     "caption": "...You want to fish? Everyone wants to fish. Nobody wants to wait."
+    },
+    {
+     "src": "voice/reed-3.mp3",
+     "caption": "Tell Bramley the lake says hello. He'll know."
+    }
+   ],
+   "moment": {
+    "src": "moment/reed.svg",
+    "alt": "Old Reed on the Glimmer Lake dock, line out.",
+    "label": "Reed, fishing off the dock"
+   }
   },
   {
    "id": "bramley",
@@ -44,10 +86,24 @@
    "portrait": "portrait/bramley.svg",
    "react": "bounce",
    "voice": [
-    { "src": "voice/bramley-1.mp3", "caption": "Well now. Hello down there." },
-    { "src": "voice/bramley-2.mp3", "caption": "Harvest's in and my hands are full. Mind the rows." },
-    { "src": "voice/bramley-3.mp3", "caption": "Well now. A little green helper, right when the harvest's in." }
-   ]
+    {
+     "src": "voice/bramley-1.mp3",
+     "caption": "Well now. Hello down there."
+    },
+    {
+     "src": "voice/bramley-2.mp3",
+     "caption": "Harvest's in and my hands are full. Mind the rows."
+    },
+    {
+     "src": "voice/bramley-3.mp3",
+     "caption": "Well now. A little green helper, right when the harvest's in."
+    }
+   ],
+   "moment": {
+    "src": "moment/bramley.svg",
+    "alt": "Bramley at harvest, hands full.",
+    "label": "Bramley, hands full at harvest"
+   }
   },
   {
    "id": "kelp",
@@ -56,10 +112,24 @@
    "portrait": "portrait/kelp.svg",
    "react": "bounce",
    "voice": [
-    { "src": "voice/kelp-1.mp3", "caption": "AHOY! Mind the ropes, little'un!" },
-    { "src": "voice/kelp-2.mp3", "caption": "AHOY! A storm last night blew the lighthouse lamp clean out!" },
-    { "src": "voice/kelp-3.mp3", "caption": "Hop aboard the Marmalade, end of the landing stage. I'll run you round to the point. HARR!" }
-   ]
+    {
+     "src": "voice/kelp-1.mp3",
+     "caption": "AHOY! Mind the ropes, little'un!"
+    },
+    {
+     "src": "voice/kelp-2.mp3",
+     "caption": "AHOY! A storm last night blew the lighthouse lamp clean out!"
+    },
+    {
+     "src": "voice/kelp-3.mp3",
+     "caption": "Hop aboard the Marmalade, end of the landing stage. I'll run you round to the point. HARR!"
+    }
+   ],
+   "moment": {
+    "src": "moment/kelp.svg",
+    "alt": "Kelp on the Marmalade's deck.",
+    "label": "Kelp on the Marmalade"
+   }
   },
   {
    "id": "wren",
@@ -68,10 +138,24 @@
    "portrait": "portrait/wren.svg",
    "react": "lean",
    "voice": [
-    { "src": "voice/wren-1.mp3", "caption": "Wren here. Skyport's the top of the town's runway. One day I'll fly everyone everywhere." },
-    { "src": "voice/wren-2.mp3", "caption": "Lumen's lamp is lit? Then the sea's safe and so's my sky." },
-    { "src": "voice/wren-3.mp3", "caption": "Frostcap? Hop in. I'll get you to its foot. Not up it: the wind up there eats planes." }
-   ]
+    {
+     "src": "voice/wren-1.mp3",
+     "caption": "Wren here. Skyport's the top of the town's runway. One day I'll fly everyone everywhere."
+    },
+    {
+     "src": "voice/wren-2.mp3",
+     "caption": "Lumen's lamp is lit? Then the sea's safe and so's my sky."
+    },
+    {
+     "src": "voice/wren-3.mp3",
+     "caption": "Frostcap? Hop in. I'll get you to its foot. Not up it: the wind up there eats planes."
+    }
+   ],
+   "moment": {
+    "src": "moment/wren.svg",
+    "alt": "Wren's plane above Frostcap.",
+    "label": "Wren flying past Frostcap"
+   }
   }
  ]
 }
