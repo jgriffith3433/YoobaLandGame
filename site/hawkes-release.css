@@ -1,36 +1,116 @@
-/* What's new on the website: the release list on whatsnew.html and the version under the landing page's Play.
-   The deploy (YoobaWebBuild.InstallReleaseNotes) copies this file to the website's site/ folder; edit it here, in
-   the Unity project, never in the website. */
-.hawkes-release {
-  border-top: 1px solid var(--line, #cfe3d4);
-  padding-top: 1.2rem;
-  margin-top: 1.4rem;
+/* What's new picture cards: release list on whatsnew.html, the home Devlog strip, and the version under Play. */
+
+.hawkes-release-list {
+  display: grid;
+  gap: 1.1rem;
 }
 
-.hawkes-release:first-child { border-top: 0; margin-top: 0; padding-top: 0; }
+.hawkes-release {
+  margin: 0;
+  background: var(--card, #ffffff);
+  border: 3px solid var(--outline, #10281c);
+  border-radius: 22px;
+  box-shadow: 0 6px 0 var(--outline, #10281c);
+  overflow: hidden;
+}
 
-.hawkes-release h3 {
-  display: flex;
+.hawkes-release-toggle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hawkes-release-toggle:focus-visible {
+  outline: 3px solid var(--sun, #ffe56a);
+  outline-offset: -3px;
+}
+
+.hawkes-release-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background:
+    linear-gradient(135deg, rgba(92, 219, 238, 0.55), rgba(137, 206, 0, 0.35)),
+    var(--sky-game, #5cdbee);
+  overflow: hidden;
+  border-bottom: 3px solid var(--outline, #10281c);
+}
+
+.hawkes-release-media img,
+.hawkes-release-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: none;
+}
+
+.hawkes-release-media-empty {
+  min-height: 8rem;
+}
+
+.hawkes-release-head {
+  padding: 0.95rem 1.1rem 1.05rem;
+}
+
+.hawkes-release-chip {
+  display: inline-flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.25rem 0.8rem;
-  margin: 0 0 0.4rem;
-  font-size: 1.45rem;
+  align-items: center;
+  gap: 0.35rem 0.7rem;
+  margin: 0 0 0.35rem;
+  padding: 0.28rem 0.7rem;
+  border: 3px solid var(--outline, #10281c);
+  border-radius: 999px;
+  background: var(--leaf, #effadb);
+  font-family: Nunito, "Segoe UI", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 800;
 }
 
 .hawkes-release-version { color: var(--green, #1f8a45); }
 
 .hawkes-release-date {
-  margin-left: auto;
   color: var(--ink-soft, #3d5a49);
-  font-family: Nunito, "Segoe UI", sans-serif;
-  font-size: 0.92rem;
   font-weight: 700;
 }
 
-.hawkes-release ul { margin: 0; padding-left: 1.2rem; }
+.hawkes-release-title {
+  margin: 0;
+  font-family: Fredoka, "Trebuchet MS", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
 
-.hawkes-release li { font-size: 1.08rem; }
+.hawkes-release-body {
+  display: none;
+  padding: 0 1.1rem 1.2rem;
+}
+
+.hawkes-release.is-open .hawkes-release-body { display: block; }
+
+.hawkes-release-notes {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.hawkes-release-notes li {
+  font-size: 1.05rem;
+  margin: 0.2rem 0;
+}
+
+.hawkes-release-play {
+  display: inline-flex;
+  margin-top: 0.85rem;
+}
 
 .hawkes-release-empty { color: var(--ink-soft, #3d5a49); }
 
@@ -39,3 +119,88 @@
 .hero-version a { color: var(--sun, #ffe56a); text-decoration: none; }
 
 .hero-version a:hover { color: white; text-decoration: underline; }
+
+/* Home / blog: same card shell for static post links */
+.post-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  text-decoration: none;
+  color: inherit;
+  background: var(--card, #ffffff);
+  border: 3px solid var(--outline, #10281c);
+  border-radius: 22px;
+  box-shadow: 0 6px 0 var(--outline, #10281c);
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.post-card:hover {
+  color: inherit;
+  transform: translateY(2px);
+  box-shadow: 0 4px 0 var(--outline, #10281c);
+}
+
+.post-card-media {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-bottom: 3px solid var(--outline, #10281c);
+  background: var(--sky-game, #5cdbee);
+}
+
+.post-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: none;
+}
+
+.post-card-body { padding: 0.95rem 1.1rem 1.15rem; }
+
+.post-card .hawkes-release-chip { margin-bottom: 0.4rem; }
+
+.post-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
+}
+
+.post-card p {
+  margin: 0;
+  color: var(--ink-soft, #3d5a49);
+}
+
+.posts-cards {
+  display: grid;
+  gap: 1.1rem;
+}
+
+@media (min-width: 720px) {
+  .hawkes-release-list.hawkes-release-grid,
+  .posts-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hawkes-release-list.hawkes-release-grid .hawkes-release:first-child,
+  .posts-cards .post-card:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 390px) {
+  .hawkes-release-head,
+  .hawkes-release-body,
+  .post-card-body {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+
+  .hawkes-release-title,
+  .post-card h3 { font-size: 1.2rem; }
+
+  .hawkes-release-notes li,
+  .post-card p { font-size: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-card { transition: none; }
+}

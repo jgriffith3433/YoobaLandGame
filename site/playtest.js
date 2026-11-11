@@ -8,6 +8,9 @@
 //   play-rotate — phone portrait: rotate prompt, then landscape; Tap to play gets the first pointerdown
 //   play-chrome — fullscreen button toggles; the back-to-home link returns to the site home
 //   map         — Explore Yooba Land: pan, zoom, open three place cards; screenshots at desktop and 390 px
+//   cast        — Meet the people: tap three characters, captions + reactions; screenshots at desktop and 390 px
+//   whatsnew    — What's new + home Devlog + blog: picture cards, latest expanded, no empty date promise;
+//                 overflow check at 1280 and 390 px
 //   pages       — every page at 1280 and 390 px: scroll, measure (sideways scroll, tap targets, tiny text, images
 //                 without size, console errors), gallery lightbox by tap. Measures only.
 //   map-alive   — Explore map sound, Road Home journey, idle life
@@ -93,6 +96,13 @@ installPlaytest({
     description: 'Home Explore Yooba Land: scroll to the map, pan and zoom, open three place cards with pictures and Play; ' +
       'screenshots at desktop and at 390 px (bottom sheet). Play href stays ./Game/.',
   }, {
+    id: 'cast',
+    title: 'Cast: tap three characters, captions on desktop and phone',
+    seconds: 75,
+    tags: ['full', 'phone'],
+    description: 'Home Meet the people: tap three cast cards so each shows a caption and a portrait reaction; ' +
+      'a second tap stops speech; a third character cycles a different line; screenshots at desktop and 390 px swipe row.',
+  }, {
     id: 'pages',
     title: 'Every page at 1280 and 390 px: layout, tap targets, text, lightbox',
     seconds: 150,
@@ -115,6 +125,13 @@ installPlaytest({
     tags: ['full', 'phone', 'menus'],
     description: 'Home hero: press Watch the trailer (real click unlocks audio), play with sound, log the first 5 s, ' +
       'on a portrait phone (390x844) use the vertical cut full-screen, then close and confirm scroll and hero stay put.',
+  }, {
+    id: 'whatsnew',
+    title: 'Visual What\'s new cards on desktop and phone',
+    seconds: 90,
+    tags: ['full', 'phone'],
+    description: 'What\'s new picture cards (version/date chip, media, 3-5 notes, newest expanded), home Devlog strip, ' +
+      'blog cards in the same style; no empty live-moment date; overflow check at 1280 and 390 px.',
   }],
 
   async start(id, options, t) {
@@ -131,6 +148,13 @@ installPlaytest({
 
     if (id === 'pages') {
       try { await runPages({ t }); } finally { window.removeEventListener('click', holdPlay, true); }
+      return;
+    }
+
+    if (id === 'whatsnew') {
+      try { await runWhatsNew({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') }); } finally {
+        window.removeEventListener('click', holdPlay, true);
+      }
       return;
     }
 
@@ -153,6 +177,15 @@ installPlaytest({
     if (id === 'map') {
       try {
         await runMapExplore({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') });
+      } finally {
+        window.removeEventListener('click', holdPlay, true);
+      }
+      return;
+    }
+
+    if (id === 'cast') {
+      try {
+        await runCast({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') });
       } finally {
         window.removeEventListener('click', holdPlay, true);
       }
@@ -351,6 +384,259 @@ installPlaytest({
     document.querySelectorAll('iframe[title="Yooba Land (playtest)"], iframe[title="Yooba Land (pages)"]').forEach((f) => f.remove());
   },
 });
+
+async function runWhatsNew({ t, flag, finish }) {
+  const frame = document.createElement('iframe');
+  frame.setAttribute('title', 'Yooba Land (whatsnew)');
+  document.body.appendChild(frame);
+  const setSize = (w, h) => {
+    frame.style.cssText =
+      `position:fixed;left:0;top:0;width:${w}px;height:${h}px;border:0;z-index:2147483000;background:#f7fbf6;`;
+  };
+  const load = async (path, label, w, h) => {
+    setSize(w, h);
+    frame.src = 'about:blank';
+    await t.wait(40);
+    frame.src = BASE + path;
+    await t.until(() => {
+      const d = frame.contentDocument;
+      return d && d.readyState === 'complete' && frame.contentWindow.location.href !== 'about:blank';
+    }, 20000, label);
+    await t.wait(500);
+    return { win: frame.contentWindow, doc: frame.contentDocument };
+  };
+  const overflow = (win, doc, tag) => {
+    const vw = win.innerWidth;
+    if (doc.documentElement.scrollWidth <= vw + 1) {
+      t.event('no-sideways', `${tag}: scrollWidth ${doc.documentElement.scrollWidth} ≤ ${vw}`);
+      return;
+    }
+    let widest = null;
+    let right = vw;
+    for (const el of doc.body ? doc.body.querySelectorAll('*') : []) {
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.right > right) { right = r.right; widest = el; }
+    }
+    flag(`${tag}: sideways scroll, scrollWidth ${doc.documentElement.scrollWidth} > ${vw}; widest ${widest ? nameOf(widest) : '?'}`);
+  };
+  const waitCards = async (doc, min) => {
+    await t.until(() => doc.querySelectorAll('article.hawkes-release').length >= min, 10000, `${min} release cards`);
+  };
+
+  try {
+    t.scene('Whatsnew 1280');
+    let { win, doc } = await load('whatsnew.html', 'whatsnew desktop', 1280, 800);
+    await waitCards(doc, 3);
+    const cards = [...doc.querySelectorAll('article.hawkes-release')];
+    const open = cards.filter((c) => c.classList.contains('is-open'));
+    const withMedia = cards.filter((c) => c.querySelector('.hawkes-release-media img, .hawkes-release-media video'));
+    const chips = cards.filter((c) => c.querySelector('.hawkes-release-chip .hawkes-release-version') && c.querySelector('.hawkes-release-date'));
+    const notes = open[0] ? open[0].querySelectorAll('.hawkes-release-notes li').length : 0;
+    t.metric('releaseCards', cards.length);
+    t.metric('releaseCardsOpen', open.length);
+    t.metric('releaseCardsWithMedia', withMedia.length);
+    t.event('whatsnew-cards', `${cards.length} cards, ${open.length} open, ${withMedia.length} with media, ${chips.length} with version/date chip, open notes ${notes}`);
+    if (!cards.length) flag('What\'s new has no release cards.');
+    if (open.length !== 1 || open[0] !== cards[0]) flag('The newest What\'s new card should be the only one expanded.');
+    if (withMedia.length < cards.length) flag(`Only ${withMedia.length}/${cards.length} release cards have a picture or clip.`);
+    if (chips.length < cards.length) flag('A release card is missing its version/date chip.');
+    if (notes < 1 || notes > 5) flag(`Expanded card shows ${notes} notes (want 1-5).`);
+    win.scrollTo(0, 0);
+    await t.wait(700);
+    t.event('screenshot', 'whatsnew @1280 top');
+    win.scrollTo(0, Math.min(900, doc.documentElement.scrollHeight));
+    await t.wait(700);
+    overflow(win, doc, 'whatsnew @1280');
+    t.progress(0.25);
+
+    t.scene('Whatsnew 390');
+    ({ win, doc } = await load('whatsnew.html', 'whatsnew phone', 390, 844));
+    await waitCards(doc, 3);
+    win.scrollTo(0, 0);
+    await t.wait(800);
+    t.event('screenshot', 'whatsnew @390 top');
+    const phoneCards = doc.querySelectorAll('article.hawkes-release');
+    const phoneOpen = doc.querySelector('article.hawkes-release.is-open');
+    if (phoneOpen) {
+      phoneOpen.querySelector('.hawkes-release-toggle')?.click();
+      await t.wait(300);
+      phoneOpen.querySelector('.hawkes-release-toggle')?.click();
+      await t.wait(400);
+      t.event('card-toggled', 'expanded card toggled on phone');
+    }
+    win.scrollTo(0, Math.min(700, doc.documentElement.scrollHeight));
+    await t.wait(700);
+    overflow(win, doc, 'whatsnew @390');
+    t.metric('phoneCards', phoneCards.length);
+    t.progress(0.5);
+
+    t.scene('Home Devlog');
+    ({ win, doc } = await load('index.html', 'home desktop', 1280, 800));
+    await t.until(() => doc.querySelector('#devlog article.hawkes-release'), 10000, 'home Devlog cards');
+    const live = doc.querySelector('[data-live-moment], .live');
+    const liveText = ((live && live.textContent) || '');
+    if (live) flag('Home still has a next-live-moment block.');
+    if (/will be posted here|date and time will be posted/i.test(doc.body.textContent || '')) {
+      flag('Home still promises a date or event that is not scheduled.');
+    }
+    t.event('no-live-promise', live ? `still present: "${liveText.slice(0, 80)}"` : 'next-live-moment block gone');
+    const homeCards = doc.querySelectorAll('#devlog article.hawkes-release');
+    const homeOpen = doc.querySelectorAll('#devlog article.hawkes-release.is-open');
+    const homeMedia = doc.querySelectorAll('#devlog .hawkes-release-media img, #devlog .hawkes-release-media video');
+    t.event('home-devlog', `${homeCards.length} cards, ${homeOpen.length} open, ${homeMedia.length} media`);
+    if (homeCards.length < 1) flag('Home Devlog has no release cards.');
+    if (homeOpen.length !== 1) flag('Home Devlog should expand only the latest release card.');
+    if (!homeMedia.length) flag('Home Devlog cards have no pictures or clips.');
+    const section = doc.getElementById('devlog');
+    if (section) section.scrollIntoView({ block: 'center' });
+    await t.wait(900);
+    t.event('screenshot', 'home Devlog @1280');
+    overflow(win, doc, 'home @1280');
+    t.progress(0.72);
+
+    t.scene('Home phone');
+    ({ win, doc } = await load('index.html', 'home phone', 390, 844));
+    await t.until(() => doc.querySelector('#devlog article.hawkes-release'), 10000, 'home Devlog phone');
+    const homeDev = doc.getElementById('devlog');
+    if (homeDev) homeDev.scrollIntoView({ block: 'center' });
+    await t.wait(900);
+    t.event('screenshot', 'home Devlog @390');
+    overflow(win, doc, 'home @390');
+    t.progress(0.85);
+
+    t.scene('Blog cards');
+    ({ win, doc } = await load('blog.html', 'blog desktop', 1280, 800));
+    const posts = doc.querySelectorAll('.post-card');
+    const postMedia = doc.querySelectorAll('.post-card-media img');
+    t.event('blog-cards', `${posts.length} post cards, ${postMedia.length} with pictures`);
+    if (posts.length < 3) flag('Blog index should use picture cards for each post.');
+    if (postMedia.length < posts.length) flag('A blog card is missing its picture.');
+    await t.wait(800);
+    t.event('screenshot', 'blog @1280');
+    overflow(win, doc, 'blog @1280');
+    ({ win, doc } = await load('blog.html', 'blog phone', 390, 844));
+    await t.wait(800);
+    overflow(win, doc, 'blog @390');
+    t.progress(1);
+    t.scene('Done');
+    finish(true);
+  } finally {
+    frame.remove();
+  }
+}
+
+async function runCast({ t, flag, finish }) {
+  const section = document.getElementById('characters');
+  if (!section) {
+    flag('Meet the people (#characters) is missing from the home page.');
+    t.scene('Missing');
+    finish(false);
+    return;
+  }
+  t.scene('Cast desktop');
+  section.scrollIntoView({ behavior: 'auto', block: 'center' });
+  await t.until(() => window.yoobaCast && window.yoobaCast.ready(), 15000, 'the cast strip');
+  const cast = window.yoobaCast;
+  const ids = cast.cards();
+  t.event('cast-ready', `cards: ${ids.join(',')}`);
+  if (ids.length < 3) flag(`Cast should list at least 3 characters (got ${ids.length}).`);
+
+  const tapCard = (id) => {
+    const btn = section.querySelector(`.cast-hit[data-cast-id="${id}"]`);
+    if (!btn) return false;
+    // Real pointer so audio unlock works the way a player tap does.
+    const r = btn.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + Math.min(40, r.height / 3);
+    const opts = { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 1, pointerType: 'mouse' };
+    btn.dispatchEvent(new PointerEvent('pointerdown', opts));
+    btn.dispatchEvent(new PointerEvent('pointerup', opts));
+    btn.click();
+    return true;
+  };
+
+  const firstThree = ids.slice(0, 3);
+  const seenCaptions = [];
+  for (let i = 0; i < firstThree.length; i++) {
+    const id = firstThree[i];
+    if (!tapCard(id)) {
+      flag(`No cast button for ${id}.`);
+      continue;
+    }
+    await t.until(() => cast.speakingId() === id && !!cast.caption(), 6000, `${id} caption`).catch(() => {});
+    const caption = cast.caption();
+    const reacting = !!section.querySelector(`.cast-hit[data-cast-id="${id}"] .cast-art.is-react-bounce, .cast-hit[data-cast-id="${id}"] .cast-art.is-react-blink, .cast-hit[data-cast-id="${id}"] .cast-art.is-react-lean, .cast-hit[data-cast-id="${id}"].is-speaking`);
+    t.event('cast-speak', `${id}: "${caption.slice(0, 80)}" react=${reacting ? 'yes' : 'no'}`);
+    if (!caption) flag(`${id} showed no caption bubble.`);
+    if (!reacting) flag(`${id} portrait did not show a speaking/react state.`);
+    seenCaptions.push(caption);
+    t.metric('castSpoken', i + 1);
+    await t.wait(900); // caption on screen for screenshots
+    // Second tap stops speech (criterion: tap again cycles / stop while speaking).
+    if (i === 0) {
+      tapCard(id);
+      await t.wait(200);
+      if (cast.speakingId() === id) flag('Second tap on a speaking card should stop it.');
+      else t.event('cast-stop', `${id} stopped on second tap`);
+      tapCard(id);
+      await t.until(() => cast.speakingId() === id && !!cast.caption(), 6000, `${id} next line`).catch(() => {});
+      const next = cast.caption();
+      t.event('cast-cycle', `${id} next: "${(next || '').slice(0, 80)}"`);
+      if (next && seenCaptions[0] && next === seenCaptions[0] && (cast.cards().length || 1)) {
+        // With 3 lines, random pick never repeats the previous index; same caption only if one line.
+        t.event('cast-cycle-same', 'caption matched previous (allowed only with one line)');
+      }
+      await t.wait(700);
+    }
+    t.progress(0.15 + 0.18 * (i + 1));
+  }
+  t.event('cast-shot-desktop', 'cast strip at desktop width');
+  t.progress(0.75);
+
+  t.scene('Cast phone');
+  document.documentElement.classList.add('cast-force-phone');
+  await t.wait(200);
+  window.dispatchEvent(new Event('resize'));
+  section.scrollIntoView({ behavior: 'auto', block: 'center' });
+  const row = section.querySelector('[data-cast-list]');
+  const scrollX0 = window.scrollX || window.pageXOffset || 0;
+  if (row) {
+    row.scrollLeft = Math.min(120, row.scrollWidth);
+    await t.wait(200);
+    // One-finger swipe along the row
+    const rr = row.getBoundingClientRect();
+    const cx = rr.left + Math.min(120, rr.width / 2);
+    const cy = rr.top + rr.height / 2;
+    row.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: cx, clientY: cy, pointerId: 2, pointerType: 'touch' }));
+    row.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: cx - 80, clientY: cy, pointerId: 2, pointerType: 'touch' }));
+    row.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, clientX: cx - 80, clientY: cy, pointerId: 2, pointerType: 'touch' }));
+    await t.wait(250);
+  }
+  const phoneId = firstThree[1] || firstThree[0];
+  tapCard(phoneId);
+  await t.until(() => cast.speakingId() === phoneId && !!cast.caption(), 6000, 'phone caption').catch(() => {});
+  const phoneCap = cast.caption();
+  const phoneW = Math.round(section.getBoundingClientRect().width);
+  const scrollX1 = window.scrollX || window.pageXOffset || 0;
+  t.metric('castPhoneWidth', phoneW);
+  t.metric('pageScrollX', Math.round(Math.abs(scrollX1 - scrollX0) * 10) / 10);
+  t.event('cast-shot-phone', `390-style width ${phoneW}px, caption "${(phoneCap || '').slice(0, 60)}", page scrollX Δ ${Math.abs(scrollX1 - scrollX0)}`);
+  if (!phoneCap) flag('Phone cast tap showed no caption.');
+  if (Math.abs(scrollX1 - scrollX0) > 2) flag('Swiping the cast row scrolled the page sideways.');
+  // Cards must not be clipped off the forced phone frame
+  const card = section.querySelector('.cast-card');
+  if (card) {
+    const cr = card.getBoundingClientRect();
+    const sr = section.getBoundingClientRect();
+    if (cr.right < sr.left + 8 || cr.left > sr.right - 8) flag('A cast card sits outside the phone frame.');
+  }
+  await t.wait(1100);
+  document.documentElement.classList.remove('cast-force-phone');
+  cast.stop();
+  t.progress(1);
+  t.scene('Done');
+  finish(true);
+}
 
 async function runMapExplore({ t, flag, finish }) {
   const section = document.getElementById('explore');

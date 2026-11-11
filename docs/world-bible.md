@@ -63,8 +63,14 @@ Yooba Land is a warm, bright, hand-crafted island-and-reach world (`x` from `-90
 - **Piper**: A whistling goatherd in the Whistling Hills (`[-400, 100]`) whose goats climb the Whistle Rocks whenever the wind changes key.
 - **Sir Tin**: A polite, slightly squeaky tin-armored knight guarding the drawbridge of Crumblecrown Castle (`[-500, 742]`).
 - **Fern**: The lantern-keeper of Mistwood's Treehouse Village (`[100, 700]`) who guides travellers between the Oldest Tree and Glowcap Grove.
-- **Captain Salt & Lumen**: The sea dog at Sugarsand Port (`[700, -300]`) and the keeper of Lumen Lighthouse (`[1000, -50]`) who watches the tide and the Skyport winds.
+- **Kelp**: The loud, friendly sea captain of the *Marmalade* at Sugarsand Port (`[700, -300]`). Older notes called him Captain Salt; the game and site cast use **Kelp**. He hollers about ropes, storms, and ferrying travellers round the point.
+- **Lumen**: The keeper of Lumen Lighthouse (`[1000, -50]`) who watches the tide and the Skyport winds.
+- **Wren**: The Skyport pilot on the high plateau (`[718, 352]`) who means to fly everyone everywhere — and will drop you at Frostcap's foot, but not up it (the wind up there eats planes).
 - **Old Hush**: The soft-spoken caretaker on Frostcap Peak (`[500, 650]`) who sweeps snow from the steps to the Beacon Bell.
+
+### Home page cast (site)
+
+The home **Meet the people** strip (`#characters`) is driven by `site/cast/cast.json`: Yooba, Pip (the other Yooba), Old Reed, Bramley, Kelp, and Wren. Each card plays cycling voice lines with a caption bubble; portraits react with a per-character CSS motion (bounce, blink, or lean).
 
 ## What happens
 
@@ -77,6 +83,10 @@ Yooba Land is a warm, bright, hand-crafted island-and-reach world (`x` from `-90
 
 The website hero plays a short cut of real Glass Garden → street → Yooba Town square play (`docs/trailer.md`). It opens on eating and growing — the same core verb as the Road Home — then walks Yooba into town. Music and voices are the game's own. No new lore: the trailer only shows beats already true in this bible.
 
+## Site: What's new cards
+
+The website's What's new / Devlog cards retell each release in player voice (chip, picture or muted clip, up to five lines). They point at the same Road Home places the bible names (Glass Garden, Yooba Town market, The Gust, Licorice Reach's Dark Bell) rather than inventing new locales. When a card has a Play link it opens the browser game; it does not teleport to a chapter.
+
 ## Story beats
 
 1. **The Gust and the Glass Garden (`main-1-1`, Yooba Town)**: Dropped from the swirling Gust into the Glass Garden, Yooba nudges through the one cracked pane, meets the other Yoobas in Yooba Town Square, and hears from Mayor Plump how the Road Home leads up to the Sky Whale.
@@ -84,6 +94,6 @@ The website hero plays a short cut of real Glass Garden → street → Yooba Tow
 3. **The Whistling Hills (`main-3-1`, Whistling Hills)**: Climbing west along Whistle Brook and Bramble Brook, Yooba helps Piper gather stray goats among the Whistle Rocks and explores the Whispering Forest, Bramble Thicket, and Windy Hilltop.
 4. **The Crown on the Hill (`main-4-1`, Crumblecrown Castle)**: Across the drawbridge of Crumblecrown Castle, Yooba helps Sir Tin oil the ancient gears and climbs into Boulder Canyon to see the Stacked Spire.
 5. **Lanterns in the Mist (`main-5-1`, Mistwood Forest)**: Following Fern's paper lanterns through the northern redwoods and Glowcap Grove, Yooba relights the path to the Oldest Tree.
-6. **The Lighthouse and the Sky (`main-6-1`, Sugarsand Coast)**: Down on the eastern shore, Yooba helps Captain Salt and Lumen relight the coastal beacon, then climbs past the Mossy Ruins and Flower Meadow to the Skyport cliffs.
+6. **The Lighthouse and the Sky (`main-6-1`, Sugarsand Coast)**: Down on the eastern shore, Yooba helps Kelp and Lumen relight the coastal beacon, then climbs past the Mossy Ruins and Flower Meadow to Wren at the Skyport cliffs.
 7. **The Way Home (`main-7-1`, Frostcap Peak)**: Guided by Old Hush above Icing Lake, Yooba climbs the snowy switchbacks of Frostcap Peak and rings the Beacon Bell to summon the Sky Whale.
 8. **The Eighth Orb (`main-8-1`, Licorice Reach)**: Before departing—or as a twilight postscript across the Pale Pier—Yooba crosses the always-dusk peninsula of Licorice Reach past the Ink Pool to Bell Hill, where the Dark Bell and the final eighth orb wait.

@@ -1,0 +1,5 @@
+- canon: Kelp — Sugarsand sea captain of the Marmalade; older site notes called him Captain Salt; home cast and game lines use Kelp.
+- canon: Wren — Skyport pilot who flies travellers (Frostcap foot only); home cast member with three voice lines.
+- convention: home cast — `#characters[data-cast]` filled by `site/cast.js` from `site/cast/cast.json`; playtest uses `window.yoobaCast` and scenario id `cast`.
+- lesson: Gen voice import — `studio_gen_import` timed out over HTTP MCP; signed `hawkesgen_job` file URLs download with curl into `site/cast/voice/`.
+- lesson: Gen project id — library/voice jobs need `org_eb0d5c82e8da8c2d.yoobaland` (plain `yoobaland` is denied on this MCP).

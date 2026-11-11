@@ -7,6 +7,7 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease;
 }
 .card:hover, .cast-card:hover, .devlog li:hover { transform: translateY(-3px); box-shadow: 0 9px 0 var(--outline); }
+.cast-hit:hover .cast-art img, .cast-hit:hover .cast-art svg { transform: scale(1.06); }
 .gallery figure:hover { transform: translateY(-3px); }
 .gallery .shot img { transition: transform 0.35s ease; }
 .gallery .shot:hover img { transform: scale(1.04); }
@@ -17,12 +18,27 @@
 .play-icon { transition: transform 0.18s ease; }
 .post-link:hover h3 { color: var(--green); }
 
+/* Idle life on the cast row: soft bob so the strip breathes before a tap (skipped while a react class is on) */
+.motion .cast-art:not(.is-react-bounce):not(.is-react-blink):not(.is-react-lean) {
+  animation: cast-idle 3.6s ease-in-out infinite;
+}
+.motion .cast-card:nth-child(2) .cast-art:not(.is-react-bounce):not(.is-react-blink):not(.is-react-lean) { animation-delay: 0.35s; }
+.motion .cast-card:nth-child(3) .cast-art:not(.is-react-bounce):not(.is-react-blink):not(.is-react-lean) { animation-delay: 0.7s; }
+.motion .cast-card:nth-child(4) .cast-art:not(.is-react-bounce):not(.is-react-blink):not(.is-react-lean) { animation-delay: 1.05s; }
+.motion .cast-card:nth-child(5) .cast-art:not(.is-react-bounce):not(.is-react-blink):not(.is-react-lean) { animation-delay: 1.4s; }
+.motion .cast-card:nth-child(6) .cast-art:not(.is-react-bounce):not(.is-react-blink):not(.is-react-lean) { animation-delay: 1.75s; }
+@keyframes cast-idle {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -4px, 0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .play, .post-link, .card, .cast-card, .devlog li, .gallery figure, .brand, .menu a,
   .gallery .shot img, .cast-art img, .cast-art svg, .play-icon { transition: none; }
   .card:hover, .cast-card:hover, .devlog li:hover, .gallery figure:hover,
   .gallery .shot:hover img, .cast-card:hover .cast-art img, .cast-card:hover .cast-art svg,
   .play:hover .play-icon { transform: none; }
+  .motion .cast-art { animation: none; }
 }
 
 /* Hero parallax: motion.js sets --hero-y (px scrolled while the hero is on screen). Each layer moves a different
