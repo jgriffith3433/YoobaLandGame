@@ -4,13 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>What's new — Yooba Land</title>
-  <meta name="description" content="What changed in Yooba Land, newest first.">
+  <meta name="description" content="What changed in Yooba Land, newest first: picture cards from each release.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./site/site.css">
   <link rel="stylesheet" href="./site/hawkes-credits.css">
   <link rel="stylesheet" href="./site/hawkes-release.css">
+  <!-- Hawkes Analytics, the only analytics on this site: anonymous statistics, no cookies (hawkesgen docs/analytics.md) -->
+  <script src="https://hawkesgen.ai/sdk/analytics@1.js" data-product="yoobaland" data-hawkes-analytics="page" defer></script>
 </head>
 <body>
   <!-- This page is installed by the deploy (YoobaWebBuild.InstallReleaseNotes) from YoobaLand/Tools/Web; edit it there -->
@@ -30,12 +32,12 @@
     <div class="page-hero-inner">
       <p class="kicker">What's new</p>
       <h1>What changed on the walk.</h1>
-      <p>Newest first. <span data-hawkes-version data-prefix="Now: v" hidden></span></p>
+      <p>Picture cards, newest first. Tap a card for the notes. <span data-hawkes-version data-prefix="Now: v" hidden></span></p>
     </div>
   </header>
 
-  <main class="article">
-    <div data-hawkes-releases><p class="hawkes-release-empty">Chewing&hellip;</p></div>
+  <main class="article article-wide">
+    <div class="hawkes-release-list hawkes-release-grid" data-hawkes-releases data-expand="first"><p class="hawkes-release-empty">Chewing&hellip;</p></div>
   </main>
 
   <footer class="site-footer">

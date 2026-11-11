@@ -8,6 +8,8 @@
 //   play-rotate — phone portrait: rotate prompt, then landscape; Tap to play gets the first pointerdown
 //   play-chrome — fullscreen button toggles; the back-to-home link returns to the site home
 //   map         — Explore Yooba Land: pan, zoom, open three place cards; screenshots at desktop and 390 px
+//   whatsnew    — What's new + home Devlog + blog: picture cards, latest expanded, no empty date promise;
+//                 overflow check at 1280 and 390 px
 //   pages       — every page at 1280 and 390 px: scroll, measure (sideways scroll, tap targets, tiny text, images
 //                 without size, console errors), gallery lightbox by tap. Measures only.
 // The contract registers on every page (each page loads this file when a bot drives it); paths resolve from BASE.
@@ -106,6 +108,13 @@ installPlaytest({
     tags: ['full'],
     description: 'Home Explore map: turn sound on, open two places (ambience crossfades), watch the idle life, ' +
       'run Follow the Road Home through chapters 1-8, and skip a second run.',
+  }, {
+    id: 'whatsnew',
+    title: 'Visual What\'s new cards on desktop and phone',
+    seconds: 90,
+    tags: ['full', 'phone'],
+    description: 'What\'s new picture cards (version/date chip, media, 3-5 notes, newest expanded), home Devlog strip, ' +
+      'blog cards in the same style; no empty live-moment date; overflow check at 1280 and 390 px.',
   }],
 
   async start(id, options, t) {
@@ -122,6 +131,13 @@ installPlaytest({
 
     if (id === 'pages') {
       try { await runPages({ t }); } finally { window.removeEventListener('click', holdPlay, true); }
+      return;
+    }
+
+    if (id === 'whatsnew') {
+      try { await runWhatsNew({ t, flag, finish: (ok) => t.finish(ok && !bad ? 'won' : 'lost') }); } finally {
+        window.removeEventListener('click', holdPlay, true);
+      }
       return;
     }
 
@@ -333,6 +349,146 @@ installPlaytest({
     document.querySelectorAll('iframe[title="Yooba Land (playtest)"], iframe[title="Yooba Land (pages)"]').forEach((f) => f.remove());
   },
 });
+
+async function runWhatsNew({ t, flag, finish }) {
+  const frame = document.createElement('iframe');
+  frame.setAttribute('title', 'Yooba Land (whatsnew)');
+  document.body.appendChild(frame);
+  const setSize = (w, h) => {
+    frame.style.cssText =
+      `position:fixed;left:0;top:0;width:${w}px;height:${h}px;border:0;z-index:2147483000;background:#f7fbf6;`;
+  };
+  const load = async (path, label, w, h) => {
+    setSize(w, h);
+    frame.src = 'about:blank';
+    await t.wait(40);
+    frame.src = BASE + path;
+    await t.until(() => {
+      const d = frame.contentDocument;
+      return d && d.readyState === 'complete' && frame.contentWindow.location.href !== 'about:blank';
+    }, 20000, label);
+    await t.wait(500);
+    return { win: frame.contentWindow, doc: frame.contentDocument };
+  };
+  const overflow = (win, doc, tag) => {
+    const vw = win.innerWidth;
+    if (doc.documentElement.scrollWidth <= vw + 1) {
+      t.event('no-sideways', `${tag}: scrollWidth ${doc.documentElement.scrollWidth} ≤ ${vw}`);
+      return;
+    }
+    let widest = null;
+    let right = vw;
+    for (const el of doc.body ? doc.body.querySelectorAll('*') : []) {
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.right > right) { right = r.right; widest = el; }
+    }
+    flag(`${tag}: sideways scroll, scrollWidth ${doc.documentElement.scrollWidth} > ${vw}; widest ${widest ? nameOf(widest) : '?'}`);
+  };
+  const waitCards = async (doc, min) => {
+    await t.until(() => doc.querySelectorAll('article.hawkes-release').length >= min, 10000, `${min} release cards`);
+  };
+
+  try {
+    t.scene('Whatsnew 1280');
+    let { win, doc } = await load('whatsnew.html', 'whatsnew desktop', 1280, 800);
+    await waitCards(doc, 3);
+    const cards = [...doc.querySelectorAll('article.hawkes-release')];
+    const open = cards.filter((c) => c.classList.contains('is-open'));
+    const withMedia = cards.filter((c) => c.querySelector('.hawkes-release-media img, .hawkes-release-media video'));
+    const chips = cards.filter((c) => c.querySelector('.hawkes-release-chip .hawkes-release-version') && c.querySelector('.hawkes-release-date'));
+    const notes = open[0] ? open[0].querySelectorAll('.hawkes-release-notes li').length : 0;
+    t.metric('releaseCards', cards.length);
+    t.metric('releaseCardsOpen', open.length);
+    t.metric('releaseCardsWithMedia', withMedia.length);
+    t.event('whatsnew-cards', `${cards.length} cards, ${open.length} open, ${withMedia.length} with media, ${chips.length} with version/date chip, open notes ${notes}`);
+    if (!cards.length) flag('What\'s new has no release cards.');
+    if (open.length !== 1 || open[0] !== cards[0]) flag('The newest What\'s new card should be the only one expanded.');
+    if (withMedia.length < cards.length) flag(`Only ${withMedia.length}/${cards.length} release cards have a picture or clip.`);
+    if (chips.length < cards.length) flag('A release card is missing its version/date chip.');
+    if (notes < 1 || notes > 5) flag(`Expanded card shows ${notes} notes (want 1-5).`);
+    win.scrollTo(0, 0);
+    await t.wait(700);
+    t.event('screenshot', 'whatsnew @1280 top');
+    win.scrollTo(0, Math.min(900, doc.documentElement.scrollHeight));
+    await t.wait(700);
+    overflow(win, doc, 'whatsnew @1280');
+    t.progress(0.25);
+
+    t.scene('Whatsnew 390');
+    ({ win, doc } = await load('whatsnew.html', 'whatsnew phone', 390, 844));
+    await waitCards(doc, 3);
+    win.scrollTo(0, 0);
+    await t.wait(800);
+    t.event('screenshot', 'whatsnew @390 top');
+    const phoneCards = doc.querySelectorAll('article.hawkes-release');
+    const phoneOpen = doc.querySelector('article.hawkes-release.is-open');
+    if (phoneOpen) {
+      phoneOpen.querySelector('.hawkes-release-toggle')?.click();
+      await t.wait(300);
+      phoneOpen.querySelector('.hawkes-release-toggle')?.click();
+      await t.wait(400);
+      t.event('card-toggled', 'expanded card toggled on phone');
+    }
+    win.scrollTo(0, Math.min(700, doc.documentElement.scrollHeight));
+    await t.wait(700);
+    overflow(win, doc, 'whatsnew @390');
+    t.metric('phoneCards', phoneCards.length);
+    t.progress(0.5);
+
+    t.scene('Home Devlog');
+    ({ win, doc } = await load('index.html', 'home desktop', 1280, 800));
+    await t.until(() => doc.querySelector('#devlog article.hawkes-release'), 10000, 'home Devlog cards');
+    const live = doc.querySelector('[data-live-moment], .live');
+    const liveText = ((live && live.textContent) || '');
+    if (live) flag('Home still has a next-live-moment block.');
+    if (/will be posted here|date and time will be posted/i.test(doc.body.textContent || '')) {
+      flag('Home still promises a date or event that is not scheduled.');
+    }
+    t.event('no-live-promise', live ? `still present: "${liveText.slice(0, 80)}"` : 'next-live-moment block gone');
+    const homeCards = doc.querySelectorAll('#devlog article.hawkes-release');
+    const homeOpen = doc.querySelectorAll('#devlog article.hawkes-release.is-open');
+    const homeMedia = doc.querySelectorAll('#devlog .hawkes-release-media img, #devlog .hawkes-release-media video');
+    t.event('home-devlog', `${homeCards.length} cards, ${homeOpen.length} open, ${homeMedia.length} media`);
+    if (homeCards.length < 1) flag('Home Devlog has no release cards.');
+    if (homeOpen.length !== 1) flag('Home Devlog should expand only the latest release card.');
+    if (!homeMedia.length) flag('Home Devlog cards have no pictures or clips.');
+    const section = doc.getElementById('devlog');
+    if (section) section.scrollIntoView({ block: 'center' });
+    await t.wait(900);
+    t.event('screenshot', 'home Devlog @1280');
+    overflow(win, doc, 'home @1280');
+    t.progress(0.72);
+
+    t.scene('Home phone');
+    ({ win, doc } = await load('index.html', 'home phone', 390, 844));
+    await t.until(() => doc.querySelector('#devlog article.hawkes-release'), 10000, 'home Devlog phone');
+    const homeDev = doc.getElementById('devlog');
+    if (homeDev) homeDev.scrollIntoView({ block: 'center' });
+    await t.wait(900);
+    t.event('screenshot', 'home Devlog @390');
+    overflow(win, doc, 'home @390');
+    t.progress(0.85);
+
+    t.scene('Blog cards');
+    ({ win, doc } = await load('blog.html', 'blog desktop', 1280, 800));
+    const posts = doc.querySelectorAll('.post-card');
+    const postMedia = doc.querySelectorAll('.post-card-media img');
+    t.event('blog-cards', `${posts.length} post cards, ${postMedia.length} with pictures`);
+    if (posts.length < 3) flag('Blog index should use picture cards for each post.');
+    if (postMedia.length < posts.length) flag('A blog card is missing its picture.');
+    await t.wait(800);
+    t.event('screenshot', 'blog @1280');
+    overflow(win, doc, 'blog @1280');
+    ({ win, doc } = await load('blog.html', 'blog phone', 390, 844));
+    await t.wait(800);
+    overflow(win, doc, 'blog @390');
+    t.progress(1);
+    t.scene('Done');
+    finish(true);
+  } finally {
+    frame.remove();
+  }
+}
 
 async function runMapExplore({ t, flag, finish }) {
   const section = document.getElementById('explore');
