@@ -23,7 +23,8 @@
   <meta name="twitter:image" content="https://yoobalandgame.com/images/og-card.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet"></noscript>
   <link rel="stylesheet" href="./site/site.css">
   <link rel="stylesheet" href="./site/motion.css">
   <link rel="stylesheet" href="./site/hawkes-credits.css">
@@ -48,7 +49,7 @@
   <section class="hero">
     <!-- In-game frame (store/screenshot5): the same picture is the game page's Tap to play screen -->
     <!-- Gameplay loop (muted, from a playtest recording); the poster is its first frame -->
-    <video class="hero-photo" data-hero-loop autoplay muted loop playsinline preload="auto" disablepictureinpicture poster="./images/hero-loop.jpg" aria-hidden="true"><source src="./images/hero-loop.mp4" type="video/mp4"></video><script>(function(){var v=document.querySelector('[data-hero-loop]');if(v&&window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause();}})();</script>
+    <video class="hero-photo" data-hero-loop autoplay muted loop playsinline preload="metadata" disablepictureinpicture poster="./images/hero-loop.jpg" aria-hidden="true"><source src="./images/hero-loop.mp4" type="video/mp4"></video><script>(function(){var v=document.querySelector('[data-hero-loop]');if(v&&window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause();}})();</script>
     <div class="hero-panel">
       <div class="hero-copy">
         <p class="kicker">A 3D game in your browser</p>
