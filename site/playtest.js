@@ -677,8 +677,11 @@ async function runMapExplore({ t, flag, finish }) {
     }
   };
   dispatchPtr('pointerdown', cx, cy);
-  dispatchPtr('pointermove', cx - 70, cy + 40);
-  dispatchPtr('pointerup', cx - 70, cy + 40);
+  for (let k = 1; k <= 8; k++) { // a drag is many small moves, like a finger
+    dispatchPtr('pointermove', cx - 9 * k, cy + 5 * k);
+    await t.wait(16);
+  }
+  dispatchPtr('pointerup', cx - 72, cy + 40);
   await t.wait(200);
   const afterPan = window.yoobaExplore.getTransform();
   const panDist = Math.hypot(afterPan.x - before.x, afterPan.y - before.y);
@@ -769,14 +772,23 @@ async function runMapExplore({ t, flag, finish }) {
   const pvr = viewport.getBoundingClientRect();
   const pcx = pvr.left + pvr.width / 2;
   const pcy = pvr.top + Math.min(120, pvr.height / 3);
+  const phoneBefore = window.yoobaExplore.getTransform();
   dispatchPtr('pointerdown', pcx, pcy);
-  dispatchPtr('pointermove', pcx + 55, pcy);
-  dispatchPtr('pointerup', pcx + 55, pcy);
+  for (let k = 1; k <= 6; k++) { dispatchPtr('pointermove', pcx + 9 * k, pcy); await t.wait(16); }
+  dispatchPtr('pointerup', pcx + 54, pcy);
   await t.wait(200);
+  const phoneAfter = window.yoobaExplore.getTransform();
+  const phonePan = Math.hypot(phoneAfter.x - phoneBefore.x, phoneAfter.y - phoneBefore.y);
+  t.metric('mapPhonePanPx', px(phonePan));
+  t.event('map-phone-drag', `phone one-finger drag moved the map ~${px(phonePan)}px`);
+  if (phonePan < 8) flag('One-finger drag on the phone-sized map did not move it.');
   const scrollX1 = window.scrollX || window.pageXOffset || 0;
   t.metric('pageScrollX', px(Math.abs(scrollX1 - scrollX0)));
   t.event('map-phone-pan', `page scrollX delta ${px(Math.abs(scrollX1 - scrollX0))}`);
   if (Math.abs(scrollX1 - scrollX0) > 2) flag('Panning the map scrolled the page sideways.');
+  const overflowX = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+  t.metric('pageOverflowX', overflowX);
+  if (overflowX > 2) flag(`The page is ${overflowX}px wider than the screen (sideways scroll).`);
   await t.wait(1200); // phone card on screen for screenshots
   document.documentElement.classList.remove('explore-force-phone');
   t.progress(1);

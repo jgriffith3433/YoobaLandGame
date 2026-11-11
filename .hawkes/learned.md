@@ -1,0 +1,1 @@
+- lesson: Explore map pan clamp — clamping the map to the frame when it "fits" made the fit start view undraggable (0 px pan); keep a minimum visible fraction instead, and check pan from the start view in the `map` scenario.
