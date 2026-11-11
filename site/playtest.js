@@ -1569,7 +1569,8 @@ async function runPages({ t }) {
   const frame = document.createElement('iframe');
   frame.setAttribute('title', 'Yooba Land (pages)');
   document.body.appendChild(frame);
-  const setSize = (w, h) => { frame.style.cssText = `position:fixed;left:0;top:0;width:${w}px;height:${h}px;border:0;z-index:2147483000;background:#fff;`; };
+  // Paper colour (not #fff): a slow iframe navigate must not flash pure white behind the page.
+  const setSize = (w, h) => { frame.style.cssText = `position:fixed;left:0;top:0;width:${w}px;height:${h}px;border:0;z-index:2147483000;background:#f7fbf6;`; };
   const total = PAGES.length * SIZES.length;
   let done = 0;
   const totals = { overflow: 0, tiny: 0, small: 0, noDims: 0, errors: 0 };

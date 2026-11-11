@@ -41,6 +41,7 @@
     var(--sky-game, #5cdbee);
   overflow: hidden;
   border-bottom: 3px solid var(--outline, #10281c);
+  cursor: pointer;
 }
 
 .hawkes-release-media img,
