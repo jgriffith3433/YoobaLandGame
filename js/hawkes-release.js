@@ -1,6 +1,7 @@
 // Hawkes release notes on a product site: the version label and the visual "What's new" cards, from the site's
 // releases.json (written by Hawkes Studio at every go live: hawkesstudio/src/releases.ts). Extended here for Yooba Land's
-// picture cards (optional image / clip / alt on each release). A fork of hawkesstudio/clients/web/hawkes-release.js.
+// picture cards (image / alt on each release; clip may be stored but is not autoplayed). A fork of
+// hawkesstudio/clients/web/hawkes-release.js.
 //
 //   <script src="js/hawkes-release.js" data-releases="releases.json" defer></script>
 //
@@ -34,43 +35,14 @@
     if (/^(https?:|data:|\/)/i.test(path)) return path;
     return base + path.replace(/^\.\//, '');
   }
+  // Still image only in the card grid. Autoplaying a muted loop (and nesting <video> inside the
+  // expand <button>) froze the pages playtest tab on software rendering: white frame, then
+  // "page stopped answering for a minute". Clip paths stay in releases.json for later use.
   function mediaFor(r) {
     var wrap = el('div', 'hawkes-release-media');
     var imgPath = resolve(r.image);
-    var clipPath = resolve(r.clip);
     var alt = r.alt || ('Yooba Land ' + (r.version ? 'v' + r.version : 'release'));
-    if (clipPath) {
-      var v = document.createElement('video');
-      v.className = 'hawkes-release-clip';
-      v.setAttribute('muted', '');
-      v.muted = true;
-      v.setAttribute('playsinline', '');
-      v.setAttribute('loop', '');
-      v.setAttribute('preload', 'metadata');
-      v.setAttribute('aria-label', alt);
-      if (imgPath) v.setAttribute('poster', imgPath);
-      var source = document.createElement('source');
-      source.src = clipPath;
-      source.type = 'video/mp4';
-      v.appendChild(source);
-      if (imgPath) {
-        var fallback = document.createElement('img');
-        fallback.src = imgPath;
-        fallback.alt = alt;
-        fallback.width = 1280;
-        fallback.height = 720;
-        fallback.loading = 'lazy';
-        fallback.decoding = 'async';
-        v.appendChild(fallback);
-      }
-      wrap.appendChild(v);
-      if (!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) {
-        v.setAttribute('autoplay', '');
-        var play = function () { v.play().catch(function () {}); };
-        if (v.readyState >= 2) play();
-        else v.addEventListener('loadeddata', play, { once: true });
-      }
-    } else if (imgPath) {
+    if (imgPath) {
       var img = document.createElement('img');
       img.src = imgPath;
       img.alt = alt;
@@ -99,10 +71,14 @@
     head.appendChild(chip);
     if (r.title) head.appendChild(el('h3', 'hawkes-release-title', r.title));
 
+    // Media sits beside the toggle, not inside it: <video>/<img> inside <button> is invalid HTML
+    // and was part of the hang on What's new.
+    var media = mediaFor(r);
+    sec.appendChild(media);
+
     var toggle = el('button', 'hawkes-release-toggle');
     toggle.type = 'button';
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    toggle.appendChild(mediaFor(r));
     toggle.appendChild(head);
     sec.appendChild(toggle);
 
@@ -118,10 +94,15 @@
     body.appendChild(play);
     sec.appendChild(body);
 
-    toggle.addEventListener('click', function () {
-      var next = !sec.classList.contains('is-open');
+    function setOpen(next) {
       sec.classList.toggle('is-open', next);
       toggle.setAttribute('aria-expanded', next ? 'true' : 'false');
+    }
+    toggle.addEventListener('click', function () {
+      setOpen(!sec.classList.contains('is-open'));
+    });
+    media.addEventListener('click', function () {
+      setOpen(!sec.classList.contains('is-open'));
     });
     return sec;
   }
