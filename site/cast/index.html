@@ -8,12 +8,13 @@ body{margin:0;font-family:'Patrick Hand','Comic Sans MS',cursive,sans-serif;back
 main{max-width:900px;margin:0 auto;padding:12px}
 .c{background:#fff;border-radius:12px;padding:10px;margin:10px 0;display:flex;gap:12px;flex-wrap:wrap}
 .c img.p{width:128px;height:128px;border-radius:8px;object-fit:cover}
-.c h2{margin:0}.f{display:flex;gap:6px;width:100%;overflow-x:auto}.f img{height:90px;border-radius:6px}
+.c h2{margin:0}
 button{font:inherit;margin:2px 0;display:block;text-align:left}
 a{color:#7a2f22}
 </style></head><body><main>
 <p><a href="../../">&larr; Home</a></p>
 <h1>Cast of Yooba Land</h1>
+<p>Prefer the home page Meet the people strip — tap a portrait there. This page lists every line.</p>
 <div id="cast"></div>
 </main>
 <script>
@@ -24,15 +25,12 @@ a{color:#7a2f22}
     var img = new Image(); img.className = "p"; img.loading = "lazy"; img.alt = c.name; img.src = c.portrait; s.appendChild(img);
     var box = document.createElement("div"), h = document.createElement("h2"), p = document.createElement("p");
     h.textContent = c.name; p.textContent = c.who; box.append(h, p);
-    c.voice.forEach(function (v) {
+    (c.voice || []).forEach(function (v) {
       var b = document.createElement("button"); b.type = "button"; b.textContent = "\u25B6 \u201C" + v.caption + "\u201D";
       b.addEventListener("click", function () { if (audio) audio.pause(); audio = new Audio(v.src); audio.play().catch(function () {}); });
       box.appendChild(b);
     });
-    s.appendChild(box);
-    var f = document.createElement("div"); f.className = "f";
-    c.moment.frames.forEach(function (u) { var i = new Image(); i.loading = "lazy"; i.alt = c.name + " moment"; i.src = u; f.appendChild(i); });
-    s.appendChild(f); root.appendChild(s);
+    s.appendChild(box); root.appendChild(s);
   });
 })();
 </script></body></html>
