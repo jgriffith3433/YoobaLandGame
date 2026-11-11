@@ -49,6 +49,17 @@
       var down = clampTransform(tx, ty + 1e5, scale);
       return { x: Math.abs(right.x - left.x), y: Math.abs(down.y - up.y) };
     },
+    // Room to drag in each direction from the current pose (px): a card centres its pin, which can leave the
+    // map pinned against one edge, so a scripted drag has to pick the side that has room.
+    panRoom: function () {
+      return {
+        left: tx - clampTransform(tx - 1e5, ty, scale).x,
+        right: clampTransform(tx + 1e5, ty, scale).x - tx,
+        up: ty - clampTransform(tx, ty - 1e5, scale).y,
+        down: clampTransform(tx, ty + 1e5, scale).y - ty,
+        moving: !!anim,
+      };
+    },
     getOpenId: function () { return openId; },
     soundOn: function () { return soundOn; },
     audioState: function () {
