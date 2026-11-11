@@ -31,4 +31,5 @@ helpers copied from hawkesstudio `clients/web`). It loads only when a bot drives
 - `play-rotate` (phone): portrait rotate prompt, then landscape, then Tap to play gets the first pointerdown
 - `play-chrome`: fullscreen button toggles; the Home link returns to the site home
 - `map`: Explore Yooba Land on the home page — pan, zoom, open three place cards; screenshots at desktop and 390 px
+- `whatsnew`: What's new + home Devlog + blog picture cards; newest expanded; no empty live-moment date; 1280 and 390 px
 The game page itself has no contract of its own: the Unity game's bridge registers `smoke`, `explore` and `full` there.

@@ -319,6 +319,10 @@ h1, h2, h3, .brand, .play, .kicker {
   margin: 0 auto;
 }
 
+.article-wide {
+  width: min(920px, 100%);
+}
+
 .page-hero h1 {
   margin: 0.2rem 0 0.4rem;
   font-size: clamp(2.2rem, 5vw, 3.4rem);
@@ -479,21 +483,6 @@ button.play, .contact-form button {
 
 .gallery figcaption { padding: 0.7rem 1rem 0.9rem; color: var(--ink-soft); font-weight: 700; }
 
-.live {
-  background:
-    linear-gradient(90deg, rgba(16, 40, 28, 0.94) 35%, rgba(16, 40, 28, 0.55)),
-    var(--green-deep) url("../images/shot-orchard.jpg") center 35% / cover no-repeat;
-  color: white;
-  border: 3px solid var(--outline);
-  border-radius: 22px;
-  box-shadow: 0 6px 0 var(--outline);
-  padding: 1.6rem 1.6rem 1.8rem;
-}
-
-.live h2 { margin: 0.2rem 0 0.4rem; }
-
-.live p { max-width: 40rem; }
-
 @media (max-width: 800px) {
   .gallery { grid-template-columns: 1fr; }
 }
@@ -554,12 +543,7 @@ button.play, .contact-form button {
 .lightbox .lb-prev { left: 0.6rem; top: 50%; }
 .lightbox .lb-next { right: 0.6rem; top: 50%; }
 
-.devlog { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-.devlog li { background: var(--card); border: 3px solid var(--outline); border-radius: 22px; box-shadow: 0 6px 0 var(--outline); padding: 1.1rem 1.2rem 1.3rem; }
-.devlog time { color: var(--ink-soft); font-weight: 700; font-size: 0.9rem; }
-.devlog h3 { margin: 0.2rem 0 0.4rem; }
-.devlog p { margin: 0; }
-@media (max-width: 800px) { .devlog { grid-template-columns: 1fr; } }
+#devlog .hawkes-release-list { margin: 0 0 1rem; }
 
 /* Explore Yooba Land: pan/zoom map after the cast, place cards (side on desktop, bottom sheet on phones) */
 .explore { padding-top: 0.4rem; }
