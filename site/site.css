@@ -3,7 +3,7 @@
 :root {
   --ink: #173024;
   --ink-soft: #3d5a49;
-  --green: #1f8a45;
+  --green: #187a3a;
   --green-deep: #143226;
   --outline: #10281c;
   --yooba: #23c34a;
@@ -40,7 +40,7 @@ img { max-width: 100%; }
 
 a { color: var(--green); }
 
-a:hover { color: #146b34; }
+a:hover { color: #0f5a2a; }
 
 h1, h2, h3, .brand, .play, .kicker {
   font-family: Fredoka, "Trebuchet MS", sans-serif;
@@ -588,7 +588,7 @@ button.play, .contact-form button {
   }
 
   .hero-panel .kicker {
-    font-size: 0.82rem;
+    font-size: 0.875rem;
   }
 
   .cards, .post-link { grid-template-columns: 1fr; }
@@ -685,7 +685,7 @@ button.play, .contact-form button {
 .cast-moment { display: block; border-bottom: 3px solid var(--outline); background: var(--sky-game); }
 .cast-moment[hidden] { display: none; }
 .cast-moment img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
-.cast-moment-cap { display: block; padding: 0.25rem 0.7rem; font-size: 0.85rem; font-weight: 700; color: var(--ink-soft); }
+.cast-moment-cap { display: block; padding: 0.25rem 0.7rem; font-size: 0.875rem; font-weight: 700; color: var(--ink-soft); }
 .cast-card h3 { margin: 0.7rem 1rem 0.2rem; font-size: 1.35rem; }
 .cast-card .cast-who { margin: 0 1rem 1rem; color: var(--ink-soft); }
 .cast-note { margin: 1.4rem 0 0; color: var(--ink-soft); font-weight: 700; }
@@ -911,7 +911,7 @@ button.play, .contact-form button {
   background: rgba(247, 251, 246, 0.92);
   border: 2px solid var(--outline);
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   color: var(--ink-soft);
   pointer-events: none;
 }
@@ -1067,4 +1067,24 @@ button.play, .contact-form button {
 @keyframes life-walk { to { offset-distance: 100%; } }
 @keyframes life-bob { to { transform: translateY(-3px); } }
 @media (prefers-reduced-motion: reduce) { .life-cloud, .life-shimmer, .life-yooba, .life-bob { animation: none; } }
-@media (max-width: 640px) { .explore-tools { bottom: 0.5rem; right: 0.5rem; } .explore-tools button { font-size: 0.8rem; padding: 0.35rem 0.55rem; } }
+@media (max-width: 640px) { .explore-tools { bottom: 0.5rem; right: 0.5rem; } .explore-tools button { font-size: 0.875rem; padding: 0.35rem 0.55rem; } }
+
+/* Phone and accessibility pass: every tap target is at least 44 px, text at least 14 px, focus is always visible. */
+.brand, .footer-links a, .hero-version a, .menu-toggle, .menu a, .post-card, .watch-trailer,
+.explore-tools button, .explore-card-close, .explore-zoom button, .hawkes-credits a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.menu a { min-height: 44px; }
+.hawkes-credits a { min-height: 44px; }
+.site-footer .hawkes-credits { font-size: 0.875rem; }
+.menu-toggle { min-width: 44px; justify-content: center; }
+.explore-card-close, .explore-zoom button { min-width: 44px; justify-content: center; }
+.post-card { display: block; }
+input, textarea, button.play, .contact-form button { min-height: 44px; }
+button:focus-visible, summary:focus-visible, [role=button]:focus-visible, .play:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: 2px;
+}
+.page-hero a:focus-visible, .article a:focus-visible { outline-color: var(--green-deep); }
