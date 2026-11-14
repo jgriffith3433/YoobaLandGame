@@ -1139,13 +1139,17 @@ async function runPlayRotate({ t, flag, openGame, setFrameSize, gameDoc, gameWin
   };
 
   await t.until(promptShown, 8000, 'the rotate prompt').catch(() => {});
-  if (!promptShown()) {
+  if (!promptShown() && !(gameDoc() && gameDoc().documentElement.classList.contains('rp-hint-off'))) {
     const w = gameWin();
-    flag(`Portrait phone showed no rotate prompt (frame ${w ? w.innerWidth + 'x' + w.innerHeight : '?'}, coarse ${!!(w && w.matchMedia && w.matchMedia('(pointer: coarse)').matches)}).`);
+    flag(`Portrait phone showed no rotate hint chip (frame ${w ? w.innerWidth + 'x' + w.innerHeight : '?'}, coarse ${!!(w && w.matchMedia && w.matchMedia('(pointer: coarse)').matches)}).`);
   } else {
     const d = gameDoc();
     const h2 = (d.querySelector('#rotate-prompt h2') || {}).textContent || '';
-    t.event('rotate-prompt', `shown at ${pw}x${ph}: "${h2}"`);
+    t.event('rotate-prompt', `hint chip shown at ${pw}x${ph}: "${h2}"`);
+    const r = d.getElementById('rotate-prompt').getBoundingClientRect();
+    if (r.height > ph * 0.15 || d.defaultView.getComputedStyle(d.getElementById('rotate-prompt')).pointerEvents !== 'none') flag('The rotate hint is not a small non-blocking chip.');
+    if (!d.getElementById('unity-loader-script')) await t.wait(500);
+    if (!d.getElementById('unity-loader-script') && !d.getElementById('hawkes-tap')) flag('Portrait: the Unity load did not start while the hint was up.');
   }
   t.progress(0.3);
   await t.wait(1200); // prompt on screen for screenshots
@@ -1167,7 +1171,7 @@ async function runPlayRotate({ t, flag, openGame, setFrameSize, gameDoc, gameWin
   try { w && w.dispatchEvent(new Event('resize')); } catch { /* ignore */ }
   await t.wait(400);
 
-  if (promptShown()) flag('The rotate prompt stayed up after switching the frame to landscape.');
+  if (promptShown()) flag('The rotate hint stayed up after switching the frame to landscape.');
   else t.event('rotate-gone', `landscape ${w ? w.innerWidth + 'x' + w.innerHeight : '844x390'}: prompt gone`);
   t.progress(0.55);
   await t.wait(800);
