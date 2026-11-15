@@ -1,0 +1,12 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wren, a Skyport pilot with goggles and a scarf.">
+  <rect width="120" height="120" fill="#5cdbee"/>
+  <rect y="84" width="120" height="36" fill="#cfe8a8"/>
+  <path d="M46 56h28v40H46z" fill="#3d6b9a" stroke="#10281c" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="60" cy="44" r="13" fill="#f3c9a0" stroke="#10281c" stroke-width="3"/>
+  <path d="M38 40h44v6H38z" fill="#2a3340" stroke="#10281c" stroke-width="2"/>
+  <circle cx="50" cy="44" r="7" fill="none" stroke="#10281c" stroke-width="3"/>
+  <circle cx="70" cy="44" r="7" fill="none" stroke="#10281c" stroke-width="3"/>
+  <path d="M57 44h6" stroke="#10281c" stroke-width="3"/>
+  <path d="M74 62q18 4 22 18" fill="none" stroke="#e85d3a" stroke-width="5" stroke-linecap="round"/>
+  <path d="M42 30q18-14 36 0" fill="#2a3340" stroke="#10281c" stroke-width="3"/>
+</svg>

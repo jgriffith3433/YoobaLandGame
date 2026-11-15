@@ -1,0 +1,10 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bramley, a farmer in a straw hat holding a golden seed.">
+  <rect width="120" height="120" fill="#5cdbee"/>
+  <rect y="84" width="120" height="36" fill="#89ce00"/>
+  <path d="M42 54h36v38H42z" fill="#2f7fb8" stroke="#10281c" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="60" cy="42" r="13" fill="#f3c9a0" stroke="#10281c" stroke-width="3"/>
+  <path d="M30 38q30-14 60 0q-6 6-30 6t-30-6z" fill="#e8cf6b" stroke="#10281c" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M42 40q18-18 36 0" fill="#e8cf6b" stroke="#10281c" stroke-width="3"/>
+  <ellipse cx="94" cy="62" rx="7" ry="10" fill="#ffd23a" stroke="#10281c" stroke-width="3"/>
+  <path d="M78 66l9-3" stroke="#10281c" stroke-width="3"/>
+</svg>

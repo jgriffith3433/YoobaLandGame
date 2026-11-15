@@ -1,16 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>window.HAWKES_BUILD_URL = "https://sites.hawkesgen.ai/builds/o/j-studio-4f12/yoobaland/b/web/133/";</script>
   <script>window.HAWKES_BUILD_BASE = "https://sites.hawkesgen.ai/builds/yoobaland/";</script>
-  <meta charset="utf-8">
   <!-- Hawkes sound prompt: installed by the deploy from YoobaLand/Tools/Web; must load before Unity's loader -->
-  <script src="https://sites.hawkesgen.ai/builds/yoobaland/v183/hawkes-sound.js"></script>
+  <script src="https://sites.hawkesgen.ai/builds/yoobaland/v185/hawkes-sound.js"></script>
   <!-- Hawkes errors: installed by the deploy from YoobaLand/Tools/Web; reports errors on the beta site only -->
-  <script src="https://sites.hawkesgen.ai/builds/yoobaland/v183/hawkes-errors.js"></script>
+  <script src="https://sites.hawkesgen.ai/builds/yoobaland/v185/hawkes-errors.js"></script>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <title>Yooba Land</title>
+  <meta name="description" content="Become one of the people of Yooba Land. Eat, grow, and find the way home.">
+  <link rel="icon" href="../images/favicon.png" type="image/png" sizes="64x64">
+  <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+  <meta name="theme-color" content="#143226">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Yooba Land">
+  <meta property="og:title" content="Yooba Land: play in the browser">
+  <meta property="og:description" content="Eat, grow, and find the way home. Play Yooba Land in your browser, nothing to install.">
+  <meta property="og:url" content="https://yoobalandgame.com/Game/">
+  <meta property="og:image" content="https://yoobalandgame.com/images/og-card.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Yooba Land: play in the browser">
+  <meta name="twitter:description" content="Eat, grow, and find the way home. Play Yooba Land in your browser, nothing to install.">
+  <meta name="twitter:image" content="https://yoobalandgame.com/images/og-card.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
@@ -27,6 +44,7 @@
     /* Until the game is running, the page shows the landing page's in-game art (../images/hero-yooba.jpg) behind the
        canvas; once it runs (.loaded, set below) the canvas is plain dark again. */
     #unity-container {
+      position: relative;
       width: 100%;
       height: 100%;
       background: #5cdbee url("../images/hero-yooba.jpg") 20% 50% / cover no-repeat;
@@ -40,7 +58,8 @@
     }
     #unity-container.loaded { background: #111; }
     #unity-container.loaded::before { display: none; }
-    #unity-canvas { position: relative; width: 100%; height: 100%; display: block; background: transparent; }
+    /* The canvas fills the container from the first paint (absolute, sized to the viewport), so nothing moves when the game appears. */
+    #unity-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: transparent; }
     #unity-container.loaded #unity-canvas { background: #111; }
     #unity-loading-bar {
       position: absolute;
@@ -57,6 +76,37 @@
       border-radius: 22px;
       box-shadow: 0 6px 0 #10281c, 0 12px 30px rgba(0, 0, 0, 0.35);
     }
+    #unity-loading-bar .ld-title { font-size: 22px; line-height: 1.2; color: #ffe56a; }
+    #unity-loading-bar .ld-pct { margin-top: 8px; font-size: 16px; opacity: .85; font-variant-numeric: tabular-nums; }
+    /* Fixed height for the tip: three lines of room, so rotating lines never resize the card. */
+    #unity-loading-bar .ld-tip {
+      margin-top: 12px;
+      height: 4.8em;
+      overflow: hidden;
+      font: 700 15px/1.6 Nunito, Arial, sans-serif;
+      color: #d9f2e4;
+    }
+    #unity-loading-bar .ld-fail { display: none; }
+    #unity-loading-bar.failed .ld-busy { display: none; }
+    #unity-loading-bar.failed .ld-fail { display: block; }
+    #unity-loading-bar .ld-fail p { font: 700 15px/1.5 Nunito, Arial, sans-serif; margin-top: 10px; color: #d9f2e4; }
+    #unity-loading-bar .ld-art { display: block; width: 100%; height: 120px; object-fit: cover; object-position: 20% 50%; border-radius: 14px; border: 3px solid #10281c; margin-bottom: 12px; }
+    #unity-loading-bar .ld-back { margin-top: 14px !important; }
+    #unity-loading-bar .ld-back a { color: #8fd9b4; }
+    #unity-retry {
+      margin-top: 16px;
+      font: 600 18px Fredoka, "Trebuchet MS", Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+      color: #143226;
+      background: #ffe56a;
+      border: 3px solid #10281c;
+      border-radius: 999px;
+      padding: 8px 26px;
+      box-shadow: 0 4px 0 #10281c;
+      cursor: pointer;
+    }
+    #unity-retry:active { transform: translateY(2px); box-shadow: 0 2px 0 #10281c; }
     #unity-progress-bar-empty {
       width: 100%;
       height: 18px;
@@ -152,8 +202,97 @@
     a.home {
       color: #8fd9b4;
     }
+    /* Control strip, top left, clear of the notch (safe-area insets). It fades away during play (html.chrome-idle)
+       and comes back on a tap or move near the corner. */
+    #chrome-strip {
+      position: fixed;
+      top: calc(8px + env(safe-area-inset-top));
+      left: calc(10px + env(safe-area-inset-left));
+      z-index: 9000;
+      display: flex;
+      gap: 8px;
+      transition: opacity 0.4s ease;
+    }
+    html.chrome-idle #chrome-strip { opacity: 0; pointer-events: none; }
+    #chrome-reveal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: calc(120px + env(safe-area-inset-left));
+      height: calc(72px + env(safe-area-inset-top));
+      z-index: 8999;
+      display: none;
+    }
+    html.chrome-idle #chrome-reveal { display: block; }
+    #home-link, #fullscreen-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      width: 44px;
+      height: 44px;
+      border: 3px solid #10281c;
+      border-radius: 14px;
+      background: rgba(255, 229, 106, 0.92);
+      color: #143226;
+      box-shadow: 0 3px 0 #10281c;
+      font: 700 22px/1 Nunito, Arial, sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    #home-link:active, #fullscreen-button:active { transform: translateY(2px); box-shadow: 0 1px 0 #10281c; }
+    /* Phones held upright: a small hint chip at the top, never a wall. It does not cover the game, takes no taps
+       (pointer-events none) and goes on the first touch or after 4 s (html.rp-hint-off). The game loads behind it. */
+    #rotate-prompt {
+      display: none;
+      position: fixed;
+      top: calc(10px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      align-items: center;
+      gap: 10px;
+      max-width: calc(100vw - 24px);
+      padding: 8px 14px;
+      border: 2px solid #10281c;
+      border-radius: 999px;
+      background: rgba(20, 50, 38, 0.92);
+      color: #d9f2e4;
+      font: 700 14px/1.3 Nunito, Arial, sans-serif;
+      text-align: left;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    #rotate-prompt .rp-phone {
+      flex: none;
+      width: 14px;
+      height: 24px;
+      border: 2px solid #ffe56a;
+      border-radius: 4px;
+      animation: rp-turn 2.4s ease-in-out infinite;
+    }
+    #rotate-prompt h2 { font: 600 14px/1.3 Fredoka, "Trebuchet MS", Arial, sans-serif; color: #ffe56a; white-space: nowrap; }
+    #rotate-prompt p, #rotate-prompt #rp-upright { display: none; }
+    @keyframes rp-turn {
+      0%, 25% { transform: rotate(0deg); }
+      50%, 80% { transform: rotate(-90deg); }
+      100% { transform: rotate(-90deg); }
+    }
+    @media (prefers-reduced-motion: reduce) { #rotate-prompt .rp-phone { animation: none; } }
+    @media (orientation: portrait) and (pointer: coarse) {
+      html:not(.rp-upright):not(.rp-hint-off) #rotate-prompt { display: flex; }
+    }
+    /* Fullscreen toggle: hidden where the browser has no element fullscreen. */
+    #fullscreen-button { display: none; }
+    #fullscreen-button.available { display: inline-flex; }
+    /* Landscape: the rotate prompt is gone for good and never takes a tap; Tap to play sits above every overlay. */
+    @media (orientation: landscape) {
+      #rotate-prompt { display: none !important; }
+      html body #hawkes-tap { z-index: 10001; }
+    }
   </style>
-  <script>window.YOOBA_BUILD = "v183";</script>
+  <script>window.YOOBA_BUILD = "v185";</script>
   <script>window.HAWKES_NET_ENDPOINT = window.HAWKES_NET_ENDPOINT || 'https://net.hawkesgen.ai'; // builds before 2026-10-28 have net.hawkesgen.com baked in; beta pages set their own first</script>
   <!-- Hawkes Analytics: the page loads the SDK once; the game's bridge finds it (data-hawkes-analytics) and adds no second copy -->
   <script>
@@ -167,14 +306,68 @@
   <div id="unity-container">
     <canvas id="unity-canvas"></canvas>
     <div id="unity-loading-bar">
-      <div>Loading Yooba Land</div>
-      <div id="unity-progress-bar-empty"><div id="unity-progress-bar-full"></div></div>
+      <div class="ld-busy" role="status" aria-live="off">
+        <div class="ld-title">Loading Yooba Land</div>
+        <div id="unity-progress-bar-empty" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="unity-progress-bar-full"></div></div>
+        <div class="ld-pct"><span id="unity-progress-text">0%</span> <span id="unity-label"></span></div>
+        <div class="ld-tip" id="unity-tip"></div>
+      </div>
+      <div class="ld-fail" role="alert">
+        <img class="ld-art" src="../images/hero-yooba-960.jpg" alt="" width="960" height="540">
+        <div class="ld-title">Yooba got lost on the way</div>
+        <p id="unity-fail-line">The meadow didn't open this time. Let's give it another go.</p>
+        <small id="unity-fail-detail" hidden></small>
+        <button type="button" id="unity-retry">Retry</button>
+        <p class="ld-back"><a class="home" href="../">Back to Yooba Land</a></p>
+      </div>
     </div>
     <div id="missing-build">
       <p>No game build has been published yet.</p>
       <p style="margin-top: 12px;"><a class="home" href="../">Back home</a></p>
     </div>
     <div id="unity-warning"></div>
+  </div>
+  <div id="rotate-prompt" role="status" aria-label="Turn your phone sideways">
+    <div class="rp-phone" aria-hidden="true"></div>
+    <h2>Best played sideways</h2>
+    <p>Yooba Land plays best in landscape. Turn your phone to continue.</p>
+    <button type="button" id="rp-upright">Play upright anyway</button>
+  </div>
+  <script>
+    // "Play upright anyway": put the prompt away for this visit (sessionStorage, so a reload or coming back from
+    // home keeps it), and pass ?rotate=0 on so the game's own prompt doesn't ask again once it loads. The game's
+    // pill sets the same two things (YoobaRotate.jslib), so either one holds for the whole visit.
+    (function () {
+      var chosen = false;
+      try { chosen = /[?&]rotate=0(&|$)/.test(location.search) || sessionStorage.getItem("yoobaRotateUpright") === "1"; } catch (e) {}
+      if (chosen) document.documentElement.className += " rp-upright";
+    })();
+    // The hint chip never blocks the load or a tap: it goes on the first touch or after 4 s.
+    (function () {
+      var root = document.documentElement;
+      function off() {
+        root.className += " rp-hint-off";
+        document.removeEventListener("pointerdown", off, true);
+        document.removeEventListener("touchstart", off, true);
+      }
+      document.addEventListener("pointerdown", off, true);
+      document.addEventListener("touchstart", off, { capture: true, passive: true });
+      setTimeout(function () { if (!/rp-hint-off/.test(root.className)) off(); }, 4000);
+    })();
+    document.getElementById("rp-upright").addEventListener("click", function () {
+      document.documentElement.className += " rp-upright";
+      try { sessionStorage.setItem("yoobaRotateUpright", "1"); } catch (e) {}
+      try {
+        var url = new URL(location.href);
+        url.searchParams.set("rotate", "0");
+        history.replaceState(history.state, "", url.toString());
+      } catch (e) {}
+    });
+  </script>
+  <div id="chrome-reveal"></div>
+  <div id="chrome-strip">
+    <a id="home-link" class="home" href="../" title="Back to Yooba Land home" aria-label="Back to Yooba Land home">&#x2190;</a>
+    <button type="button" id="fullscreen-button" aria-label="Enter fullscreen" title="Fullscreen" aria-pressed="false">&#x26F6;</button>
   </div>
   <div id="version-display"></div>
   <script>
@@ -192,17 +385,148 @@
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var warningBanner = document.querySelector("#unity-warning");
 
+      // No raw Unity banner text: errors go to the branded failure panel, warnings to the console.
       function unityShowBanner(msg, type) {
-        var div = document.createElement("div");
-        div.innerHTML = msg;
-        div.style.cssText = "background:" + (type === "warning" ? "rgba(255,193,7,0.95)" : "rgba(180,40,40,0.95)") + ";color:#111;padding:10px 14px;margin-top:8px;border-radius:6px;font-family:Arial,sans-serif;";
-        warningBanner.appendChild(div);
-        if (type !== "error") {
-          setTimeout(function () {
-            if (div.parentElement) div.parentElement.removeChild(div);
-          }, 5000);
-        }
+        if (type === "error") loadFailed(String(msg).replace(/<[^>]*>/g, ""));
+        else console.warn("Unity:", msg);
       }
+
+      // Lore while the biggest download of the site comes in: from the story the game tells (docs/story.md).
+      var tips = [
+        "Yooba is small and hungry, and all he wants is to get home.",
+        "Yooba blew in from The Gust and landed inside a glass fence.",
+        "Past the broken glass lies a town full of other Yoobas.",
+        "Old Reed fishes all day. His advice is always the same: sit still.",
+        "Bramley the farmer once gave away a golden seed. Ask what it grows.",
+        "Somewhere out on the hills, a goatherd is whistling a tune.",
+        "The mayor knows everyone in town. Everyone knows the mayor.",
+        "Share the world with other Yoobas right in the browser, or wander alone and offline."
+      ];
+      var tipEl = document.getElementById("unity-tip");
+      var pctEl = document.getElementById("unity-progress-text");
+      var labelEl = document.getElementById("unity-label");
+      var barEmpty = document.getElementById("unity-progress-bar-empty");
+      var tipIndex = Math.floor(Math.random() * tips.length);
+      var tipTimer = null;
+      function showTip() { tipEl.textContent = tips[tipIndex]; tipIndex = (tipIndex + 1) % tips.length; }
+
+      // Honest bar: Unity's loader fills 0-70%, the game's own content progress (window.yoobaLoad) 70-100%.
+      var STALL_MS = 45000;
+      var stallTimer = null;
+      var unityInstance = null;
+      var loadDone = false;
+      var attempt = 0;
+      var gameReported = false;
+      var finishTimer = null;
+      function setBar(pct, label) {
+        pct = Math.max(0, Math.min(100, Math.round(pct)));
+        progressBarFull.style.width = pct + "%";
+        pctEl.textContent = pct + "%";
+        barEmpty.setAttribute("aria-valuenow", pct);
+        if (label !== undefined) labelEl.textContent = label ? "\u00b7 " + label : "";
+      }
+      // Any progress re-arms the 45 s watchdog (event-driven: no polling).
+      function armStall() {
+        clearTimeout(stallTimer);
+        stallTimer = setTimeout(function () { loadFailed("No progress for 45 s"); }, STALL_MS);
+      }
+      function showGame() {
+        if (loadDone) return;
+        loadDone = true;
+        clearTimeout(stallTimer);
+        clearTimeout(finishTimer);
+        clearInterval(tipTimer);
+        setBar(100);
+        loadingBar.style.display = "none";
+        container.className += " loaded";
+        document.documentElement.className += " rp-game rp-hint-off";
+      }
+      // The game calls this as it gathers its content: yoobaLoad(0..1, "Gathering the meadow\u2026"). 1 ends the load.
+      window.yoobaLoad = function (progress, label) {
+        if (loadDone || loadingBar.className === "failed") return;
+        gameReported = true;
+        progress = Math.max(0, Math.min(1, Number(progress) || 0));
+        setBar(70 + 30 * progress, label || "Gathering the meadow\u2026");
+        armStall();
+        if (progress >= 1 && unityInstance) showGame();
+      };
+
+      function loadFailed(message) {
+        if (loadDone) return;
+        clearInterval(tipTimer);
+        clearTimeout(stallTimer);
+        clearTimeout(finishTimer);
+        loadingBar.className = "failed";
+        loadingBar.style.display = "";
+        document.getElementById("unity-fail-detail").textContent = String(message || "").slice(0, 200);
+        console.error("Yooba Land failed to load:", message);
+      }
+
+      function hasWebGL() {
+        try {
+          var c = document.createElement("canvas");
+          return !!(c.getContext("webgl2") || c.getContext("webgl"));
+        } catch (e) { return false; }
+      }
+
+      // ?loadfail=1 or ?playtest=fail-load points the loader at a missing file, to see the failure screen (playtests).
+      var failLoad = /[?&]loadfail=1\b/.test(location.search) || /[?&]playtest=fail-load\b/.test(location.search);
+
+      function startLoad() {
+        attempt++;
+        container.setAttribute("data-attempt", attempt);
+        loadingBar.className = "";
+        loadingBar.style.display = "";
+        gameReported = false;
+        setBar(0, "");
+        showTip();
+        clearInterval(tipTimer);
+        // Local rotation only: no requests. Stopped when the game runs or the load fails.
+        tipTimer = setInterval(showTip, 4500);
+        if (!hasWebGL()) {
+          loadFailed("WebGL is not supported");
+          document.getElementById("unity-fail-line").textContent = "This browser can't draw Yooba Land. Try another browser or device.";
+          return;
+        }
+        document.getElementById("unity-fail-line").textContent = "The meadow didn't open this time. Let's give it another go.";
+        armStall();
+        var old = document.getElementById("unity-loader-script");
+        if (old) old.remove();
+        var loader = document.createElement("script");
+        loader.id = "unity-loader-script";
+        loader.src = failLoad ? buildBase + "does-not-exist.loader.js?a=" + attempt : buildUrl + ".loader.js?v=" + gameVersion;
+        var mine = attempt;
+        loader.onload = function () {
+          if (mine !== attempt) return;
+          createUnityInstance(canvas, config, function (progress) {
+            if (mine !== attempt) return;
+            // Unity reports 0.9 when the download is done and 1 when it has started.
+            setBar(70 * Math.min(1, progress / 0.9), "");
+            armStall();
+          }).then(function (instance) {
+            if (mine !== attempt) { instance.Quit(); return; }
+            unityInstance = instance;
+            setBar(70);
+            // A game that never calls yoobaLoad still gets in after a short grace.
+            if (gameReported) return;
+            finishTimer = setTimeout(function () { if (!gameReported) showGame(); }, 3000);
+          }).catch(function (message) {
+            if (mine === attempt) loadFailed(message);
+          });
+        };
+        loader.onerror = function () {
+          if (mine === attempt) loadFailed("Could not load " + loader.src);
+        };
+        document.body.appendChild(loader);
+      }
+
+      // Retry without a full page reload: quit any half-started instance, then load again.
+      document.getElementById("unity-retry").addEventListener("click", function () {
+        var inst = unityInstance;
+        unityInstance = null;
+        var again = function () { startLoad(); };
+        if (inst && inst.Quit) inst.Quit().then(again, again); else again();
+      });
 
       function fitCanvas() {
         var width = window.visualViewport ? window.visualViewport.width : window.innerWidth;
@@ -216,7 +540,8 @@
       fitCanvas();
 
       // Builds in R2 (hawkesstudio docs/unity-builds-storage.md): the cloud build sets HAWKES_BUILD_BASE; without it, from here.
-      var buildBase = (window.HAWKES_BUILD_BASE || "") + gameVersion + "/";
+      // A Hawkes Studio build (publish.page "site") names its own address in HAWKES_BUILD_URL; else the versioned folder.
+      var buildBase = window.HAWKES_BUILD_URL || ((window.HAWKES_BUILD_BASE || "") + gameVersion + "/");
       var buildUrl = buildBase + gameName + "/Build/" + gameName;
       var config = {
         arguments: [],
@@ -230,24 +555,7 @@
         showBanner: unityShowBanner,
       };
 
-      var loader = document.createElement("script");
-      loader.src = buildUrl + ".loader.js?v=" + gameVersion;
-      loader.onload = function () {
-        createUnityInstance(canvas, config, function (progress) {
-          progressBarFull.style.width = (100 * progress) + "%";
-        }).then(function () {
-          loadingBar.style.display = "none";
-          container.className += " loaded";
-        }).catch(function (message) {
-          loadingBar.style.display = "none";
-          unityShowBanner(String(message), "error");
-        });
-      };
-      loader.onerror = function () {
-        loadingBar.style.display = "none";
-        unityShowBanner("Could not load " + loader.src, "error");
-      };
-      document.body.appendChild(loader);
+      startLoad();
     }
   </script>
   <script>
@@ -286,5 +594,103 @@
     })();
   </script>
   <!-- /Hawkes release -->
+  <script>
+    // Fullscreen toggle. A tap is a user gesture, so the request is allowed. Where the browser has no element
+    // fullscreen (iPhone Safari), the button stays hidden. Landscape lock is best effort: most phones refuse it.
+    (function () {
+      var button = document.getElementById("fullscreen-button");
+      var target = document.getElementById("unity-container");
+      if (!button || !target) return;
+      var el = document.documentElement;
+      var canRequest = !!(el.requestFullscreen || el.webkitRequestFullscreen);
+      var enabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+      if (!canRequest || !enabled) return;
+      button.classList.add("available");
+
+      function inFullscreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+      function render() {
+        var on = inFullscreen();
+        button.setAttribute("aria-pressed", on ? "true" : "false");
+        button.setAttribute("aria-label", on ? "Leave fullscreen" : "Enter fullscreen");
+        button.title = on ? "Leave fullscreen" : "Fullscreen";
+        button.innerHTML = on ? "&#x2715;" : "&#x26F6;";
+      }
+      button.addEventListener("click", function () {
+        if (inFullscreen()) {
+          var exit = document.exitFullscreen || document.webkitExitFullscreen;
+          if (exit) exit.call(document);
+          return;
+        }
+        var request = el.requestFullscreen || el.webkitRequestFullscreen;
+        var result = request.call(el);
+        if (result && result.then) {
+          result.then(function () {
+            if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(function () {});
+          }).catch(function () {});
+        }
+      });
+      document.addEventListener("fullscreenchange", render);
+      document.addEventListener("webkitfullscreenchange", render);
+      render();
+    })();
+  </script>
+  <script>
+    // Control strip: Leave-the-game question, fade during play, iOS bar fallback. Tap to play: pointerdown and
+    // touchend count as well as click, and the prompt goes as soon as the audio context is running.
+    (function () {
+      var root = document.documentElement;
+      var home = document.getElementById("home-link");
+      home.addEventListener("click", function (e) {
+        if (!window.confirm("Leave the game?")) e.preventDefault();
+      });
+
+      var idleTimer = 0;
+      function show() { root.classList.remove("chrome-idle"); clearTimeout(idleTimer); arm(); }
+      function arm() {
+        clearTimeout(idleTimer);
+        if (document.getElementById("hawkes-tap")) return;
+        idleTimer = setTimeout(function () { root.classList.add("chrome-idle"); }, 4000);
+      }
+      var reveal = document.getElementById("chrome-reveal");
+      reveal.addEventListener("pointerdown", function (e) { e.stopPropagation(); show(); });
+      reveal.addEventListener("pointermove", show);
+      reveal.addEventListener("touchstart", function (e) { e.stopPropagation(); show(); }, { passive: true });
+
+      function dismissTap() {
+        var tap = document.getElementById("hawkes-tap");
+        if (tap && !tap.classList.contains("gone")) tap.click();
+      }
+      function audioRunning() {
+        try { return window.hawkesSound && JSON.parse(window.hawkesSound.state()).audio === "running"; } catch (e) { return false; }
+      }
+      function onTapGesture(e) {
+        var tap = document.getElementById("hawkes-tap");
+        if (!tap || !tap.contains(e.target)) return;
+        dismissTap();
+        var tries = 0;
+        (function check() {
+          var left = document.getElementById("hawkes-tap");
+          if (left && audioRunning()) { left.className = "gone"; left.style.pointerEvents = "none"; }
+          if (left && ++tries < 20) setTimeout(check, 100);
+        })();
+      }
+      document.addEventListener("pointerdown", onTapGesture, true);
+      document.addEventListener("touchend", onTapGesture, true);
+
+      // Start the fade timer once Tap to play is gone.
+      var watch = new MutationObserver(function () {
+        if (!document.getElementById("hawkes-tap") || document.getElementById("hawkes-tap").classList.contains("gone")) arm();
+      });
+      watch.observe(document.body, { childList: true, attributes: true, subtree: true, attributeFilter: ["class"] });
+
+      // No element fullscreen (iPhone Safari): nudge the page up so the address bar tucks away.
+      var el = document.documentElement;
+      if (!(el.requestFullscreen || el.webkitRequestFullscreen)) {
+        var hide = function () { setTimeout(function () { window.scrollTo(0, 1); }, 300); };
+        window.addEventListener("orientationchange", hide);
+        window.addEventListener("load", hide);
+      }
+    })();
+  </script>
 </body>
 </html>

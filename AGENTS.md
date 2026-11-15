@@ -19,3 +19,21 @@ the API and AWS keys and runs the shared GPU fleet. This project never holds tho
 - **Art direction:** `hawkesgen/presets/yoobaland.json` (style line and named presets). Edit it there.
 - **Code:** copy `hawkesgen/clients/js/hawkesgen.mjs` into `tools/` and use `new HawkesGen({ project: 'yoobaland' })`.
 - GPU tools cost money while a server runs. Ask J before starting servers or running big batches.
+
+## Playtest
+
+The home page implements the playtest contract (`site/playtest.js`, with the `hawkes-playtest.js` and `hawkes-perf.js`
+helpers copied from hawkesstudio `clients/web`). It loads only when a bot drives the page (`navigator.webdriver` or
+`?playtest=`), so players download nothing. Scenarios open `Game/` in a full-window frame:
+- `play-flow` (start point `at: "load-failed"`): hero holds still, Play, loading (progress bar, lore lines), canvas
+  without moving, failed load (`?loadfail=1`) with Try again
+- `play-fail`: `Game/?playtest=fail-load` (loader simulates a failed Unity load) and the failure screen
+- `play-rotate` (phone): portrait rotate prompt, then landscape, then Tap to play gets the first pointerdown
+- `play-chrome`: fullscreen button toggles; the Home link returns to the site home
+- `map`: Explore Yooba Land on the home page — pan, zoom, open three place cards; screenshots at desktop and 390 px
+- `trailer`: Watch the trailer from the hero — plays with sound, first 5 s, portrait vertical cut full-bleed, close restores scroll
+- `cast`: Meet the people — tap three characters for captions + portrait reactions; screenshots at desktop and 390 px
+- `whatsnew`: What's new + home Devlog + blog picture cards; newest expanded; no empty live-moment date; 1280 and 390 px
+- `first-minute`: home first impression — eat/grow headline, way-home premise, phone fold at 390x844, no live-moment, Gnash villain or absent, Play together online-only, gallery hooks without metres
+The game page itself has no contract of its own: the Unity game's bridge registers `smoke`, `explore` and `full` there.
+Trailer cut sheet: `docs/trailer.md` (hold the final mp4 compose until grow juice + grounded town are on beta).
