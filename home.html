@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yooba Land</title>
+  <meta name="description" content="Eat. Grow. The world stays tiny. Find the way home in Yooba Land — a cartoon 3D game in your browser.">
+  <meta name="theme-color" content="#143226">
+  <link rel="icon" href="./images/favicon.png" type="image/png" sizes="64x64">
+  <link rel="apple-touch-icon" href="./images/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Yooba Land">
+  <meta property="og:title" content="Yooba Land: eat, grow, find the way home">
+  <meta property="og:description" content="Eat. Grow. The world stays tiny. Find the way home. A cartoon 3D game you play in your browser, nothing to install.">
+  <meta property="og:url" content="https://yoobalandgame.com/">
+  <meta property="og:image" content="https://yoobalandgame.com/images/og-card.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Yooba, a small green blob, looks down a wooden path inside a glass fence. Yooba Land: eat, grow, and find the way home.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Yooba Land: eat, grow, find the way home">
+  <meta name="twitter:description" content="Eat. Grow. The world stays tiny. Find the way home. A cartoon 3D game you play in your browser, nothing to install.">
+  <meta name="twitter:image" content="https://yoobalandgame.com/images/og-card.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="./site/site.css">
+  <link rel="stylesheet" href="./site/motion.css">
+  <link rel="stylesheet" href="./site/hawkes-credits.css">
+  <link rel="stylesheet" href="./site/hawkes-release.css">
+  <!-- Hawkes Analytics, the only analytics on this site: anonymous statistics, no cookies (hawkesgen docs/analytics.md) -->
+  <script>if(!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches))document.documentElement.classList.add("motion")</script>
+  <script src="https://hawkesgen.ai/sdk/analytics@1.js" data-product="yoobaland" data-hawkes-analytics="page" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./">Yooba Land</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">Menu</button>
+    <nav id="site-menu" class="menu" aria-label="Primary">
+      <a href="./" aria-current="page">Home</a>
+      <a href="./blog.html">Blog</a>
+      <a href="./contact.html">Contact</a>
+      <a href="./whatsnew.html" data-hawkes-whatsnew>What's new</a>
+    </nav>
+    <a class="play" href="./Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
+  </header>
+
+  <section class="hero">
+    <!-- In-game frame (store/screenshot5): the same picture is the game page's Tap to play screen -->
+    <!-- Gameplay loop (muted, from a playtest recording); the poster is its first frame -->
+    <video class="hero-photo" data-hero-loop autoplay muted loop playsinline preload="metadata" disablepictureinpicture poster="./images/hero-loop.jpg" aria-hidden="true"><source src="./images/hero-loop.mp4" type="video/mp4"></video><script>(function(){var v=document.querySelector('[data-hero-loop]');if(v&&window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause();}})();</script>
+    <div class="hero-panel">
+      <div class="hero-copy">
+        <p class="kicker">A 3D game in your browser</p>
+        <h1>Eat. Grow. The world stays tiny.</h1>
+        <p class="hero-premise">Find the way home through Yooba Land.</p>
+        <!-- Hawkes release: written by the deploy (YoobaWebBuild.InstallReleaseNotes); edit it there -->
+        <p class="hero-version"><a href="./whatsnew.html" data-hawkes-version data-prefix="What's new in v" hidden></a></p>
+        <!-- /Hawkes release -->
+      </div>
+      <!-- Trailer switch: set data-trailer-enabled="true" when images/trailer*.mp4 and trailer-poster.jpg ship (CSS hides the button, trailer.js and the playtest read this one attribute) -->
+      <div class="hero-cta" data-trailer data-trailer-enabled="false" data-video="./images/trailer.mp4" data-video-portrait="./images/trailer-portrait.mp4" data-poster="./images/trailer-poster.jpg">
+        <a class="play play-large" href="./Game/"><span class="play-icon" aria-hidden="true"></span>Play</a>
+        <button type="button" class="watch-trailer" data-trailer-open>Watch the trailer</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section story" id="story">
+    <p class="kicker kicker-dark">Yooba's story</p>
+    <h2>I am small. I am hungry. Home is that way.</h2>
+    <p class="lede">Yooba blew in from The Gust and landed inside a glass fence with apples, a bridge, and a Zorlith orb that leans toward home. Gnash, the evil Yooba, stands on that bridge and means every word. Past the broken glass is a town of people like him. Every bite makes Yooba bigger. The world stays the same size. The way home is the walk.</p>
+  </section>
+
+  <section class="band cast" id="characters" data-cast>
+    <div class="section">
+      <h2>Meet the people</h2>
+      <p class="lede">Tap someone to hear them. Who you will meet on the walk home.</p>
+      <p class="cast-hint" data-cast-hint hidden>Sound on helps — captions still show if it is off.</p>
+      <ul class="cast-grid" data-cast-list>
+        <!-- Filled from site/cast/cast.json by site/cast.js -->
+      </ul>
+      <p class="cast-note">Gnash, the evil Yooba on the glass-garden bridge, is not on this strip — he is the one who says no. The mayor and a whistling goatherd turn up in the chapters.</p>
+    </div>
+  </section>
+
+  <section class="band explore" id="explore">
+    <div class="section">
+      <p class="kicker kicker-dark">The island</p>
+      <h2>Explore Yooba Land</h2>
+      <p class="lede">Pan and zoom the map. Tap a place to peek, then play from there.</p>
+      <div class="explore-stage" data-explore-map>
+        <div class="explore-map-col">
+          <div class="explore-viewport" aria-label="Map of Yooba Land" role="application">
+            <p class="explore-hint">Drag to pan · pinch or +/− to zoom</p>
+            <div class="explore-canvas"></div>
+          </div>
+          <div class="explore-tools">
+            <button type="button" data-explore-sound aria-pressed="false">Sound off</button>
+            <button type="button" data-explore-journey>Follow the Road Home</button>
+          </div>
+          <p class="explore-journey-cap" hidden aria-live="polite"></p>
+          <div class="explore-zoom" aria-label="Zoom">
+            <button type="button" data-explore-zoom="in" aria-label="Zoom in">+</button>
+            <button type="button" data-explore-zoom="out" aria-label="Zoom out">−</button>
+          </div>
+        </div>
+        <div class="explore-side">
+          <p class="explore-empty">Tap a pin on the map to see a place.</p>
+          <aside class="explore-card" hidden aria-live="polite">
+            <button type="button" class="explore-card-close" aria-label="Close place card">×</button>
+            <img class="explore-card-img" alt="" width="640" height="400" decoding="async">
+            <div class="explore-card-body">
+              <h3 class="explore-card-name"></h3>
+              <p class="explore-card-hook"></p>
+              <a class="play" href="./Game/" data-explore-play><span class="play-icon" aria-hidden="true"></span>Play</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>What Yooba Land is</h2>
+    <p class="lede">A cartoon world you walk through: eat, grow, and find the way home.</p>
+    <div class="cards">
+      <article class="card">
+        <span class="card-index">01</span>
+        <h3>Eat and grow</h3>
+        <p>Apples first, then bigger snacks. Each bite makes Yooba larger; the world stays the same size.</p>
+      </article>
+      <article class="card">
+        <span class="card-index">02</span>
+        <h3>Play together</h3>
+        <p>Other players appear only when they are online. Alone or offline, the walk still works.</p>
+      </article>
+      <article class="card">
+        <span class="card-index">03</span>
+        <h3>A story in episodes</h3>
+        <p>New chapters of the Road Home arrive one episode at a time, and the world changes for everyone on the same day.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section">
+      <h2>A look around</h2>
+      <p class="lede">Screenshots from the game.</p>
+      <div class="gallery">
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/shot-market.jpg" data-caption="The market, full of things to eat."><img src="./images/shot-market.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="A fruit and vegetable market with two wooden stalls and crates of apples, pumpkins and watermelons."></button><figcaption>The market, full of things to eat.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/shot-bridge.jpg" data-caption="Gnash's bridge, where the evil Yooba says no."><img src="./images/shot-bridge.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="A wooden bridge over blue water leads to a grassy island with two bright trees, inside a long glass fence."></button><figcaption>Gnash's bridge, where the evil Yooba says no.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/shot-orchard.jpg" data-caption="Trees, grass and a Zorlith orb."><img src="./images/shot-orchard.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="Trees and bushes on bright grass inside a glass fence, with a Zorlith orb hanging in the air."></button><figcaption>Trees, grass and a Zorlith orb.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/gallery-4.jpg" data-caption="Yooba, out for a walk."><img src="./images/gallery-4.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="Yooba, a bright green blob with stalk eyes and a wide open mouth, beside a wooden path and a glass wall."></button><figcaption>Yooba, out for a walk.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/gallery-5.jpg" data-caption="A Zorlith orb leans toward home."><img src="./images/gallery-5.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="Yooba on bright grass, with a Zorlith orb hanging in the air and market crates behind the glass."></button><figcaption>A Zorlith orb leans toward home.</figcaption></figure>
+        <figure><button type="button" class="shot" data-lightbox data-full="./images/hero-loop.jpg" data-caption="Out through the glass. Home is that way."><img src="./images/hero-loop.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="The game's screen: a small Yooba on a plank bridge over water, with a message that says Yooba knows the way now."></button><figcaption>Out through the glass. Home is that way.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="devlog">
+    <h2>Devlog</h2>
+    <p class="lede">What players notice in the newest builds. Newest first; tap a card for the notes.</p>
+    <div class="hawkes-release-list" data-hawkes-releases data-limit="3" data-expand="first"><p class="hawkes-release-empty">Chewing&hellip;</p></div>
+    <p><a href="./whatsnew.html">All release notes</a></p>
+  </section>
+
+  <section class="section">
+    <h2>How a walk goes</h2>
+    <p class="lede">Yooba is small at the start. Food changes that. The path is how you get home.</p>
+    <div class="cards">
+      <article class="card">
+        <span class="card-index">01</span>
+        <h3>Eat</h3>
+        <p>Apples come first. Watermelons and pumpkins wait until Yooba is big enough.</p>
+      </article>
+      <article class="card">
+        <span class="card-index">02</span>
+        <h3>Grow</h3>
+        <p>Each bite makes Yooba larger. The world stays the same size, so the next step feels different.</p>
+      </article>
+      <article class="card">
+        <span class="card-index">03</span>
+        <h3>Head home</h3>
+        <p>Trees, houses, and open grass sit under a big sky. The walk has a direction.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section">
+      <h2>From the blog</h2>
+      <p class="lede">Short notes on how the game plays, and how to open it.</p>
+      <div class="posts-cards">
+        <a class="post-card" href="./blog/eat-and-grow.html">
+          <div class="post-card-media"><img src="./images/shot-orchard.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="Trees and bushes on bright grass inside a glass fence, with a Zorlith orb hanging in the air."></div>
+          <div class="post-card-body">
+            <p class="hawkes-release-chip"><time datetime="2026-10-13">October 13, 2026</time></p>
+            <h3>Eat, then grow</h3>
+            <p>What the food is for, and why the bigger pieces wait.</p>
+          </div>
+        </a>
+        <a class="post-card" href="./blog/the-way-home.html">
+          <div class="post-card-media"><img src="./images/shot-bridge.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="A wooden bridge over blue water leads to a grassy island with two bright trees."></div>
+          <div class="post-card-body">
+            <p class="hawkes-release-chip"><time datetime="2026-10-06">October 6, 2026</time></p>
+            <h3>The way home</h3>
+            <p>Movement, jumping, and the things you can interact with.</p>
+          </div>
+        </a>
+        <a class="post-card" href="./blog/play-in-the-browser.html">
+          <div class="post-card-media"><img src="./images/hero-loop.jpg" width="1280" height="720" loading="lazy" decoding="async" alt="A small Yooba on a plank bridge over water inside the glass fence."></div>
+          <div class="post-card-body">
+            <p class="hawkes-release-chip"><time datetime="2026-09-22">September 22, 2026</time></p>
+            <h3>Play it in the browser</h3>
+            <p>Nothing to install. The first visit just needs a moment to load.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-brand">Yooba Land</p>
+      <p>A cartoon game about eating, growing, and finding the way home.</p>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="./">Home</a>
+        <a href="./blog.html">Blog</a>
+        <a href="./contact.html">Contact</a>
+        <a href="./privacypolicy.html">Privacy</a>
+        <a href="./Game/">Play</a>
+        <a href="./whatsnew.html" data-hawkes-whatsnew>What's new</a>
+      </nav>
+      <!-- Hawkes credits: written by the deploy (YoobaWebBuild.InstallSiteCredits); edit it there -->
+      <p class="hawkes-credits">
+        <a class="hawkes-gen" href="https://hawkesgen.ai">Powered by <span class="hawkes-gen-name">HAWKES GEN</span></a>
+        <a class="hawkes-biomedical" href="https://hawkesbiomedical.com">From Hawkes Biomedical</a>
+      </p>
+      <!-- /Hawkes credits -->
+    </div>
+  </footer>
+  <script src="./site/gallery.js" defer></script>
+  <script src="./site/trailer.js" defer></script>
+  <script src="./site/site.js"></script>
+  <script src="./site/cast.js" defer></script>
+  <script src="./site/map-explore.js" defer></script>
+  <script src="./site/motion.js" defer></script>
+  <!-- Playtest: the Hawkes playtest contract (docs: hawkesstudio playtest.md), loaded only when a bot drives the page -->
+  <script>if(navigator.webdriver||/[?&]playtest=/.test(location.search)){var s=document.createElement("script");s.type="module";s.src="./site/playtest.js";document.head.appendChild(s)}</script>
+  <!-- Hawkes release: written by the deploy (YoobaWebBuild.InstallReleaseNotes); edit it there -->
+  <script src="./js/hawkes-release.js" data-releases="./releases.json" defer></script>
+  <!-- /Hawkes release -->
+</body>
+</html>

@@ -1,5 +1,5 @@
 // Hawkes playtest contract for the home page (spec: hawkesstudio/docs/playtest.md). Loaded only when a bot drives the
-// page (index.html: navigator.webdriver or ?playtest=), so players download nothing.
+// page (home.html: navigator.webdriver or ?playtest=), so players download nothing.
 //
 // Scenarios (all open Game/ in a full-window frame so the bot keeps its log, except map):
 //   play-flow   — hero holds still, Play, loading (bar + lore), canvas without moving, failed load + Try again
@@ -418,7 +418,7 @@ async function runFirstMinute({ t, flag, finish }) {
     setSize(w, h);
     frame.src = 'about:blank';
     await t.wait(40);
-    frame.src = BASE + 'index.html';
+    frame.src = BASE + 'home.html';
     await t.until(() => {
       const d = frame.contentDocument;
       return d && d.readyState === 'complete' && frame.contentWindow.location.href !== 'about:blank';
@@ -631,7 +631,7 @@ async function runWhatsNew({ t, flag, finish }) {
     t.progress(0.5);
 
     t.scene('Home Devlog');
-    ({ win, doc } = await load('index.html', 'home desktop', 1280, 800));
+    ({ win, doc } = await load('home.html', 'home desktop', 1280, 800));
     await t.until(() => doc.querySelector('#devlog article.hawkes-release'), 10000, 'home Devlog cards');
     const live = doc.querySelector('[data-live-moment], .live');
     const liveText = ((live && live.textContent) || '');
@@ -655,7 +655,7 @@ async function runWhatsNew({ t, flag, finish }) {
     t.progress(0.72);
 
     t.scene('Home phone');
-    ({ win, doc } = await load('index.html', 'home phone', 390, 844));
+    ({ win, doc } = await load('home.html', 'home phone', 390, 844));
     await t.until(() => doc.querySelector('#devlog article.hawkes-release'), 10000, 'home Devlog phone');
     const homeDev = doc.getElementById('devlog');
     if (homeDev) homeDev.scrollIntoView({ block: 'center' });
@@ -1506,7 +1506,7 @@ async function runPlayChrome({ t, flag, openGame, gameDoc, gameWin, visible, pre
 }
 
 const PAGES = [
-  ['home', 'index.html'],
+  ['home', 'home.html'],
   ['blog index', 'blog.html'],
   ['blog post', 'blog/eat-and-grow.html'],
   ['whatsnew', 'whatsnew.html'],
@@ -1687,8 +1687,8 @@ async function playFrom({ t, frame, win, doc, tag, label }) {
     const what = `${tag}: ${where} Play`;
     if (!el) { t.problem('bug', `${what} is missing`); allOk = false; continue; }
     if (where !== 'header') {
-      frame.src = BASE + 'index.html';
-      await t.until(() => { const d = frame.contentDocument; return d && d.readyState === 'complete' && /index\.html$/.test(frame.contentWindow.location.pathname); }, 20000, 'the home page again');
+      frame.src = BASE + 'home.html';
+      await t.until(() => { const d = frame.contentDocument; return d && d.readyState === 'complete' && /home\.html$/.test(frame.contentWindow.location.pathname); }, 20000, 'the home page again');
       await t.wait(400);
     }
     const from = where === 'header' ? el : frame.contentDocument.querySelector('.hero .play-large');
