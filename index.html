@@ -2,12 +2,196 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Yooba Land</title>
-<meta name="color-scheme" content="light">
-<meta name="theme-color" content="#ffffff">
-<script>(function(){var s=location.search,h=location.hash;if(navigator.webdriver||s.length>1||h.length>1){location.replace('./home.html'+s+h);}})();</script>
-<style>html,body{margin:0;height:100%;background:#fff}</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Planet</title>
+<meta name="description" content="The Planet (10⁷ m): Earth · 12,742 km across · a thin skin of rock and air around a ball of hot stone and metal. Explained simply by an AI narrator, with captions. One of nine scales, from the nucleus to the universe.">
+<meta name="theme-color" content="#03050b">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#eef4ff;--dim:rgba(214,228,255,.66);--acc:#8fc2ff}
+html,body{margin:0;height:100%;background:#03050b;overflow:hidden;color:var(--ink);font-family:"Space Grotesk",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#hud{position:fixed;left:0;right:0;top:0;pointer-events:none;text-align:center;padding:max(14px,env(safe-area-inset-top)) 16px 30px;background:linear-gradient(rgba(3,5,11,.72),rgba(3,5,11,.3) 65%,transparent)}
+.k{font:600 11px/1 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.38em;color:var(--dim);text-transform:uppercase}
+.k b{color:var(--acc);font-weight:600}
+.name{font-weight:700;font-size:clamp(30px,6.2vw,76px);line-height:1.02;letter-spacing:.06em;text-transform:uppercase;margin:.18em 0 .12em;color:#fff;text-shadow:0 0 28px rgba(110,165,255,.7),0 0 6px rgba(160,200,255,.55),0 2px 14px rgba(0,0,0,.9);animation:rise 1.1s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;letter-spacing:.3em;filter:blur(6px)}to{opacity:1;letter-spacing:.06em;filter:blur(0)}}
+.sub{font:400 clamp(11px,1.3vw,14px)/1.5 "JetBrains Mono",ui-monospace,monospace;color:var(--dim);letter-spacing:.05em;max-width:920px;margin:0 auto}
+#cc{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 74px);width:max-content;max-width:min(92vw,820px);text-align:center;pointer-events:none}
+#cc span{display:inline-block;font:500 clamp(16px,2.2vw,25px)/1.4 "Space Grotesk",system-ui,sans-serif;color:#fff;background:rgba(3,6,14,.74);padding:.34em .8em;border-radius:10px;box-shadow:0 0 0 1px rgba(143,194,255,.22),0 8px 30px rgba(0,0,0,.5)}
+#cc span:empty{display:none}
+#snd{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 132px);font:600 clamp(12px,1.5vw,15px)/1 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:#03050b;background:linear-gradient(180deg,#d7e9ff,#8fc2ff);padding:.8em 1.2em;border-radius:999px;box-shadow:0 0 30px rgba(143,194,255,.6);cursor:pointer;user-select:none;-webkit-user-select:none;animation:pulse 1.6s ease-in-out infinite;white-space:nowrap}
+#snd.on{left:auto;right:max(14px,env(safe-area-inset-right));top:max(14px,env(safe-area-inset-top));bottom:auto;transform:none;animation:none;background:rgba(3,6,14,.7);color:var(--acc);box-shadow:0 0 0 1px rgba(143,194,255,.4);font-size:11px;padding:.7em 1em}
+@keyframes pulse{50%{box-shadow:0 0 54px rgba(143,194,255,.95)}}
+#ruler{position:fixed;left:max(52px,env(safe-area-inset-left));right:max(52px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));height:56px}
+#ruler:before{content:"";position:absolute;left:0;right:0;top:20px;height:1px;background:linear-gradient(90deg,transparent,rgba(143,194,255,.55) 6%,rgba(143,194,255,.55) 94%,transparent)}
+#ruler a{position:absolute;top:0;transform:translateX(-50%);text-decoration:none;color:var(--dim);font:400 10px/1.25 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.04em;text-align:center;white-space:nowrap;padding-top:30px;outline:none}
+#ruler a:before{content:"";position:absolute;left:50%;top:15px;width:9px;height:9px;margin-left:-5px;border-radius:50%;background:#0b1326;box-shadow:0 0 0 1.5px rgba(143,194,255,.75);transition:transform .2s,background .2s}
+#ruler a:hover,#ruler a:focus-visible{color:#fff}
+#ruler a:hover:before,#ruler a:focus-visible:before{transform:scale(1.5);background:var(--acc)}
+#ruler a.up{padding-top:0;top:-14px}
+#ruler a.up:before{top:29px}
+#ruler a.me{color:#fff;font-weight:600}
+#ruler a.me:before{background:#fff;box-shadow:0 0 0 2px var(--acc),0 0 18px 4px rgba(143,194,255,.9);transform:scale(1.35)}
+#ruler a b{display:block;font-weight:600;color:var(--acc)}
+#ruler .cap{position:absolute;top:-30px;font:400 10px/1 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(214,228,255,.4)}
+#ruler .cap.l{left:-30px}#ruler .cap.r{right:-30px}
+@media (max-width:760px){#ruler a:not(.me) span{display:none}#ruler a:not(.me) b{font-size:9px}#ruler .cap{display:none}#cc{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 70px)}}
+.nav{position:fixed;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;align-items:center;gap:7px;text-decoration:none;color:rgba(214,228,255,.7);font:400 10px/1.25 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.08em;text-align:center;text-transform:uppercase;padding:14px 8px;outline:none;text-shadow:0 0 8px #000}
+.nav i{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:rgba(3,6,14,.62);box-shadow:0 0 0 1.5px rgba(143,194,255,.55);font:300 28px/1 system-ui,sans-serif;font-style:normal;color:#fff;padding-bottom:3px;box-sizing:border-box;transition:transform .2s,box-shadow .2s,background .2s}
+.nav:hover i,.nav:focus-visible i{transform:scale(1.12);background:rgba(143,194,255,.25);box-shadow:0 0 0 2px #8fc2ff,0 0 24px rgba(143,194,255,.75)}
+.nav.l{left:max(6px,env(safe-area-inset-left))}
+.nav.r{right:max(6px,env(safe-area-inset-right))}
+.nav b{display:block;color:#8fc2ff;font-weight:600}
+@media (max-width:760px){.nav span{display:none}.nav i{width:40px;height:40px;font-size:23px}}
+@media (prefers-reduced-motion:reduce){.name,#snd{animation:none}}
+</style>
 </head>
-<body></body>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <div class="k" id="k"></div>
+  <h1 class="name" id="name"></h1>
+  <div class="sub" id="sub"></div>
+</div>
+<div id="cc" aria-live="polite"><span id="cap"></span></div>
+<div id="snd" role="button" tabindex="0" aria-label="Turn the narration sound on">&#128266; Tap anywhere to hear it explained</div>
+<nav id="ruler" aria-label="The nine scales, from the nucleus to the universe"></nav>
+<audio id="au" src="./narration.mp3" preload="auto" loop muted autoplay playsinline></audio>
+<script>
+(function () {
+'use strict';
+// One of nine pages, one per scale of the world (10^-15 m to 10^27 m). Each draws its scale from the real numbers and
+// an AI voice explains it; the captions are cut from the voice's own timing. The ruler at the bottom links the nine.
+var D = {"i":4,"scales":[{"exp":-15,"name":"The Nucleus","short":"nucleus","size":"10⁻¹⁵ m","sub":"the heart of an atom · a millionth of a billionth of a meter · uranium-235: 92 protons, 143 neutrons","domain":"doseofdestruction.com"},{"exp":-10,"name":"The Atom","short":"atom","size":"10⁻¹⁰ m","sub":"the building brick of everything · one ten-billionth of a meter · hydrogen's electron clouds, drawn from the real equations","domain":"hawkesgames.com"},{"exp":-5,"name":"The Cell","short":"cell","size":"10⁻⁵ m","sub":"the smallest living thing · a hundredth of a millimeter · you are about 37 trillion of these","domain":"hawkesbiomedical.com"},{"exp":0,"name":"You","short":"you","size":"10⁰ m","sub":"the human scale · about a meter and a bit · 7 × 10²⁷ atoms, 37 trillion cells, 86 billion neurons","domain":"icanbe.ai"},{"exp":7,"name":"The Planet","short":"planet","size":"10⁷ m","sub":"Earth · 12,742 km across · a thin skin of rock and air around a ball of hot stone and metal","domain":"yoobalandgame.com"},{"exp":9,"name":"The Star","short":"star","size":"10⁹ m","sub":"the Sun · 1.39 million km across · a million Earths would fit inside","domain":"imaginelivetv.com"},{"exp":13,"name":"The Solar System","short":"solar system","size":"10¹³ m","sub":"the Sun's neighborhood · 9 billion km across at Neptune · real orbits and real speeds, distances squeezed to fit","domain":"theplacedepartment.com"},{"exp":21,"name":"The Galaxy","short":"galaxy","size":"10²¹ m","sub":"","domain":"phorigins.com"},{"exp":27,"name":"The Universe","short":"universe","size":"10²⁷ m","sub":"everything we could ever see · 93 billion light-years across · 13.8 billion years old","domain":"hawkesgen.ai"}],"cues":[[0,0.73,"Hello."],[0.73,4.08,"I'm the AI in this page, and that blue ball is home."],[4.08,5.34,"The Earth is big."],[5.34,8.21,"If you drove a car all the way around it without stopping,"],[8.21,10.43,"it would take about seventeen days."],[10.43,12.06,"But it is built like a peach."],[12.06,14.89,"The ground you stand on is just the thin skin."],[14.89,17.7,"Under it is hot, slow, gooey rock."],[17.7,22.21,"And in the very middle is a ball of metal, as hot as the surface of the Sun."],[22.21,23.96,"Why is the Earth round?"],[23.96,26.59,"Because gravity pulls everything toward the middle,"],[26.59,30.74,"the same from every side, like hands squeezing a snowball."],[30.74,33.22,"The air you breathe is thinner than you think."],[33.22,34.82,"If the Earth were an apple,"],[34.82,37.69,"all the air would be thinner than the apple's skin."],[37.69,38.92,"And the Moon?"],[38.92,40.12,"It is far."],[40.12,45.199999999999996,"You could fit every other planet in the solar system in the gap between here and there."]],"dur":45.2};
+var TAU = Math.PI * 2;
+function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function gauss(r) { var u = 1 - r(), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * v); }
+function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+function lerp(a, b, t) { return a + (b - a) * t; }
+function smooth(t) { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); }
+// a soft glowing dot, drawn from a cached sprite (fast enough for tens of thousands a frame)
+var sprites = {};
+function sprite(col) {
+  if (sprites[col]) return sprites[col];
+  var s = document.createElement('canvas'); s.width = s.height = 64; var g = s.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, col); gr.addColorStop(0.25, col); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.globalAlpha = 1; g.fillRect(0, 0, 64, 64);
+  return (sprites[col] = s);
+}
+function dot(x, c, y, r, col, a) { x.globalAlpha = a == null ? 1 : a; x.drawImage(sprite(col), c - r, y - r, r * 2, r * 2); }
+function label(x, text, px, py, align, col, size) {
+  x.save(); x.globalAlpha = 1; x.globalCompositeOperation = 'source-over'; x.font = '500 ' + (size || 12) + 'px "JetBrains Mono", ui-monospace, monospace'; x.textAlign = align || 'left'; x.textBaseline = 'middle';
+  x.lineWidth = 4; x.strokeStyle = 'rgba(3,5,11,.85)'; x.strokeText(text, px, py); x.fillStyle = col || 'rgba(214,228,255,.9)'; x.fillText(text, px, py); x.restore();
+}
+function lead(x, x0, y0, x1, y1, col) { x.save(); x.globalAlpha = 0.6; x.globalCompositeOperation = 'source-over'; x.strokeStyle = col || 'rgba(143,194,255,.7)'; x.lineWidth = 1; x.beginPath(); x.moveTo(x0, y0); x.lineTo(x1, y1); x.stroke(); x.restore(); }
+function scaleBar(x, W, H, px, text) { // a labelled length, bottom-left above the ruler
+  var bx = Math.max(22, W * 0.03), by = H - 150; x.save(); x.globalAlpha = 0.9; x.strokeStyle = '#fff'; x.lineWidth = 1.5; x.beginPath(); x.moveTo(bx, by - 5); x.lineTo(bx, by); x.lineTo(bx + px, by); x.lineTo(bx + px, by - 5); x.stroke(); x.restore();
+  label(x, text, bx, by + 14, 'left', 'rgba(238,244,255,.92)', 12);
+}
+var H3 = { rng: rng, gauss: gauss, clamp: clamp, lerp: lerp, smooth: smooth, dot: dot, label: label, lead: lead, scaleBar: scaleBar, TAU: TAU };
+
+// THE PLANET: Earth, 12,742 km across, turning on an axis tilted 23.4 degrees, lit from one side (day and night, with
+// city lights on the dark side). Its layers are drawn to scale in the cutaway: crust (the top 0.5%), mantle down to
+// 2,890 km, liquid outer core to 5,150 km, solid inner core (radius 1,220 km, about 5,400 C).
+// The Moon strip is to scale: the Moon is 0.27 Earths wide and 30 Earth-widths away (384,400 km).
+var SCENE = (function () {
+  var r = H3.rng(8), N = 15000, P = [], C = [], stars = [];
+  function hash(x, y, z) { var n = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return n - Math.floor(n); }
+  function vnoise(x, y, z) { var xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z), xf = x - xi, yf = y - yi, zf = z - zi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
+    function L(a, b, t) { return a + (b - a) * t; }
+    return L(L(L(hash(xi, yi, zi), hash(xi + 1, yi, zi), u), L(hash(xi, yi + 1, zi), hash(xi + 1, yi + 1, zi), u), v), L(L(hash(xi, yi, zi + 1), hash(xi + 1, yi, zi + 1), u), L(hash(xi, yi + 1, zi + 1), hash(xi + 1, yi + 1, zi + 1), u), v), w); }
+  function fbm(x, y, z) { return vnoise(x, y, z) * 0.5 + vnoise(x * 2.1, y * 2.1, z * 2.1) * 0.27 + vnoise(x * 4.3, y * 4.3, z * 4.3) * 0.15 + vnoise(x * 8.7, y * 8.7, z * 8.7) * 0.08; }
+  function init() {
+    var i, ga = Math.PI * (3 - Math.sqrt(5));
+    for (i = 0; i < N; i++) { var y = H3.clamp(1 - (i / (N - 1)) * 2 + (r() - 0.5) * 0.012, -1, 1), rad = Math.sqrt(1 - y * y), th = ga * i + (r() - 0.5) * 0.5, x = Math.cos(th) * rad, z = Math.sin(th) * rad, h = fbm(x * 1.7 + 3.1, y * 1.7 + 1.3, z * 1.7 + 5.9), lat = Math.abs(y);
+      var land = h > 0.52, ice = lat > 0.9 - (land ? 0.08 : 0) + (h - 0.5) * 0.2, col;
+      if (ice) col = 'rgba(235,245,255,1)'; else if (!land) col = h > 0.47 ? 'rgba(40,120,200,1)' : 'rgba(20,70,160,1)'; else col = lat < 0.35 ? (h > 0.6 ? 'rgba(150,130,80,1)' : 'rgba(50,150,70,1)') : (h > 0.62 ? 'rgba(140,125,100,1)' : 'rgba(70,130,60,1)');
+      P.push([x, y, z, col, land && !ice && hash(x * 9, y * 9, z * 9) > 0.72]); }
+    for (i = 0; i < 4200; i++) { var y2 = r() * 2 - 1, r2 = Math.sqrt(1 - y2 * y2), t2 = r() * 6.2832, x2 = Math.cos(t2) * r2, z2 = Math.sin(t2) * r2; if (fbm(x2 * 2.6 + 9, y2 * 4 + 2, z2 * 2.6 + 4) > 0.55) C.push([x2, y2, z2]); }
+    for (i = 0; i < 260; i++) stars.push([r(), r(), r() * 1.2 + 0.3]);
+  }
+  function draw(x, W, H, t, dt, nt) {
+    var cx = W / 2, cy = H * 0.46, R = Math.min(W * 0.33, H * 0.27), i;
+    x.fillStyle = '#02030a'; x.fillRect(0, 0, W, H);
+    x.globalCompositeOperation = 'lighter'; for (i = 0; i < stars.length; i++) H3.dot(x, stars[i][0] * W, stars[i][1] * H, stars[i][2], 'rgba(220,230,255,1)', 0.5 + 0.3 * Math.sin(t * 0.7 + i));
+    // the air: a thin blue glow
+    var at = x.createRadialGradient(cx, cy, R * 0.96, cx, cy, R * 1.13); at.addColorStop(0, 'rgba(90,170,255,.55)'); at.addColorStop(1, 'rgba(90,170,255,0)'); x.globalAlpha = 1; x.fillStyle = at; x.beginPath(); x.arc(cx, cy, R * 1.13, 0, 7); x.fill();
+    x.globalCompositeOperation = 'source-over'; x.fillStyle = '#030814'; x.beginPath(); x.arc(cx, cy, R, 0, 7); x.fill();
+    // turn about the tilted axis; the Sun is up and to the right
+    var a = t * 0.11, ca = Math.cos(a), sa = Math.sin(a), tl = 0.408, ct = Math.cos(tl), st = Math.sin(tl), Lx = 0.72, Ly = 0.28, Lz = 0.63, sz = Math.max(1.7, R * 0.0165);
+    x.globalCompositeOperation = 'lighter';
+    function turn(p) { var x1 = p[0] * ca + p[2] * sa, z1 = -p[0] * sa + p[2] * ca, y1 = p[1]; return [x1 * ct - y1 * st, x1 * st + y1 * ct, z1]; }
+    for (i = 0; i < N; i++) { var p = P[i], q = turn(p); if (q[2] < 0) continue; var lit = q[0] * Lx + q[1] * Ly + q[2] * Lz, px = cx + q[0] * R, py = cy - q[1] * R;
+      if (lit > 0) H3.dot(x, px, py, sz * (0.7 + q[2] * 0.5), p[3], Math.min(1, 0.18 + lit * 0.95)); else if (p[4]) H3.dot(x, px, py, sz * 0.75, 'rgba(255,205,120,1)', Math.min(0.85, -lit * 2.2)); }
+    var a2 = t * 0.13, cb = Math.cos(a2), sb = Math.sin(a2);
+    for (i = 0; i < C.length; i++) { var c = C[i], x1 = c[0] * cb + c[2] * sb, z1 = -c[0] * sb + c[2] * cb, qx = x1 * ct - c[1] * st, qy = x1 * st + c[1] * ct; if (z1 < 0) continue; var l2 = qx * Lx + qy * Ly + z1 * Lz; if (l2 > 0.02) H3.dot(x, cx + qx * R * 1.015, cy - qy * R * 1.015, sz * 1.25, 'rgba(255,255,255,1)', Math.min(0.5, l2 * 0.6)); }
+    x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
+    // the axis
+    x.strokeStyle = 'rgba(143,194,255,.5)'; x.lineWidth = 1; x.setLineDash([4, 5]); x.beginPath(); x.moveTo(cx + st * R * 1.22, cy - ct * R * 1.22); x.lineTo(cx - st * R * 1.22, cy + ct * R * 1.22); x.stroke(); x.setLineDash([]);
+    H3.label(x, 'tilted 23.4°: that tilt makes the seasons', cx - st * R * 1.24 - 8, cy + ct * R * 1.24, 'right', 'rgba(214,228,255,.8)', 11);
+    // the cutaway, to scale
+    var small = W < 760, cr = small ? 44 : Math.min(84, R * 0.36), kx = small ? W - cr - 16 : Math.min(W - cr - 150, cx + R * 2.0), ky = small ? cy + R + cr * 0.4 : cy - R * 0.1;
+    var layers = [[1, '#5a3a22'], [0.995, '#c8552b'], [0.546, '#f0a23a'], [0.191, '#fff0b8']];
+    for (i = 0; i < layers.length; i++) { x.beginPath(); x.arc(kx, ky, cr * layers[i][0], 0, 7); x.fillStyle = layers[i][1]; x.fill(); }
+    x.strokeStyle = 'rgba(3,5,11,.9)'; x.lineWidth = 1.5; x.beginPath(); x.arc(kx, ky, cr, 0, 7); x.stroke();
+    if (!small) { H3.label(x, 'inside the Earth, to scale', kx, ky - cr - 14, 'center', '#fff', 12); var T = function (txt, n, col) { x.fillStyle = col; x.fillRect(kx - cr, ky + cr + 14 + n * 17 - 4, 8, 8); H3.label(x, txt, kx - cr + 14, ky + cr + 14 + n * 17, 'left', 'rgba(238,244,255,.9)', 11); };
+      T('crust: the peach skin, 5 to 70 km', 0, '#8a5a36'); T('mantle: hot, slow rock', 1, '#c8552b'); T('outer core: liquid iron', 2, '#f0a23a'); T('inner core: solid, 5,400 °C', 3, '#fff0b8'); }
+    else H3.label(x, 'inside, to scale', kx, ky + cr + 12, 'center', 'rgba(214,228,255,.8)', 10);
+    // Earth and Moon, to scale
+    var ed = small ? 7 : 9, mx0 = Math.max(22, W * 0.03), my0 = H - 196, gap = ed * 30.17;
+    if (mx0 + gap + 10 < W) { x.fillStyle = '#4a9cff'; x.beginPath(); x.arc(mx0 + ed / 2, my0, ed / 2, 0, 7); x.fill(); x.fillStyle = '#c9c9c9'; x.beginPath(); x.arc(mx0 + gap, my0, ed * 0.136, 0, 7); x.fill();
+      x.strokeStyle = 'rgba(143,194,255,.35)'; x.beginPath(); x.moveTo(mx0 + ed, my0); x.lineTo(mx0 + gap - 3, my0); x.stroke(); H3.label(x, 'Earth and Moon, truly to scale: 384,400 km apart', mx0, my0 - 14, 'left', 'rgba(214,228,255,.85)', 11); }
+    H3.scaleBar(x, W, H, R * 2 * (5000 / 12742), '5,000 km');
+  }
+  return { init: init, draw: draw };
+})();
+
+
+// ---------------------------------------------------------------- page
+var cv = document.getElementById('c'), cx = cv.getContext('2d'), W = 0, Hh = 0, dpr = 1;
+function fit() { dpr = Math.min(devicePixelRatio || 1, 2); W = innerWidth; Hh = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(Hh * dpr); cx.setTransform(dpr, 0, 0, dpr, 0, 0); if (SCENE.resize) SCENE.resize(W, Hh); }
+addEventListener('resize', fit);
+var me = D.scales[D.i];
+document.getElementById('k').innerHTML = 'Scale ' + (D.i + 1) + ' of ' + D.scales.length + ' · <b>' + me.size + '</b>';
+document.getElementById('name').textContent = me.name;
+document.getElementById('sub').textContent = me.sub;
+var ruler = document.getElementById('ruler'), lo = D.scales[0].exp, hi = D.scales[D.scales.length - 1].exp;
+ruler.innerHTML = '<span class="cap l">← smaller</span><span class="cap r">bigger →</span>' + D.scales.map(function (s, i) {
+  return '<a href="https://' + s.domain + '/" class="' + (i === D.i ? 'me ' : '') + (i % 2 ? 'up' : '') + '" style="left:' + ((s.exp - lo) / (hi - lo) * 100).toFixed(2) + '%"' + (i === D.i ? ' aria-current="page"' : '') + ' title="' + s.name + ' · ' + s.size + ' · ' + s.domain + '"><b>' + s.size + '</b><span>' + s.short + '</span></a>';
+}).join('');
+
+// the arrows at the sides: one scale smaller, one scale bigger (they wrap round at the ends); the arrow keys do the same
+(function () { var n = D.scales.length, pv = D.scales[(D.i - 1 + n) % n], nx = D.scales[(D.i + 1) % n];
+  function nav(cls, s, arrow, word) { var a = document.createElement('a'); a.className = 'nav ' + cls; a.href = 'https://' + s.domain + '/'; a.title = word + ': ' + s.name + ' (' + s.size + ')'; a.setAttribute('aria-label', word + ': ' + s.name); a.innerHTML = '<i>' + arrow + '</i><span>' + word + '<b>' + s.short + '</b></span>'; document.body.appendChild(a); return a; }
+  var L = nav('l', pv, '‹', D.i === 0 ? 'biggest' : 'smaller'), R = nav('r', nx, '›', D.i === n - 1 ? 'smallest' : 'bigger');
+  addEventListener('keydown', function (e) { if (e.altKey || e.ctrlKey || e.metaKey) return; if (e.key === 'ArrowLeft') location.href = L.href; else if (e.key === 'ArrowRight') location.href = R.href; });
+})();
+
+// the voice: muted until the first tap (browsers require it); the captions and the picture follow its clock either way
+var au = document.getElementById('au'), snd = document.getElementById('snd'), cap = document.getElementById('cap'), started = false, t0 = performance.now(), shown = -2;
+function nt() { return (!au.paused && au.readyState > 1 && isFinite(au.currentTime)) ? au.currentTime : ((performance.now() - t0) / 1000) % (D.dur + 2); }
+function setSnd() { snd.classList.add('on'); snd.innerHTML = au.muted ? '&#128263; Sound off' : '&#128266; Sound on'; snd.setAttribute('aria-label', au.muted ? 'Turn the sound on' : 'Turn the sound off'); }
+function begin() { if (started) return; started = true; au.muted = false; au.currentTime = 0; t0 = performance.now(); var p = au.play(); if (p && p.catch) p.catch(function () {}); setSnd(); }
+addEventListener('pointerdown', function (e) { if (!started) { begin(); return; } if (e.target === snd) { au.muted = !au.muted; setSnd(); } }, { passive: true });
+addEventListener('keydown', function (e) { if (!started) begin(); else if (e.target === snd && (e.key === 'Enter' || e.key === ' ')) { au.muted = !au.muted; setSnd(); } });
+var pp = au.play(); if (pp && pp.catch) pp.catch(function () {});
+
+var last = performance.now(), T = +(new URLSearchParams(location.search).get("t") || 0); // ?t=seconds jumps the picture ahead
+fit(); SCENE.init(W, Hh);
+function frame(now) {
+  requestAnimationFrame(frame);
+  var dt = Math.min(0.05, (now - last) / 1000); last = now; T += dt;
+  var n = nt();
+  cx.globalCompositeOperation = 'source-over'; cx.globalAlpha = 1;
+  SCENE.draw(cx, W, Hh, T, dt, n);
+  var q = -1; for (var j = 0; j < D.cues.length; j++) { if (n >= D.cues[j][0] && n < D.cues[j][1]) { q = j; break; } }
+  if (q !== shown) { shown = q; cap.textContent = q < 0 ? '' : D.cues[q][2]; }
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
 </html>
